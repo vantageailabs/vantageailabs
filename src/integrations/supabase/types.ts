@@ -57,6 +57,10 @@ export type Database = {
           notes: string | null
           status: string
           updated_at: string
+          zoom_join_url: string | null
+          zoom_meeting_id: string | null
+          zoom_password: string | null
+          zoom_start_url: string | null
         }
         Insert: {
           appointment_date: string
@@ -70,6 +74,10 @@ export type Database = {
           notes?: string | null
           status?: string
           updated_at?: string
+          zoom_join_url?: string | null
+          zoom_meeting_id?: string | null
+          zoom_password?: string | null
+          zoom_start_url?: string | null
         }
         Update: {
           appointment_date?: string
@@ -83,6 +91,10 @@ export type Database = {
           notes?: string | null
           status?: string
           updated_at?: string
+          zoom_join_url?: string | null
+          zoom_meeting_id?: string | null
+          zoom_password?: string | null
+          zoom_start_url?: string | null
         }
         Relationships: []
       }
