@@ -19,14 +19,16 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours[]>([]);
   const [settings, setSettings] = useState<AdminSettings | null>(null);
+  const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch working hours and settings on mount
+  // Fetch working hours, settings, and blocked dates on mount
   useEffect(() => {
     const fetchData = async () => {
-      const [workingHoursResult, settingsResult] = await Promise.all([
+      const [workingHoursResult, settingsResult, blockedDatesResult] = await Promise.all([
         supabase.from('working_hours').select('*'),
         supabase.from('admin_settings').select('*').limit(1).maybeSingle(),
+        supabase.from('blocked_dates').select('blocked_date'),
       ]);
 
       if (workingHoursResult.data) {
@@ -34,6 +36,9 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
       }
       if (settingsResult.data) {
         setSettings(settingsResult.data);
+      }
+      if (blockedDatesResult.data) {
+        setBlockedDates(blockedDatesResult.data.map(d => d.blocked_date));
       }
       setLoading(false);
     };
@@ -110,6 +115,10 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
     const maxDate = new Date(today);
     maxDate.setDate(maxDate.getDate() + settings.advance_booking_days);
     if (date > maxDate) return false;
+
+    // Check if date is blocked
+    const dateStr = date.toISOString().split('T')[0];
+    if (blockedDates.includes(dateStr)) return false;
 
     // Check if day has working hours
     const dayOfWeek = date.getDay();
