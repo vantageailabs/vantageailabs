@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,7 +7,7 @@ import { AppointmentsList } from '@/components/admin/AppointmentsList';
 import { WorkingHoursEditor } from '@/components/admin/WorkingHoursEditor';
 import { BlockedDatesManager } from '@/components/admin/BlockedDatesManager';
 import { LeadsList } from '@/components/admin/LeadsList';
-import { Calendar, Clock, Ban, Users, LogOut, Settings } from 'lucide-react';
+import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft } from 'lucide-react';
 
 function DashboardContent() {
   const { signOut } = useAuth();
@@ -28,10 +28,18 @@ function DashboardContent() {
             </div>
             <h1 className="font-display text-xl font-bold text-foreground">Admin Dashboard</h1>
           </div>
-          <Button variant="ghost" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild>
+              <Link to="/">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to site
+              </Link>
+            </Button>
+            <Button variant="ghost" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 
