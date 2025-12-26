@@ -140,5 +140,6 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
     formatTimeDisplay,
     loading,
     settings,
+    blockedDates,
   };
 };

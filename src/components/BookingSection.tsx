@@ -23,7 +23,7 @@ const BookingSection = () => {
   });
 
   const { toast } = useToast();
-  const { availableSlots, isDateAvailable, formatTimeDisplay, loading, settings } = useAvailableSlots(selectedDate);
+  const { availableSlots, isDateAvailable, formatTimeDisplay, loading, settings, blockedDates } = useAvailableSlots(selectedDate);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
