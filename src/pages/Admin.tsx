@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Lock, Mail } from 'lucide-react';
+import { Loader2, Lock, Mail, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 
 const signUpSchema = z.object({
@@ -117,7 +117,12 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center px-4">
-      <Card className="w-full max-w-md card-elevated border-border/50">
+      <div className="w-full max-w-md space-y-4">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="h-4 w-4" />
+          Back to site
+        </Link>
+        <Card className="w-full card-elevated border-border/50">
         <CardHeader className="text-center space-y-2">
           <div className="mx-auto w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-2">
             <Lock className="h-6 w-6 text-primary" />
@@ -249,6 +254,7 @@ export default function Admin() {
           </Tabs>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
