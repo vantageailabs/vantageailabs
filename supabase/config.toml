@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.create-appointment]
 verify_jwt = false
+
+[functions.fetch-calendar-events]
+verify_jwt = false
