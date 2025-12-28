@@ -15,12 +15,39 @@ interface AdminSettings {
   timezone: string;
 }
 
+interface BusyPeriod {
+  start: string; // HH:MM format
+  end: string;   // HH:MM format
+}
+
+// Check if a time slot overlaps with any busy period
+function isSlotBusy(slotStart: string, slotDurationMinutes: number, busyPeriods: BusyPeriod[]): boolean {
+  const [slotStartHour, slotStartMin] = slotStart.split(':').map(Number);
+  const slotStartMinutes = slotStartHour * 60 + slotStartMin;
+  const slotEndMinutes = slotStartMinutes + slotDurationMinutes;
+
+  for (const busy of busyPeriods) {
+    const [busyStartHour, busyStartMin] = busy.start.split(':').map(Number);
+    const [busyEndHour, busyEndMin] = busy.end.split(':').map(Number);
+    const busyStartMinutes = busyStartHour * 60 + busyStartMin;
+    const busyEndMinutes = busyEndHour * 60 + busyEndMin;
+
+    // Check for overlap: slot starts before busy ends AND slot ends after busy starts
+    if (slotStartMinutes < busyEndMinutes && slotEndMinutes > busyStartMinutes) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export const useAvailableSlots = (selectedDate: Date | null) => {
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours[]>([]);
   const [settings, setSettings] = useState<AdminSettings | null>(null);
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [calendarConfigured, setCalendarConfigured] = useState(false);
 
   // Fetch working hours, settings, and blocked dates on mount
   useEffect(() => {
@@ -64,15 +91,34 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
 
       // Get existing appointments for this date
       const dateStr = selectedDate.toISOString().split('T')[0];
-      const { data: existingAppointments } = await supabase
-        .from('appointments')
-        .select('appointment_time')
-        .eq('appointment_date', dateStr)
-        .neq('status', 'cancelled');
+      
+      // Fetch appointments and Google Calendar events in parallel
+      const [appointmentsResult, calendarResult] = await Promise.all([
+        supabase
+          .from('appointments')
+          .select('appointment_time')
+          .eq('appointment_date', dateStr)
+          .neq('status', 'cancelled'),
+        supabase.functions.invoke('fetch-calendar-events', {
+          body: { date: dateStr, timezone: settings.timezone }
+        })
+      ]);
 
       const bookedTimes = new Set(
-        existingAppointments?.map(a => a.appointment_time.slice(0, 5)) || []
+        appointmentsResult.data?.map(a => a.appointment_time.slice(0, 5)) || []
       );
+
+      // Extract busy periods from Google Calendar
+      let busyPeriods: BusyPeriod[] = [];
+      if (calendarResult.data && !calendarResult.error) {
+        busyPeriods = calendarResult.data.busyPeriods || [];
+        setCalendarConfigured(calendarResult.data.configured || false);
+        if (busyPeriods.length > 0) {
+          console.log('Google Calendar busy periods:', busyPeriods);
+        }
+      } else if (calendarResult.error) {
+        console.warn('Failed to fetch calendar events:', calendarResult.error);
+      }
 
       // Generate time slots
       const slots: string[] = [];
@@ -88,9 +134,18 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
         const minute = time % 60;
         const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
         
-        if (!bookedTimes.has(timeStr)) {
-          slots.push(timeStr);
+        // Check if slot is booked by existing appointment
+        if (bookedTimes.has(timeStr)) {
+          continue;
         }
+
+        // Check if slot overlaps with Google Calendar busy period
+        if (isSlotBusy(timeStr, settings.appointment_duration_minutes, busyPeriods)) {
+          console.log(`Slot ${timeStr} blocked by Google Calendar event`);
+          continue;
+        }
+
+        slots.push(timeStr);
       }
 
       setAvailableSlots(slots);
@@ -141,5 +196,6 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
     loading,
     settings,
     blockedDates,
+    calendarConfigured,
   };
 };
