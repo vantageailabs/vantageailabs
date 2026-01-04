@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Download, CheckCircle, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const LeadMagnet = () => {
   const [email, setEmail] = useState("");
@@ -14,11 +15,25 @@ const LeadMagnet = () => {
     if (!email) return;
     
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    setIsSubmitted(true);
-    toast.success("Check your email for the free guide!");
+    
+    try {
+      const { error } = await supabase
+        .from('lead_submissions')
+        .insert({
+          email: email.trim(),
+          source: 'lead_magnet'
+        });
+
+      if (error) throw error;
+      
+      setIsSubmitted(true);
+      toast.success("Check your email for the free guide!");
+    } catch (error) {
+      console.error('Error submitting lead:', error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const benefits = [
