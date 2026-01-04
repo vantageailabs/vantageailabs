@@ -1,0 +1,483 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Mail, 
+  Database, 
+  Calendar, 
+  BarChart3, 
+  Headphones, 
+  UserCheck, 
+  Receipt, 
+  Share2,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  Sparkles
+} from "lucide-react";
+
+interface Question {
+  id: string;
+  category: string;
+  icon: React.ReactNode;
+  question: string;
+  options: { value: string; label: string; score: number }[];
+  weight: number;
+}
+
+const questions: Question[] = [
+  {
+    id: "email",
+    category: "Email & Communication",
+    icon: <Mail className="h-6 w-6" />,
+    question: "How many hours per week does your team spend on customer emails, follow-ups, and newsletters?",
+    options: [
+      { value: "heavy", label: "Heavy Load (15+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (8-12 hours/week)", score: 75 },
+      { value: "light", label: "Light (4-7 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (2-3 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.2,
+  },
+  {
+    id: "dataEntry",
+    category: "Data Entry & Documentation",
+    icon: <Database className="h-6 w-6" />,
+    question: "How much time is spent manually entering data into spreadsheets, CRMs, or databases?",
+    options: [
+      { value: "heavy", label: "Heavy Load (10+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (5-10 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-5 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.1,
+  },
+  {
+    id: "scheduling",
+    category: "Scheduling & Calendar",
+    icon: <Calendar className="h-6 w-6" />,
+    question: "How many hours are spent coordinating meetings, appointments, and rescheduling?",
+    options: [
+      { value: "heavy", label: "Heavy Load (8+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (4-8 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-4 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.0,
+  },
+  {
+    id: "reporting",
+    category: "Report Generation",
+    icon: <BarChart3 className="h-6 w-6" />,
+    question: "How much time is spent creating reports, dashboards, and performance summaries?",
+    options: [
+      { value: "heavy", label: "Heavy Load (10+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (5-10 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-5 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 0.9,
+  },
+  {
+    id: "support",
+    category: "Customer Support",
+    icon: <Headphones className="h-6 w-6" />,
+    question: "How many hours are spent answering repetitive questions and handling support tickets?",
+    options: [
+      { value: "heavy", label: "Heavy Load (15+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (8-15 hours/week)", score: 75 },
+      { value: "light", label: "Light (4-8 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 4 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.15,
+  },
+  {
+    id: "leadFollowup",
+    category: "Lead Follow-up",
+    icon: <UserCheck className="h-6 w-6" />,
+    question: "How much time is spent on lead qualification, initial outreach, and nurturing?",
+    options: [
+      { value: "heavy", label: "Heavy Load (10+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (5-10 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-5 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.1,
+  },
+  {
+    id: "invoicing",
+    category: "Invoice & Payments",
+    icon: <Receipt className="h-6 w-6" />,
+    question: "How many hours are spent on billing, payment reminders, and reconciliation?",
+    options: [
+      { value: "heavy", label: "Heavy Load (8+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (4-8 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-4 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 0.85,
+  },
+  {
+    id: "socialMedia",
+    category: "Social Media & Content",
+    icon: <Share2 className="h-6 w-6" />,
+    question: "How much time is spent on posting, engagement, and content scheduling?",
+    options: [
+      { value: "heavy", label: "Heavy Load (10+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (5-10 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-5 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 0.8,
+  },
+];
+
+interface CategoryResult {
+  category: string;
+  score: number;
+  icon: React.ReactNode;
+}
+
+const AIReadinessAssessment = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [showResults, setShowResults] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { toast } = useToast();
+
+  const progress = ((currentStep + 1) / questions.length) * 100;
+
+  const handleAnswer = (value: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questions[currentStep].id]: value,
+    }));
+  };
+
+  const handleNext = () => {
+    if (currentStep < questions.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      setShowResults(true);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+    }
+  };
+
+  const calculateResults = (): { overallScore: number; categories: CategoryResult[]; estimatedHoursSaved: number } => {
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+    let estimatedHours = 0;
+
+    const categories: CategoryResult[] = questions.map((q) => {
+      const answer = answers[q.id];
+      const option = q.options.find((opt) => opt.value === answer);
+      const score = option?.score || 0;
+      
+      totalWeightedScore += score * q.weight;
+      totalWeight += q.weight * 100;
+
+      // Estimate hours based on answer
+      const hourMap: Record<string, number> = {
+        heavy: 12,
+        moderate: 7,
+        light: 4,
+        minimal: 1.5,
+        automated: 0,
+      };
+      estimatedHours += (hourMap[answer] || 0) * 0.65; // 65% automation potential
+
+      return {
+        category: q.category,
+        score,
+        icon: q.icon,
+      };
+    });
+
+    const overallScore = Math.round((totalWeightedScore / totalWeight) * 100);
+
+    return { overallScore, categories, estimatedHoursSaved: Math.round(estimatedHours) };
+  };
+
+  const getScoreLabel = (score: number): { label: string; color: string } => {
+    if (score >= 70) return { label: "High Automation Potential", color: "text-green-500" };
+    if (score >= 40) return { label: "Moderate Automation Potential", color: "text-yellow-500" };
+    return { label: "Low Automation Potential", color: "text-muted-foreground" };
+  };
+
+  const getTopRecommendations = (categories: CategoryResult[]): CategoryResult[] => {
+    return [...categories]
+      .filter((c) => c.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+  };
+
+  const handleSubmitEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from("lead_submissions").insert({
+        email: email.trim(),
+        source: "automation_assessment",
+      });
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      toast({
+        title: "Success!",
+        description: "Your personalized automation roadmap is on its way!",
+      });
+    } catch (error) {
+      console.error("Error submitting assessment lead:", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const currentQuestion = questions[currentStep];
+  const currentAnswer = answers[currentQuestion?.id];
+
+  if (showResults) {
+    const { overallScore, categories, estimatedHoursSaved } = calculateResults();
+    const { label, color } = getScoreLabel(overallScore);
+    const topRecommendations = getTopRecommendations(categories);
+
+    return (
+      <section id="assessment" className="py-20 px-4 bg-muted/30">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Sparkles className="h-4 w-4" />
+              Assessment Complete
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Your Automation Assessment Results
+            </h2>
+          </div>
+
+          <Card className="mb-8">
+            <CardContent className="p-8">
+              {/* Overall Score */}
+              <div className="text-center mb-8 pb-8 border-b">
+                <div className="text-6xl font-bold text-primary mb-2">{overallScore}</div>
+                <div className="text-lg text-muted-foreground mb-1">out of 100</div>
+                <div className={`text-lg font-semibold ${color}`}>{label}</div>
+              </div>
+
+              {/* Key Stats */}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="text-3xl font-bold text-primary">{estimatedHoursSaved}</div>
+                  <div className="text-sm text-muted-foreground">Hours/week you could save</div>
+                </div>
+                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="text-3xl font-bold text-primary">{estimatedHoursSaved * 52}</div>
+                  <div className="text-sm text-muted-foreground">Hours saved annually</div>
+                </div>
+              </div>
+
+              {/* Category Breakdown */}
+              <div className="mb-8">
+                <h3 className="font-semibold mb-4">Priority Areas</h3>
+                <div className="space-y-3">
+                  {categories.map((cat) => (
+                    <div key={cat.category} className="flex items-center gap-3">
+                      <div className="text-muted-foreground">{cat.icon}</div>
+                      <div className="flex-1">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>{cat.category}</span>
+                          <span className="text-muted-foreground">{cat.score}%</span>
+                        </div>
+                        <Progress value={cat.score} className="h-2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Top Recommendations */}
+              {topRecommendations.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="font-semibold mb-4">Top Recommendations</h3>
+                  <div className="space-y-3">
+                    {topRecommendations.map((rec, index) => (
+                      <div
+                        key={rec.category}
+                        className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg"
+                      >
+                        <div className="flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground rounded-full text-sm font-bold">
+                          {index + 1}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {rec.icon}
+                          <span className="font-medium">{rec.category}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Lead Capture */}
+              {!isSubmitted ? (
+                <div className="bg-muted/50 rounded-lg p-6">
+                  <h3 className="font-semibold mb-2">Get Your Personalized Automation Roadmap</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    We'll send you a detailed action plan based on your results, including specific tools and implementation steps.
+                  </p>
+                  <form onSubmit={handleSubmitEmail} className="flex gap-3">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="flex-1"
+                    />
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Sending..." : "Send My Roadmap"}
+                    </Button>
+                  </form>
+                </div>
+              ) : (
+                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-6 text-center">
+                  <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-3" />
+                  <h3 className="font-semibold text-lg mb-1">Roadmap on the way!</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Check your inbox for your personalized automation roadmap.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="text-center">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowResults(false);
+                setCurrentStep(0);
+                setAnswers({});
+                setEmail("");
+                setIsSubmitted(false);
+              }}
+            >
+              Retake Assessment
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="assessment" className="py-20 px-4 bg-muted/30">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <Sparkles className="h-4 w-4" />
+            Free Assessment
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Discover Your Automation Opportunities
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Answer 8 quick questions to see where AI can save you the most time
+          </p>
+        </div>
+
+        {/* Progress */}
+        <div className="mb-8">
+          <div className="flex justify-between text-sm text-muted-foreground mb-2">
+            <span>Question {currentStep + 1} of {questions.length}</span>
+            <span>{Math.round(progress)}% complete</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
+
+        {/* Question Card */}
+        <Card>
+          <CardContent className="p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                {currentQuestion.icon}
+              </div>
+              <span className="text-sm font-medium text-primary">
+                {currentQuestion.category}
+              </span>
+            </div>
+
+            <h3 className="text-xl font-semibold mb-6">{currentQuestion.question}</h3>
+
+            <RadioGroup
+              value={currentAnswer || ""}
+              onValueChange={handleAnswer}
+              className="space-y-3"
+            >
+              {currentQuestion.options.map((option) => (
+                <div key={option.value} className="flex items-center">
+                  <RadioGroupItem
+                    value={option.value}
+                    id={option.value}
+                    className="peer sr-only"
+                  />
+                  <Label
+                    htmlFor={option.value}
+                    className="flex-1 p-4 border rounded-lg cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:border-primary/50"
+                  >
+                    {option.label}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+
+            <div className="flex justify-between mt-8">
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                disabled={currentStep === 0}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              <Button onClick={handleNext} disabled={!currentAnswer}>
+                {currentStep === questions.length - 1 ? "See Results" : "Next"}
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+};
+
+export default AIReadinessAssessment;
