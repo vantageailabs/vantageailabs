@@ -8,6 +8,7 @@ import { WorkingHoursEditor } from '@/components/admin/WorkingHoursEditor';
 import { BlockedDatesManager } from '@/components/admin/BlockedDatesManager';
 import { LeadsList } from '@/components/admin/LeadsList';
 import { AssessmentsList } from '@/components/admin/AssessmentsList';
+import { CalendarStatus } from '@/components/admin/CalendarStatus';
 import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList } from 'lucide-react';
 
 function DashboardContent() {
@@ -90,7 +91,12 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Calendar Settings</h2>
               <p className="text-muted-foreground">Configure working hours and appointment settings</p>
             </div>
-            <WorkingHoursEditor />
+            <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+              <WorkingHoursEditor />
+              <div className="lg:order-first">
+                <CalendarStatus />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="blocked" className="animate-fade-in">
