@@ -13,6 +13,7 @@ interface AppointmentRequest {
   guest_email: string;
   guest_phone?: string;
   notes?: string;
+  assessment_id?: string; // Optional assessment to link
 }
 
 serve(async (req) => {
@@ -121,6 +122,24 @@ serve(async (req) => {
     }
 
     console.log('Appointment created:', appointment.id);
+
+    // If there's a pending assessment, link it to this appointment
+    if (appointmentData.assessment_id) {
+      const { error: updateError } = await supabase
+        .from('assessment_responses')
+        .update({ 
+          appointment_id: appointment.id,
+          email: appointmentData.guest_email 
+        })
+        .eq('id', appointmentData.assessment_id);
+
+      if (updateError) {
+        console.error('Error linking assessment:', updateError);
+        // Don't fail the appointment creation, just log the error
+      } else {
+        console.log('Assessment linked to appointment:', appointmentData.assessment_id);
+      }
+    }
 
     return new Response(
       JSON.stringify({

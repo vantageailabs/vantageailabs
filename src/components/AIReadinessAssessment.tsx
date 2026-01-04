@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -18,13 +17,12 @@ import {
   Share2,
   ArrowRight,
   ArrowLeft,
-  CheckCircle2,
   Sparkles,
   Building2,
   DollarSign,
   Layers,
-  ClipboardCheck,
-  Clock
+  Clock,
+  CalendarCheck
 } from "lucide-react";
 
 interface Question {
@@ -193,24 +191,10 @@ const questions: Question[] = [
     weight: 0,
   },
   {
-    id: "readiness",
-    category: "Implementation Readiness",
-    icon: <ClipboardCheck className="h-6 w-6" />,
-    question: "How ready is your business to implement automation?",
-    options: [
-      { value: "ready", label: "Ready to Implement - Processes documented, team trained", score: 0 },
-      { value: "quick", label: "Quick Preparation - Can prepare within 1-2 weeks", score: 0 },
-      { value: "some", label: "Some Preparation Needed - Need 2-4 weeks to organize", score: 0 },
-      { value: "significant", label: "Significant Preparation - Need 1-2 months to document processes", score: 0 },
-      { value: "scratch", label: "Starting from Scratch - Processes ad-hoc, need guidance", score: 0 },
-    ],
-    weight: 0,
-  },
-  {
     id: "timeline",
     category: "Investment Timeline",
     icon: <Clock className="h-6 w-6" />,
-    question: "When would you want automation implemented?",
+    question: "When would you like to implement automation?",
     options: [
       { value: "immediate", label: "Immediate - Ready to start within 1-2 weeks", score: 0 },
       { value: "fast", label: "Fast Track - Want to begin within 3-4 weeks", score: 0 },
@@ -232,9 +216,7 @@ const AIReadinessAssessment = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
-  const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
   const progress = ((currentStep + 1) / questions.length) * 100;
@@ -273,7 +255,6 @@ const AIReadinessAssessment = () => {
       businessType: string;
       revenue: string;
       toolStack: string;
-      readiness: string;
       timeline: string;
     };
   } => {
@@ -323,7 +304,6 @@ const AIReadinessAssessment = () => {
       businessType: answers.businessType || "",
       revenue: answers.monthlyRevenue || "",
       toolStack: answers.toolStack || "",
-      readiness: answers.readiness || "",
       timeline: answers.timeline || "",
     };
 
@@ -343,26 +323,41 @@ const AIReadinessAssessment = () => {
       .slice(0, 3);
   };
 
-  const handleSubmitEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
+  const handleSaveAndSchedule = async () => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("lead_submissions").insert({
-        email: email.trim(),
-        source: "automation_assessment",
-      });
+      const results = calculateResults();
+      
+      const { data, error } = await supabase.from("assessment_responses").insert({
+        overall_score: results.overallScore,
+        estimated_hours_saved: results.estimatedHoursSaved,
+        estimated_monthly_savings: results.estimatedMonthlySavings,
+        answers: answers,
+        business_type: results.businessContext.businessType || null,
+        monthly_revenue: results.businessContext.revenue || null,
+        tool_stack: results.businessContext.toolStack || null,
+        timeline: results.businessContext.timeline || null,
+      }).select().single();
 
       if (error) throw error;
 
-      setIsSubmitted(true);
+      // Store assessment ID in localStorage for booking flow to link
+      if (data) {
+        localStorage.setItem('pending_assessment_id', data.id);
+      }
+
+      // Scroll to booking section
+      const bookingSection = document.getElementById('booking');
+      if (bookingSection) {
+        bookingSection.scrollIntoView({ behavior: 'smooth' });
+      }
+
       toast({
-        title: "Success!",
-        description: "Your personalized automation roadmap is on its way!",
+        title: "Assessment Saved!",
+        description: "Now let's schedule your strategy call.",
       });
     } catch (error) {
-      console.error("Error submitting assessment lead:", error);
+      console.error("Error saving assessment:", error);
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",
@@ -386,15 +381,6 @@ const AIReadinessAssessment = () => {
     const { overallScore, categories, estimatedHoursSaved, estimatedMonthlySavings, businessContext } = calculateResults();
     const { label, color } = getScoreLabel(overallScore);
     const topRecommendations = getTopRecommendations(categories);
-
-    // Get readiness message
-    const readinessMessages: Record<string, string> = {
-      ready: "You're ready for immediate implementation!",
-      quick: "With 1-2 weeks of preparation, you can start automating.",
-      some: "Plan for 2-4 weeks of process organization before implementation.",
-      significant: "We recommend 1-2 months of process documentation first.",
-      scratch: "We'll help guide you through process documentation and automation planning.",
-    };
 
     // Get timeline message
     const timelineMessages: Record<string, string> = {
@@ -448,14 +434,13 @@ const AIReadinessAssessment = () => {
               </div>
 
               {/* Implementation Insights */}
-              {(businessContext.readiness || businessContext.timeline) && (
+              {businessContext.timeline && (
                 <div className="mb-8 p-4 bg-primary/5 rounded-lg border border-primary/10">
                   <h3 className="font-semibold mb-2 flex items-center gap-2">
-                    <ClipboardCheck className="h-5 w-5 text-primary" />
+                    <Clock className="h-5 w-5 text-primary" />
                     Your Implementation Path
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {readinessMessages[businessContext.readiness] || ""}{" "}
                     {timelineMessages[businessContext.timeline] || ""}
                   </p>
                 </div>
@@ -503,36 +488,28 @@ const AIReadinessAssessment = () => {
                 </div>
               )}
 
-              {/* Lead Capture */}
-              {!isSubmitted ? (
-                <div className="bg-muted/50 rounded-lg p-6">
-                  <h3 className="font-semibold mb-2">Get Your Personalized Automation Roadmap</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    We'll send you a detailed action plan based on your results, including specific tools and implementation steps.
-                  </p>
-                  <form onSubmit={handleSubmitEmail} className="flex gap-3">
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="flex-1"
-                    />
-                    <Button type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? "Sending..." : "Send My Roadmap"}
-                    </Button>
-                  </form>
-                </div>
-              ) : (
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-6 text-center">
-                  <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-3" />
-                  <h3 className="font-semibold text-lg mb-1">Roadmap on the way!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Check your inbox for your personalized automation roadmap.
-                  </p>
-                </div>
-              )}
+              {/* Schedule Call CTA */}
+              <div className="bg-primary/10 rounded-lg p-6 text-center">
+                <h3 className="font-semibold mb-2 text-lg">Ready to Unlock Your Automation Potential?</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Schedule a free strategy call and we'll create a personalized automation roadmap for your business.
+                </p>
+                <Button 
+                  size="lg" 
+                  onClick={handleSaveAndSchedule}
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto"
+                >
+                  {isSubmitting ? (
+                    "Saving..."
+                  ) : (
+                    <>
+                      <CalendarCheck className="h-5 w-5 mr-2" />
+                      Schedule Your Strategy Call
+                    </>
+                  )}
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -543,8 +520,6 @@ const AIReadinessAssessment = () => {
                 setShowResults(false);
                 setCurrentStep(0);
                 setAnswers({});
-                setEmail("");
-                setIsSubmitted(false);
               }}
             >
               Retake Assessment

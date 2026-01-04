@@ -98,6 +98,59 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_responses: {
+        Row: {
+          answers: Json
+          appointment_id: string | null
+          business_type: string | null
+          created_at: string
+          email: string | null
+          estimated_hours_saved: number
+          estimated_monthly_savings: number
+          id: string
+          monthly_revenue: string | null
+          overall_score: number
+          timeline: string | null
+          tool_stack: string | null
+        }
+        Insert: {
+          answers: Json
+          appointment_id?: string | null
+          business_type?: string | null
+          created_at?: string
+          email?: string | null
+          estimated_hours_saved: number
+          estimated_monthly_savings: number
+          id?: string
+          monthly_revenue?: string | null
+          overall_score: number
+          timeline?: string | null
+          tool_stack?: string | null
+        }
+        Update: {
+          answers?: Json
+          appointment_id?: string | null
+          business_type?: string | null
+          created_at?: string
+          email?: string | null
+          estimated_hours_saved?: number
+          estimated_monthly_savings?: number
+          id?: string
+          monthly_revenue?: string | null
+          overall_score?: number
+          timeline?: string | null
+          tool_stack?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_responses_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocked_dates: {
         Row: {
           blocked_date: string

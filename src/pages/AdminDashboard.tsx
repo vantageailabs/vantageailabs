@@ -7,7 +7,8 @@ import { AppointmentsList } from '@/components/admin/AppointmentsList';
 import { WorkingHoursEditor } from '@/components/admin/WorkingHoursEditor';
 import { BlockedDatesManager } from '@/components/admin/BlockedDatesManager';
 import { LeadsList } from '@/components/admin/LeadsList';
-import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft } from 'lucide-react';
+import { AssessmentsList } from '@/components/admin/AssessmentsList';
+import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList } from 'lucide-react';
 
 function DashboardContent() {
   const { signOut } = useAuth();
@@ -45,10 +46,14 @@ function DashboardContent() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+          <TabsList className="grid grid-cols-5 w-full max-w-3xl">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Appointments</span>
+            </TabsTrigger>
+            <TabsTrigger value="assessments" className="flex items-center gap-2">
+              <ClipboardList className="h-4 w-4" />
+              <span className="hidden sm:inline">Assessments</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
@@ -70,6 +75,14 @@ function DashboardContent() {
               <p className="text-muted-foreground">Manage your scheduled appointments</p>
             </div>
             <AppointmentsList />
+          </TabsContent>
+
+          <TabsContent value="assessments" className="animate-fade-in">
+            <div className="mb-4">
+              <h2 className="text-2xl font-display font-bold text-foreground">AI Readiness Assessments</h2>
+              <p className="text-muted-foreground">View submitted assessments and automation potential scores</p>
+            </div>
+            <AssessmentsList />
           </TabsContent>
 
           <TabsContent value="settings" className="animate-fade-in">
