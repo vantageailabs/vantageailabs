@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Clock, Mail, Phone, User, Video, ExternalLink, Trash2 } from 'lucide-react';
+import { Calendar, Clock, Mail, Phone, Video, Trash2, ClipboardList } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Appointment {
@@ -21,8 +21,16 @@ interface Appointment {
   zoom_start_url: string | null;
 }
 
+interface AssessmentInfo {
+  id: string;
+  overall_score: number;
+  estimated_hours_saved: number;
+  business_type: string | null;
+}
+
 export function AppointmentsList() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [assessmentMap, setAssessmentMap] = useState<Record<string, AssessmentInfo>>({});
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -37,6 +45,30 @@ export function AppointmentsList() {
       toast({ title: 'Error loading appointments', description: error.message, variant: 'destructive' });
     } else {
       setAppointments(data || []);
+      
+      // Fetch linked assessments
+      if (data && data.length > 0) {
+        const appointmentIds = data.map(a => a.id);
+        const { data: assessments } = await supabase
+          .from('assessment_responses')
+          .select('id, appointment_id, overall_score, estimated_hours_saved, business_type')
+          .in('appointment_id', appointmentIds);
+        
+        if (assessments) {
+          const map: Record<string, AssessmentInfo> = {};
+          assessments.forEach((a: any) => {
+            if (a.appointment_id) {
+              map[a.appointment_id] = {
+                id: a.id,
+                overall_score: a.overall_score,
+                estimated_hours_saved: a.estimated_hours_saved,
+                business_type: a.business_type,
+              };
+            }
+          });
+          setAssessmentMap(map);
+        }
+      }
     }
     setLoading(false);
   };
@@ -90,9 +122,15 @@ export function AppointmentsList() {
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <h3 className="font-semibold text-foreground">{apt.guest_name}</h3>
                   <Badge className={getStatusColor(apt.status)}>{apt.status}</Badge>
+                  {assessmentMap[apt.id] && (
+                    <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
+                      <ClipboardList className="h-3 w-3 mr-1" />
+                      Score: {assessmentMap[apt.id].overall_score}/100
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
@@ -114,6 +152,18 @@ export function AppointmentsList() {
                     </span>
                   )}
                 </div>
+                {assessmentMap[apt.id] && (
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="bg-muted px-2 py-1 rounded">
+                      {assessmentMap[apt.id].estimated_hours_saved} hrs/week savings potential
+                    </span>
+                    {assessmentMap[apt.id].business_type && (
+                      <span className="bg-muted px-2 py-1 rounded capitalize">
+                        {assessmentMap[apt.id].business_type.replace('_', ' ')}
+                      </span>
+                    )}
+                  </div>
+                )}
                 {apt.notes && <p className="text-sm text-muted-foreground italic">{apt.notes}</p>}
               </div>
               <div className="flex items-center gap-2">

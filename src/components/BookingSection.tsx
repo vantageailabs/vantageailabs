@@ -78,6 +78,9 @@ const BookingSection = () => {
     try {
       const dateStr = selectedDate.toISOString().split('T')[0];
       
+      // Check for pending assessment from landing page
+      const pendingAssessmentId = localStorage.getItem('pending_assessment_id');
+      
       const { data, error } = await supabase.functions.invoke('create-appointment', {
         body: {
           appointment_date: dateStr,
@@ -86,6 +89,7 @@ const BookingSection = () => {
           guest_email: formData.email,
           guest_phone: formData.phone || undefined,
           notes: formData.notes || undefined,
+          assessment_id: pendingAssessmentId || undefined,
         },
       });
 
@@ -93,6 +97,11 @@ const BookingSection = () => {
 
       if (data.error) {
         throw new Error(data.error);
+      }
+
+      // Clear the pending assessment ID after successful booking
+      if (pendingAssessmentId) {
+        localStorage.removeItem('pending_assessment_id');
       }
 
       setBookingResult(data.appointment);
