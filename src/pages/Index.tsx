@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import ProblemSection from "@/components/ProblemSection";
 import ServicesSection from "@/components/ServicesSection";
 import WorkflowDemo from "@/components/WorkflowDemo";
+import ROICalculator from "@/components/ROICalculator";
 import LeadMagnet from "@/components/LeadMagnet";
 import BookingSection from "@/components/BookingSection";
 import Footer from "@/components/Footer";
@@ -15,6 +16,7 @@ const Index = () => {
       <ProblemSection />
       <ServicesSection />
       <WorkflowDemo />
+      <ROICalculator />
       <LeadMagnet />
       <BookingSection />
       <Footer />
