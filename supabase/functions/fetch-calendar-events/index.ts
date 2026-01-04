@@ -151,13 +151,40 @@ serve(async (req) => {
 
     const { access_token } = await tokenResponse.json();
 
-    // Fetch events from Google Calendar using the timezone parameter
-    // This tells Google to interpret the date range in the specified timezone
+    // Build RFC3339 timestamps for the given date in the specified timezone
+    // We need to calculate the UTC offset for the timezone to create proper RFC3339 timestamps
+    const startDateTime = new Date(`${date}T00:00:00`);
+    const endDateTime = new Date(`${date}T23:59:59`);
+    
+    // Get timezone offset by comparing local interpretation to UTC
+    // Create a date formatter that gives us the offset
+    const getTimezoneOffset = (tz: string, dt: Date): string => {
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        timeZoneName: 'longOffset',
+      });
+      const parts = formatter.formatToParts(dt);
+      const offsetPart = parts.find(p => p.type === 'timeZoneName');
+      if (offsetPart) {
+        // Extract offset like "GMT-07:00" -> "-07:00"
+        const match = offsetPart.value.match(/GMT([+-]\d{2}:\d{2})/);
+        if (match) return match[1];
+      }
+      return '+00:00';
+    };
+    
+    const offset = getTimezoneOffset(timezone, startDateTime);
+    const timeMin = `${date}T00:00:00${offset}`;
+    const timeMax = `${date}T23:59:59${offset}`;
+    
+    console.log(`Time range: ${timeMin} to ${timeMax}`);
+
+    // Fetch events from Google Calendar
     const calendarUrl = new URL(
       `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`
     );
-    calendarUrl.searchParams.set('timeMin', `${date}T00:00:00`);
-    calendarUrl.searchParams.set('timeMax', `${date}T23:59:59`);
+    calendarUrl.searchParams.set('timeMin', timeMin);
+    calendarUrl.searchParams.set('timeMax', timeMax);
     calendarUrl.searchParams.set('timeZone', timezone);
     calendarUrl.searchParams.set('singleEvents', 'true');
     calendarUrl.searchParams.set('orderBy', 'startTime');
