@@ -91,11 +91,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Calendar Settings</h2>
               <p className="text-muted-foreground">Configure working hours and appointment settings</p>
             </div>
-            <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+            <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+              <CalendarStatus />
               <WorkingHoursEditor />
-              <div className="lg:order-first">
-                <CalendarStatus />
-              </div>
             </div>
           </TabsContent>
 
