@@ -207,6 +207,7 @@ const BookingSection = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    company: '',
     phone: '',
   });
 
@@ -252,7 +253,7 @@ const BookingSection = () => {
   };
 
   const handleContinueToAssessment = () => {
-    if (formData.name && formData.email) {
+    if (formData.name && formData.email && formData.company) {
       setStep('assessment');
       setAssessmentStep(0);
     }
@@ -585,6 +586,14 @@ const BookingSection = () => {
                     />
                   </div>
                   <div>
+                    <label className="text-sm font-medium mb-1 block">Company *</label>
+                    <Input
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      placeholder="Your company name"
+                    />
+                  </div>
+                  <div>
                     <label className="text-sm font-medium mb-1 block">Phone (optional)</label>
                     <Input
                       type="tel"
@@ -599,7 +608,7 @@ const BookingSection = () => {
                     size="lg"
                     className="w-full mt-4"
                     onClick={handleContinueToAssessment}
-                    disabled={!formData.name || !formData.email}
+                    disabled={!formData.name || !formData.email || !formData.company}
                   >
                     Continue to Assessment
                     <ChevronRight className="w-5 h-5 ml-2" />
