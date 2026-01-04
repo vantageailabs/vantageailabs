@@ -176,10 +176,14 @@ export function AssessmentsList() {
                   <Badge className={getScoreColor(assessment.overall_score)}>
                     {assessment.overall_score}/100 - {getScoreLabel(assessment.overall_score)}
                   </Badge>
-                  {assessment.appointment_id && (
+                  {assessment.appointment_id ? (
                     <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
                       <Calendar className="h-3 w-3 mr-1" />
                       Has Appointment
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
+                      No Appointment - Follow Up
                     </Badge>
                   )}
                 </div>

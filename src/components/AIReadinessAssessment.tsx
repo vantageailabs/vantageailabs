@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -22,7 +23,8 @@ import {
   DollarSign,
   Layers,
   Clock,
-  CalendarCheck
+  CalendarCheck,
+  Send
 } from "lucide-react";
 
 interface Question {
@@ -217,6 +219,8 @@ const AIReadinessAssessment = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
+  const [contactInfo, setContactInfo] = useState({ name: '', email: '', phone: '' });
   const { toast } = useToast();
 
   const progress = ((currentStep + 1) / questions.length) * 100;
@@ -368,6 +372,53 @@ const AIReadinessAssessment = () => {
     }
   };
 
+  const handleSendResultsOnly = async () => {
+    if (!contactInfo.email || !contactInfo.name) {
+      toast({
+        title: "Required Fields",
+        description: "Please enter your name and email.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const results = calculateResults();
+      
+      const { error } = await supabase.from("assessment_responses").insert({
+        overall_score: results.overallScore,
+        estimated_hours_saved: results.estimatedHoursSaved,
+        estimated_monthly_savings: results.estimatedMonthlySavings,
+        answers: { ...answers, contact_name: contactInfo.name, contact_phone: contactInfo.phone },
+        business_type: results.businessContext.businessType || null,
+        monthly_revenue: results.businessContext.revenue || null,
+        tool_stack: results.businessContext.toolStack || null,
+        timeline: results.businessContext.timeline || null,
+        email: contactInfo.email,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Results Sent!",
+        description: "We'll review your assessment and follow up shortly.",
+      });
+
+      setShowEmailCapture(false);
+      setContactInfo({ name: '', email: '', phone: '' });
+    } catch (error) {
+      console.error("Error saving assessment:", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const currentQuestion = questions[currentStep];
   const currentAnswer = answers[currentQuestion?.id];
 
@@ -488,27 +539,96 @@ const AIReadinessAssessment = () => {
                 </div>
               )}
 
-              {/* Schedule Call CTA */}
-              <div className="bg-primary/10 rounded-lg p-6 text-center">
-                <h3 className="font-semibold mb-2 text-lg">Ready to Unlock Your Automation Potential?</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Schedule a free strategy call and we'll create a personalized automation roadmap for your business.
-                </p>
-                <Button 
-                  size="lg" 
-                  onClick={handleSaveAndSchedule}
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto"
-                >
-                  {isSubmitting ? (
-                    "Saving..."
-                  ) : (
-                    <>
-                      <CalendarCheck className="h-5 w-5 mr-2" />
-                      Schedule Your Strategy Call
-                    </>
-                  )}
-                </Button>
+              {/* CTA Section */}
+              <div className="bg-primary/10 rounded-lg p-6">
+                {!showEmailCapture ? (
+                  <div className="text-center">
+                    <h3 className="font-semibold mb-2 text-lg">Ready to Unlock Your Automation Potential?</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Schedule a free strategy call and we'll create a personalized automation roadmap for your business.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <Button 
+                        size="lg" 
+                        onClick={handleSaveAndSchedule}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          "Saving..."
+                        ) : (
+                          <>
+                            <CalendarCheck className="h-5 w-5 mr-2" />
+                            Schedule Your Strategy Call
+                          </>
+                        )}
+                      </Button>
+                      <Button 
+                        size="lg" 
+                        variant="outline"
+                        onClick={() => setShowEmailCapture(true)}
+                        disabled={isSubmitting}
+                      >
+                        <Send className="h-5 w-5 mr-2" />
+                        Just Send Me the Results
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="text-center mb-4">
+                      <h3 className="font-semibold text-lg">Get Your Personalized Results</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Enter your details and we'll send you a personalized follow-up with recommendations.
+                      </p>
+                    </div>
+                    <div className="grid gap-3 max-w-md mx-auto">
+                      <div>
+                        <Label htmlFor="contact-name">Name *</Label>
+                        <Input
+                          id="contact-name"
+                          placeholder="Your name"
+                          value={contactInfo.name}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, name: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="contact-email">Email *</Label>
+                        <Input
+                          id="contact-email"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={contactInfo.email}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, email: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="contact-phone">Phone (optional)</Label>
+                        <Input
+                          id="contact-phone"
+                          type="tel"
+                          placeholder="(555) 123-4567"
+                          value={contactInfo.phone}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, phone: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-3 justify-center">
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowEmailCapture(false)}
+                        disabled={isSubmitting}
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        onClick={handleSendResultsOnly}
+                        disabled={isSubmitting || !contactInfo.name || !contactInfo.email}
+                      >
+                        {isSubmitting ? "Sending..." : "Send My Results"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -520,6 +640,7 @@ const AIReadinessAssessment = () => {
                 setShowResults(false);
                 setCurrentStep(0);
                 setAnswers({});
+                setShowEmailCapture(false);
               }}
             >
               Retake Assessment
