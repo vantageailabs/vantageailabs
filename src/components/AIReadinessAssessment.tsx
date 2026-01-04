@@ -19,7 +19,12 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  Building2,
+  DollarSign,
+  Layers,
+  ClipboardCheck,
+  Clock
 } from "lucide-react";
 
 interface Question {
@@ -144,6 +149,77 @@ const questions: Question[] = [
     ],
     weight: 0.8,
   },
+  // Business Context Questions
+  {
+    id: "businessType",
+    category: "Business Profile",
+    icon: <Building2 className="h-6 w-6" />,
+    question: "What type of business do you operate?",
+    options: [
+      { value: "ecommerce", label: "E-commerce/Retail - Online store, physical products, inventory", score: 0 },
+      { value: "professional", label: "Professional Services - Consulting, agencies, client projects", score: 0 },
+      { value: "saas", label: "SaaS/Technology - Software platform, digital products, subscriptions", score: 0 },
+      { value: "local", label: "Local Business - Restaurant, healthcare, fitness, local services", score: 0 },
+      { value: "b2b", label: "B2B Services - Lead generation, sales processes, B2B relationships", score: 0 },
+    ],
+    weight: 0,
+  },
+  {
+    id: "monthlyRevenue",
+    category: "Revenue Range",
+    icon: <DollarSign className="h-6 w-6" />,
+    question: "What is your current monthly revenue range?",
+    options: [
+      { value: "50k_plus", label: "$50,000+ monthly - Established business with significant ROI potential", score: 0 },
+      { value: "20k_50k", label: "$20,000-$49,999 monthly - Growing business ready for efficiency", score: 0 },
+      { value: "10k_20k", label: "$10,000-$19,999 monthly - Scaling business needing time-saving automation", score: 0 },
+      { value: "5k_10k", label: "$5,000-$9,999 monthly - Early growth stage with automation opportunities", score: 0 },
+      { value: "under_5k", label: "Under $5,000 monthly - Startup phase focused on efficiency", score: 0 },
+    ],
+    weight: 0,
+  },
+  {
+    id: "toolStack",
+    category: "Current Tool Stack",
+    icon: <Layers className="h-6 w-6" />,
+    question: "What does your current technology stack look like?",
+    options: [
+      { value: "advanced", label: "Advanced Stack - CRM, marketing automation, project management, analytics", score: 0 },
+      { value: "moderate", label: "Moderate Stack - Email platform, basic CRM, accounting software, social tools", score: 0 },
+      { value: "basic", label: "Basic Stack - Email, spreadsheets, basic website, minimal software", score: 0 },
+      { value: "starting", label: "Starting Stack - Gmail, social media, basic website, looking to add tools", score: 0 },
+      { value: "manual", label: "Manual Operations - Primarily manual processes, minimal software usage", score: 0 },
+    ],
+    weight: 0,
+  },
+  {
+    id: "readiness",
+    category: "Implementation Readiness",
+    icon: <ClipboardCheck className="h-6 w-6" />,
+    question: "How ready is your business to implement automation?",
+    options: [
+      { value: "ready", label: "Ready to Implement - Processes documented, team trained", score: 0 },
+      { value: "quick", label: "Quick Preparation - Can prepare within 1-2 weeks", score: 0 },
+      { value: "some", label: "Some Preparation Needed - Need 2-4 weeks to organize", score: 0 },
+      { value: "significant", label: "Significant Preparation - Need 1-2 months to document processes", score: 0 },
+      { value: "scratch", label: "Starting from Scratch - Processes ad-hoc, need guidance", score: 0 },
+    ],
+    weight: 0,
+  },
+  {
+    id: "timeline",
+    category: "Investment Timeline",
+    icon: <Clock className="h-6 w-6" />,
+    question: "When would you want automation implemented?",
+    options: [
+      { value: "immediate", label: "Immediate - Ready to start within 1-2 weeks", score: 0 },
+      { value: "fast", label: "Fast Track - Want to begin within 3-4 weeks", score: 0 },
+      { value: "standard", label: "Standard Timeline - Ready within 1-2 months", score: 0 },
+      { value: "future", label: "Future Planning - Interested in 3-6 months", score: 0 },
+      { value: "research", label: "Information Gathering - Researching options, timeline flexible", score: 0 },
+    ],
+    weight: 0,
+  },
 ];
 
 interface CategoryResult {
@@ -184,12 +260,28 @@ const AIReadinessAssessment = () => {
     }
   };
 
-  const calculateResults = (): { overallScore: number; categories: CategoryResult[]; estimatedHoursSaved: number } => {
+  // Separate task questions from business context questions
+  const taskQuestions = questions.filter(q => q.weight > 0);
+  const businessQuestions = questions.filter(q => q.weight === 0);
+
+  const calculateResults = (): { 
+    overallScore: number; 
+    categories: CategoryResult[]; 
+    estimatedHoursSaved: number;
+    estimatedMonthlySavings: number;
+    businessContext: {
+      businessType: string;
+      revenue: string;
+      toolStack: string;
+      readiness: string;
+      timeline: string;
+    };
+  } => {
     let totalWeightedScore = 0;
     let totalWeight = 0;
     let estimatedHours = 0;
 
-    const categories: CategoryResult[] = questions.map((q) => {
+    const categories: CategoryResult[] = taskQuestions.map((q) => {
       const answer = answers[q.id];
       const option = q.options.find((opt) => opt.value === answer);
       const score = option?.score || 0;
@@ -216,7 +308,26 @@ const AIReadinessAssessment = () => {
 
     const overallScore = Math.round((totalWeightedScore / totalWeight) * 100);
 
-    return { overallScore, categories, estimatedHoursSaved: Math.round(estimatedHours) };
+    // Calculate estimated monthly savings based on revenue
+    const revenueMap: Record<string, number> = {
+      "50k_plus": 5000,
+      "20k_50k": 2500,
+      "10k_20k": 1500,
+      "5k_10k": 800,
+      "under_5k": 400,
+    };
+    const hourlyRate = 50; // Assumed hourly value
+    const estimatedMonthlySavings = Math.round(estimatedHours * 4 * hourlyRate * (overallScore / 100));
+
+    const businessContext = {
+      businessType: answers.businessType || "",
+      revenue: answers.monthlyRevenue || "",
+      toolStack: answers.toolStack || "",
+      readiness: answers.readiness || "",
+      timeline: answers.timeline || "",
+    };
+
+    return { overallScore, categories, estimatedHoursSaved: Math.round(estimatedHours), estimatedMonthlySavings, businessContext };
   };
 
   const getScoreLabel = (score: number): { label: string; color: string } => {
@@ -265,10 +376,34 @@ const AIReadinessAssessment = () => {
   const currentQuestion = questions[currentStep];
   const currentAnswer = answers[currentQuestion?.id];
 
+  // Determine if we're in task phase or business phase
+  const isBusinessPhase = currentStep >= taskQuestions.length;
+  const phaseProgress = isBusinessPhase 
+    ? ((currentStep - taskQuestions.length + 1) / businessQuestions.length) * 100
+    : ((currentStep + 1) / taskQuestions.length) * 100;
+
   if (showResults) {
-    const { overallScore, categories, estimatedHoursSaved } = calculateResults();
+    const { overallScore, categories, estimatedHoursSaved, estimatedMonthlySavings, businessContext } = calculateResults();
     const { label, color } = getScoreLabel(overallScore);
     const topRecommendations = getTopRecommendations(categories);
+
+    // Get readiness message
+    const readinessMessages: Record<string, string> = {
+      ready: "You're ready for immediate implementation!",
+      quick: "With 1-2 weeks of preparation, you can start automating.",
+      some: "Plan for 2-4 weeks of process organization before implementation.",
+      significant: "We recommend 1-2 months of process documentation first.",
+      scratch: "We'll help guide you through process documentation and automation planning.",
+    };
+
+    // Get timeline message
+    const timelineMessages: Record<string, string> = {
+      immediate: "We can get started right away.",
+      fast: "We'll have you up and running in 3-4 weeks.",
+      standard: "A 1-2 month timeline allows for thorough implementation.",
+      future: "We'll keep you informed and ready for when you're prepared.",
+      research: "Take your time—we're here when you're ready.",
+    };
 
     return (
       <section id="assessment" className="py-20 px-4 bg-muted/30">
@@ -293,16 +428,38 @@ const AIReadinessAssessment = () => {
               </div>
 
               {/* Key Stats */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <div className="text-3xl font-bold text-primary">{estimatedHoursSaved}</div>
-                  <div className="text-sm text-muted-foreground">Hours/week you could save</div>
+                  <div className="text-2xl font-bold text-primary">{estimatedHoursSaved}</div>
+                  <div className="text-xs text-muted-foreground">Hours/week saved</div>
                 </div>
                 <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <div className="text-3xl font-bold text-primary">{estimatedHoursSaved * 52}</div>
-                  <div className="text-sm text-muted-foreground">Hours saved annually</div>
+                  <div className="text-2xl font-bold text-primary">{estimatedHoursSaved * 52}</div>
+                  <div className="text-xs text-muted-foreground">Hours/year saved</div>
+                </div>
+                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="text-2xl font-bold text-primary">${estimatedMonthlySavings.toLocaleString()}</div>
+                  <div className="text-xs text-muted-foreground">Est. monthly savings</div>
+                </div>
+                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="text-2xl font-bold text-primary">${(estimatedMonthlySavings * 12).toLocaleString()}</div>
+                  <div className="text-xs text-muted-foreground">Est. annual savings</div>
                 </div>
               </div>
+
+              {/* Implementation Insights */}
+              {(businessContext.readiness || businessContext.timeline) && (
+                <div className="mb-8 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                  <h3 className="font-semibold mb-2 flex items-center gap-2">
+                    <ClipboardCheck className="h-5 w-5 text-primary" />
+                    Your Implementation Path
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {readinessMessages[businessContext.readiness] || ""}{" "}
+                    {timelineMessages[businessContext.timeline] || ""}
+                  </p>
+                </div>
+              )}
 
               {/* Category Breakdown */}
               <div className="mb-8">
@@ -404,23 +561,40 @@ const AIReadinessAssessment = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Sparkles className="h-4 w-4" />
-            Free Assessment
+            {isBusinessPhase ? "Almost Done!" : "Free Assessment"}
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Discover Your Automation Opportunities
+            {isBusinessPhase ? "Help Us Personalize Your Results" : "Discover Your Automation Opportunities"}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Answer 8 quick questions to see where AI can save you the most time
+            {isBusinessPhase 
+              ? "A few more questions to tailor your automation roadmap"
+              : "Answer a few quick questions to see where AI can save you the most time"
+            }
           </p>
         </div>
 
         {/* Progress */}
         <div className="mb-8">
           <div className="flex justify-between text-sm text-muted-foreground mb-2">
+            <span>
+              {isBusinessPhase 
+                ? `Business Profile ${currentStep - taskQuestions.length + 1} of ${businessQuestions.length}`
+                : `Task Assessment ${currentStep + 1} of ${taskQuestions.length}`
+              }
+            </span>
             <span>Question {currentStep + 1} of {questions.length}</span>
-            <span>{Math.round(progress)}% complete</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Progress value={isBusinessPhase ? 100 : phaseProgress} className="h-2" />
+              <p className="text-xs text-muted-foreground mt-1">Task Questions</p>
+            </div>
+            <div className="flex-1">
+              <Progress value={isBusinessPhase ? phaseProgress : 0} className="h-2" />
+              <p className="text-xs text-muted-foreground mt-1">Business Profile</p>
+            </div>
+          </div>
         </div>
 
         {/* Question Card */}
