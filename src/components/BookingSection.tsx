@@ -374,6 +374,9 @@ const BookingSection = () => {
                       <Clock className="w-5 h-5 text-primary" />
                       <span>{settings?.appointment_duration_minutes || 30} minutes</span>
                     </div>
+                    <p className="text-xs text-muted-foreground/70">
+                      Times shown in Mountain Time (MT)
+                    </p>
                   </div>
                 </div>
               </div>
