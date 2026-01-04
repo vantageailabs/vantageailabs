@@ -1,29 +1,217 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar, Clock, Video, ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Calendar, Clock, Video, ChevronLeft, ChevronRight, Check, Loader2, Mail, Database, BarChart3, Headphones, UserCheck, Receipt, Share2, Building2, DollarSign, Layers, Clock as ClockIcon, MessageSquare } from "lucide-react";
 import { useAvailableSlots } from "@/hooks/useAvailableSlots";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+
+interface Question {
+  id: string;
+  category: string;
+  icon: React.ReactNode;
+  question: string;
+  options: { value: string; label: string; score: number }[];
+  weight: number;
+}
+
+const assessmentQuestions: Question[] = [
+  {
+    id: "email",
+    category: "Email & Communication",
+    icon: <Mail className="h-5 w-5" />,
+    question: "How many hours per week does your team spend on customer emails, follow-ups, and newsletters?",
+    options: [
+      { value: "heavy", label: "Heavy Load (15+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (8-12 hours/week)", score: 75 },
+      { value: "light", label: "Light (4-7 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (2-3 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.2,
+  },
+  {
+    id: "dataEntry",
+    category: "Data Entry & Documentation",
+    icon: <Database className="h-5 w-5" />,
+    question: "How much time is spent manually entering data into spreadsheets, CRMs, or databases?",
+    options: [
+      { value: "heavy", label: "Heavy Load (10+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (5-10 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-5 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.1,
+  },
+  {
+    id: "scheduling",
+    category: "Scheduling & Calendar",
+    icon: <Calendar className="h-5 w-5" />,
+    question: "How many hours are spent coordinating meetings, appointments, and rescheduling?",
+    options: [
+      { value: "heavy", label: "Heavy Load (8+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (4-8 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-4 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.0,
+  },
+  {
+    id: "reporting",
+    category: "Report Generation",
+    icon: <BarChart3 className="h-5 w-5" />,
+    question: "How much time is spent creating reports, dashboards, and performance summaries?",
+    options: [
+      { value: "heavy", label: "Heavy Load (10+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (5-10 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-5 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 0.9,
+  },
+  {
+    id: "support",
+    category: "Customer Support",
+    icon: <Headphones className="h-5 w-5" />,
+    question: "How many hours are spent answering repetitive questions and handling support tickets?",
+    options: [
+      { value: "heavy", label: "Heavy Load (15+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (8-15 hours/week)", score: 75 },
+      { value: "light", label: "Light (4-8 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 4 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.15,
+  },
+  {
+    id: "leadFollowup",
+    category: "Lead Follow-up",
+    icon: <UserCheck className="h-5 w-5" />,
+    question: "How much time is spent on lead qualification, initial outreach, and nurturing?",
+    options: [
+      { value: "heavy", label: "Heavy Load (10+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (5-10 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-5 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 1.1,
+  },
+  {
+    id: "invoicing",
+    category: "Invoice & Payments",
+    icon: <Receipt className="h-5 w-5" />,
+    question: "How many hours are spent on billing, payment reminders, and reconciliation?",
+    options: [
+      { value: "heavy", label: "Heavy Load (8+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (4-8 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-4 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 0.85,
+  },
+  {
+    id: "socialMedia",
+    category: "Social Media & Content",
+    icon: <Share2 className="h-5 w-5" />,
+    question: "How much time is spent on posting, engagement, and content scheduling?",
+    options: [
+      { value: "heavy", label: "Heavy Load (10+ hours/week)", score: 100 },
+      { value: "moderate", label: "Moderate (5-10 hours/week)", score: 75 },
+      { value: "light", label: "Light (2-5 hours/week)", score: 50 },
+      { value: "minimal", label: "Minimal (under 2 hours/week)", score: 25 },
+      { value: "automated", label: "Already Automated", score: 0 },
+    ],
+    weight: 0.8,
+  },
+  {
+    id: "businessType",
+    category: "Business Profile",
+    icon: <Building2 className="h-5 w-5" />,
+    question: "What type of business do you operate?",
+    options: [
+      { value: "ecommerce", label: "E-commerce/Retail", score: 0 },
+      { value: "professional", label: "Professional Services", score: 0 },
+      { value: "saas", label: "SaaS/Technology", score: 0 },
+      { value: "local", label: "Local Business", score: 0 },
+      { value: "b2b", label: "B2B Services", score: 0 },
+    ],
+    weight: 0,
+  },
+  {
+    id: "monthlyRevenue",
+    category: "Revenue Range",
+    icon: <DollarSign className="h-5 w-5" />,
+    question: "What is your current monthly revenue range?",
+    options: [
+      { value: "50k_plus", label: "$50,000+ monthly", score: 0 },
+      { value: "20k_50k", label: "$20,000-$49,999 monthly", score: 0 },
+      { value: "10k_20k", label: "$10,000-$19,999 monthly", score: 0 },
+      { value: "5k_10k", label: "$5,000-$9,999 monthly", score: 0 },
+      { value: "under_5k", label: "Under $5,000 monthly", score: 0 },
+    ],
+    weight: 0,
+  },
+  {
+    id: "toolStack",
+    category: "Current Tool Stack",
+    icon: <Layers className="h-5 w-5" />,
+    question: "What does your current technology stack look like?",
+    options: [
+      { value: "advanced", label: "Advanced Stack - CRM, marketing automation, analytics", score: 0 },
+      { value: "moderate", label: "Moderate Stack - Email platform, basic CRM, accounting", score: 0 },
+      { value: "basic", label: "Basic Stack - Email, spreadsheets, basic website", score: 0 },
+      { value: "starting", label: "Starting Stack - Gmail, social media, basic website", score: 0 },
+      { value: "manual", label: "Manual Operations - Minimal software usage", score: 0 },
+    ],
+    weight: 0,
+  },
+  {
+    id: "timeline",
+    category: "Investment Timeline",
+    icon: <ClockIcon className="h-5 w-5" />,
+    question: "When would you like to implement automation?",
+    options: [
+      { value: "immediate", label: "Immediate - Ready to start within 1-2 weeks", score: 0 },
+      { value: "fast", label: "Fast Track - Want to begin within 3-4 weeks", score: 0 },
+      { value: "standard", label: "Standard Timeline - Ready within 1-2 months", score: 0 },
+      { value: "future", label: "Future Planning - Interested in 3-6 months", score: 0 },
+      { value: "research", label: "Information Gathering - Timeline flexible", score: 0 },
+    ],
+    weight: 0,
+  },
+];
 
 const BookingSection = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [step, setStep] = useState<'calendar' | 'form' | 'success'>('calendar');
+  const [step, setStep] = useState<'calendar' | 'form' | 'assessment' | 'success'>('calendar');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingResult, setBookingResult] = useState<{ zoom_join_url: string } | null>(null);
+  
+  // Assessment state
+  const [assessmentStep, setAssessmentStep] = useState(0);
+  const [assessmentAnswers, setAssessmentAnswers] = useState<Record<string, string>>({});
+  const [additionalNotes, setAdditionalNotes] = useState('');
   
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    notes: '',
   });
 
   const { toast } = useToast();
-  const { availableSlots, isDateAvailable, formatTimeDisplay, loading, settings, blockedDates } = useAvailableSlots(selectedDate);
+  const { availableSlots, isDateAvailable, formatTimeDisplay, loading, settings } = useAvailableSlots(selectedDate);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -63,6 +251,73 @@ const BookingSection = () => {
     }
   };
 
+  const handleContinueToAssessment = () => {
+    if (formData.name && formData.email) {
+      setStep('assessment');
+      setAssessmentStep(0);
+    }
+  };
+
+  const handleAssessmentAnswer = (value: string) => {
+    setAssessmentAnswers((prev) => ({
+      ...prev,
+      [assessmentQuestions[assessmentStep].id]: value,
+    }));
+  };
+
+  const handleAssessmentNext = () => {
+    if (assessmentStep < assessmentQuestions.length - 1) {
+      setAssessmentStep((prev) => prev + 1);
+    }
+  };
+
+  const handleAssessmentBack = () => {
+    if (assessmentStep > 0) {
+      setAssessmentStep((prev) => prev - 1);
+    } else {
+      setStep('form');
+    }
+  };
+
+  const calculateResults = () => {
+    const taskQuestions = assessmentQuestions.filter(q => q.weight > 0);
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+    let estimatedHours = 0;
+
+    taskQuestions.forEach((q) => {
+      const answer = assessmentAnswers[q.id];
+      const option = q.options.find((opt) => opt.value === answer);
+      const score = option?.score || 0;
+      
+      totalWeightedScore += score * q.weight;
+      totalWeight += q.weight * 100;
+
+      const hourMap: Record<string, number> = {
+        heavy: 12,
+        moderate: 7,
+        light: 4,
+        minimal: 1.5,
+        automated: 0,
+      };
+      estimatedHours += (hourMap[answer] || 0) * 0.65;
+    });
+
+    const overallScore = totalWeight > 0 ? Math.round((totalWeightedScore / totalWeight) * 100) : 0;
+    const hourlyRate = 50;
+    const estimatedMonthlySavings = Math.round(estimatedHours * 4 * hourlyRate * (overallScore / 100));
+
+    return {
+      overallScore,
+      estimatedHoursSaved: Math.round(estimatedHours),
+      estimatedMonthlySavings,
+      businessType: assessmentAnswers.businessType || null,
+      monthlyRevenue: assessmentAnswers.monthlyRevenue || null,
+      toolStack: assessmentAnswers.toolStack || null,
+      timeline: assessmentAnswers.timeline || null,
+    };
+  };
+
   const handleBooking = async () => {
     if (!selectedDate || !selectedTime || !formData.name || !formData.email) {
       toast({
@@ -77,10 +332,28 @@ const BookingSection = () => {
 
     try {
       const dateStr = selectedDate.toISOString().split('T')[0];
+      const results = calculateResults();
       
-      // Check for pending assessment from landing page
-      const pendingAssessmentId = localStorage.getItem('pending_assessment_id');
+      // First, save the assessment
+      const { data: assessmentData, error: assessmentError } = await supabase
+        .from("assessment_responses")
+        .insert({
+          overall_score: results.overallScore,
+          estimated_hours_saved: results.estimatedHoursSaved,
+          estimated_monthly_savings: results.estimatedMonthlySavings,
+          answers: { ...assessmentAnswers, additional_notes: additionalNotes },
+          business_type: results.businessType,
+          monthly_revenue: results.monthlyRevenue,
+          tool_stack: results.toolStack,
+          timeline: results.timeline,
+          email: formData.email,
+        })
+        .select()
+        .single();
+
+      if (assessmentError) throw assessmentError;
       
+      // Then create the appointment with the assessment linked
       const { data, error } = await supabase.functions.invoke('create-appointment', {
         body: {
           appointment_date: dateStr,
@@ -88,8 +361,8 @@ const BookingSection = () => {
           guest_name: formData.name,
           guest_email: formData.email,
           guest_phone: formData.phone || undefined,
-          notes: formData.notes || undefined,
-          assessment_id: pendingAssessmentId || undefined,
+          notes: additionalNotes || undefined,
+          assessment_id: assessmentData?.id,
         },
       });
 
@@ -97,11 +370,6 @@ const BookingSection = () => {
 
       if (data.error) {
         throw new Error(data.error);
-      }
-
-      // Clear the pending assessment ID after successful booking
-      if (pendingAssessmentId) {
-        localStorage.removeItem('pending_assessment_id');
       }
 
       setBookingResult(data.appointment);
@@ -127,6 +395,11 @@ const BookingSection = () => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
     return isDateAvailable(date);
   };
+
+  const currentQuestion = assessmentQuestions[assessmentStep];
+  const currentAnswer = assessmentAnswers[currentQuestion?.id];
+  const assessmentProgress = ((assessmentStep + 1) / assessmentQuestions.length) * 100;
+  const isLastQuestion = assessmentStep === assessmentQuestions.length - 1;
 
   if (loading) {
     return (
@@ -175,6 +448,109 @@ const BookingSection = () => {
                   </Button>
                 )}
               </div>
+            ) : step === 'assessment' ? (
+              <div className="max-w-lg mx-auto">
+                <button
+                  onClick={handleAssessmentBack}
+                  className="text-sm text-muted-foreground hover:text-foreground mb-6 flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  {assessmentStep === 0 ? 'Back to details' : 'Previous question'}
+                </button>
+
+                <div className="mb-6">
+                  <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                    <span>Question {assessmentStep + 1} of {assessmentQuestions.length}</span>
+                    <span>{Math.round(assessmentProgress)}%</span>
+                  </div>
+                  <Progress value={assessmentProgress} className="h-2" />
+                </div>
+
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    {currentQuestion.icon}
+                  </div>
+                  <span className="text-sm font-medium text-primary">{currentQuestion.category}</span>
+                </div>
+
+                <h3 className="font-display text-lg font-semibold mb-6">
+                  {currentQuestion.question}
+                </h3>
+
+                <RadioGroup
+                  value={currentAnswer || ''}
+                  onValueChange={handleAssessmentAnswer}
+                  className="space-y-3"
+                >
+                  {currentQuestion.options.map((option) => (
+                    <div
+                      key={option.value}
+                      className={`flex items-center space-x-3 p-4 rounded-lg border transition-all cursor-pointer ${
+                        currentAnswer === option.value
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                      onClick={() => handleAssessmentAnswer(option.value)}
+                    >
+                      <RadioGroupItem value={option.value} id={option.value} />
+                      <Label htmlFor={option.value} className="flex-1 cursor-pointer text-sm">
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+
+                {/* Additional notes on last question */}
+                {isLastQuestion && (
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <div className="flex items-center gap-3 mb-3">
+                      <MessageSquare className="w-5 h-5 text-primary" />
+                      <label className="text-sm font-medium">Anything else we should know? (optional)</label>
+                    </div>
+                    <Textarea
+                      value={additionalNotes}
+                      onChange={(e) => setAdditionalNotes(e.target.value)}
+                      placeholder="Tell us about your business, specific challenges, or what you're hoping to achieve..."
+                      className="min-h-[100px]"
+                    />
+                  </div>
+                )}
+
+                <div className="mt-6">
+                  {isLastQuestion ? (
+                    <Button
+                      variant="hero"
+                      size="lg"
+                      className="w-full"
+                      onClick={handleBooking}
+                      disabled={!currentAnswer || isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                          Booking...
+                        </>
+                      ) : (
+                        <>
+                          Confirm Booking
+                          <Check className="w-5 h-5 ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="hero"
+                      size="lg"
+                      className="w-full"
+                      onClick={handleAssessmentNext}
+                      disabled={!currentAnswer}
+                    >
+                      Continue
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  )}
+                </div>
+              </div>
             ) : step === 'form' ? (
               <div className="max-w-md mx-auto">
                 <button
@@ -217,33 +593,16 @@ const BookingSection = () => {
                       placeholder="+1 (555) 123-4567"
                     />
                   </div>
-                  <div>
-                    <label className="text-sm font-medium mb-1 block">Anything we should know? (optional)</label>
-                    <Input
-                      value={formData.notes}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      placeholder="Tell us about your business..."
-                    />
-                  </div>
                   
                   <Button
                     variant="hero"
                     size="lg"
                     className="w-full mt-4"
-                    onClick={handleBooking}
-                    disabled={isSubmitting || !formData.name || !formData.email}
+                    onClick={handleContinueToAssessment}
+                    disabled={!formData.name || !formData.email}
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                        Booking...
-                      </>
-                    ) : (
-                      <>
-                        Confirm Booking
-                        <Check className="w-5 h-5 ml-2" />
-                      </>
-                    )}
+                    Continue to Assessment
+                    <ChevronRight className="w-5 h-5 ml-2" />
                   </Button>
                 </div>
               </div>
