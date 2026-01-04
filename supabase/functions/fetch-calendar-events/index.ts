@@ -151,16 +151,14 @@ serve(async (req) => {
 
     const { access_token } = await tokenResponse.json();
 
-    // Calculate time range for the date (full day in the specified timezone)
-    const startOfDay = new Date(`${date}T00:00:00`);
-    const endOfDay = new Date(`${date}T23:59:59`);
-    
-    // Fetch events from Google Calendar
+    // Fetch events from Google Calendar using the timezone parameter
+    // This tells Google to interpret the date range in the specified timezone
     const calendarUrl = new URL(
       `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`
     );
-    calendarUrl.searchParams.set('timeMin', startOfDay.toISOString());
-    calendarUrl.searchParams.set('timeMax', endOfDay.toISOString());
+    calendarUrl.searchParams.set('timeMin', `${date}T00:00:00`);
+    calendarUrl.searchParams.set('timeMax', `${date}T23:59:59`);
+    calendarUrl.searchParams.set('timeZone', timezone);
     calendarUrl.searchParams.set('singleEvents', 'true');
     calendarUrl.searchParams.set('orderBy', 'startTime');
 
@@ -180,7 +178,10 @@ serve(async (req) => {
     const eventsData = await eventsResponse.json();
     const events: CalendarEvent[] = eventsData.items || [];
 
-    console.log(`Found ${events.length} events for ${date}`);
+    console.log(`Found ${events.length} events for ${date} in timezone ${timezone}`);
+    events.forEach((event: any) => {
+      console.log(`Event: "${event.summary}", Start: ${event.start?.dateTime || event.start?.date}, End: ${event.end?.dateTime || event.end?.date}`);
+    });
 
     // Extract busy periods from events
     const busyPeriods: BusyPeriod[] = events
