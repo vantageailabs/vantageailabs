@@ -6,8 +6,8 @@ const Hero = () => {
     document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const scrollToDemo = () => {
-    document.getElementById('workflow-demo')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToAssessment = () => {
+    document.getElementById('assessment')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -47,9 +47,9 @@ const Hero = () => {
               Book Your Free Strategy Call
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="hero-outline" size="xl" onClick={scrollToDemo} className="group">
+            <Button variant="hero-outline" size="xl" onClick={scrollToAssessment} className="group">
               <Play className="w-5 h-5" />
-              See It In Action
+              Take the Assessment
             </Button>
           </div>
 
