@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, Building2, Mail, Phone, DollarSign, Plus, Eye, UserPlus } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ClientDetailModal } from './ClientDetailModal';
 import { ConvertLeadModal } from './ConvertLeadModal';
 import {
@@ -172,7 +172,7 @@ export function ClientsList() {
                   </span>
                   {client.start_month && (
                     <span className="text-xs text-muted-foreground">
-                      Start: {format(new Date(client.start_month), 'MMM yyyy')}
+                      Start: {format(parseISO(client.start_month), 'MMM yyyy')}
                     </span>
                   )}
                 </div>
