@@ -379,14 +379,14 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
               <p className="text-sm text-muted-foreground">No support packages available. Add packages in the Services tab first.</p>
             ) : (
               <Select
-                value={formData.support_package_id}
-                onValueChange={(v) => setFormData({ ...formData, support_package_id: v })}
+                value={formData.support_package_id || 'none'}
+                onValueChange={(v) => setFormData({ ...formData, support_package_id: v === 'none' ? '' : v })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a support package (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {packages.map((p) => (
                     <SelectItem key={p.id} value={p.id}>
                       {p.name} - ${p.monthly_price}/mo ({p.hours_included}hrs)
