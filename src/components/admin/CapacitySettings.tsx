@@ -51,10 +51,10 @@ export function CapacitySettings() {
       setDefaultCapacity(settings.default_monthly_capacity);
     }
 
-    // Generate next 6 months
+    // Generate past 12 months + next 6 months (to show historical data)
     const months: string[] = [];
     const today = new Date();
-    for (let i = 0; i < 6; i++) {
+    for (let i = -12; i < 6; i++) {
       const monthDate = addMonths(startOfMonth(today), i);
       months.push(format(monthDate, 'yyyy-MM'));
     }
