@@ -8,6 +8,7 @@ import AboutSection from "@/components/AboutSection";
 import AIReadinessAssessment from "@/components/AIReadinessAssessment";
 import ROICalculator from "@/components/ROICalculator";
 import FAQSection from "@/components/FAQSection";
+import GuaranteeSection from "@/components/GuaranteeSection";
 import LeadMagnet from "@/components/LeadMagnet";
 import BookingSection from "@/components/BookingSection";
 import Footer from "@/components/Footer";
@@ -25,6 +26,7 @@ const Index = () => {
       <AIReadinessAssessment />
       <ROICalculator />
       <FAQSection />
+      <GuaranteeSection />
       <LeadMagnet />
       <BookingSection />
       <Footer />
