@@ -4,7 +4,7 @@ const credentials = [
   "10+ years in software development & automation",
   "Helped 50+ businesses implement AI solutions",
   "Former tech lead at Fortune 500 company",
-  "Passionate about making AI accessible to all"
+  "Passionate about making AI accessible to all",
 ];
 
 const AboutSection = () => {
@@ -21,9 +21,7 @@ const AboutSection = () => {
                   <div className="w-32 h-32 mx-auto rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center mb-4">
                     <span className="text-4xl font-display font-bold text-primary">JD</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Replace with founder photo
-                  </p>
+                  <p className="text-sm text-muted-foreground">Replace with founder photo</p>
                 </div>
               </div>
             </div>
@@ -39,26 +37,21 @@ const AboutSection = () => {
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-6">
               Hi, I'm{" "}
-              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                [Your Name]
-              </span>
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">[Zach]</span>
             </h2>
-            
+
             <div className="space-y-4 text-muted-foreground text-lg leading-relaxed mb-8">
               <p>
-                I started this journey because I saw too many small business owners 
-                drowning in repetitive tasks—spending hours on work that could be 
-                automated in seconds.
+                I started this journey because I saw too many small business owners drowning in repetitive
+                tasks—spending hours on work that could be automated in seconds.
               </p>
               <p>
-                After a decade in tech, building systems for enterprise companies, 
-                I realized the same powerful AI tools should be available to everyone, 
-                not just corporations with massive budgets.
+                After a decade in tech, building systems for enterprise companies, I realized the same powerful AI tools
+                should be available to everyone, not just corporations with massive budgets.
               </p>
               <p>
-                <span className="text-foreground font-medium">My mission is simple:</span> help 
-                business owners reclaim their time so they can focus on what they do best—growing 
-                their business and serving their customers.
+                <span className="text-foreground font-medium">My mission is simple:</span> help business owners reclaim
+                their time so they can focus on what they do best—growing their business and serving their customers.
               </p>
             </div>
 
@@ -73,8 +66,8 @@ const AboutSection = () => {
 
             <div className="p-6 bg-muted/50 rounded-xl border border-border/50">
               <p className="italic text-muted-foreground">
-                "I believe every business deserves access to the same AI advantages 
-                that big companies have. Let me show you what's possible."
+                "I believe every business deserves access to the same AI advantages that big companies have. Let me show
+                you what's possible."
               </p>
               <p className="mt-3 font-semibold text-foreground">— [Your Name], Founder</p>
             </div>
