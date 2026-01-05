@@ -13,6 +13,7 @@ interface MonthlyCapacity {
   id: string;
   year_month: string;
   max_clients: number;
+  artificial_clients: number;
   notes: string | null;
 }
 
@@ -20,6 +21,7 @@ interface MonthStat {
   year_month: string;
   max_clients: number;
   current_clients: number;
+  artificial_clients: number;
   notes: string | null;
   capacity_id: string | null;
 }
@@ -81,6 +83,7 @@ export function CapacitySettings() {
         year_month: ym,
         max_clients: capacity?.max_clients ?? settings?.default_monthly_capacity ?? 5,
         current_clients: clientCount,
+        artificial_clients: capacity?.artificial_clients ?? 0,
         notes: capacity?.notes || null,
         capacity_id: capacity?.id || null,
       };
@@ -106,12 +109,12 @@ export function CapacitySettings() {
     setSaving(false);
   };
 
-  const handleUpdateMonth = async (stat: MonthStat, newMax: number) => {
+  const handleUpdateMonth = async (stat: MonthStat, updates: { max_clients?: number; artificial_clients?: number }) => {
     if (stat.capacity_id) {
       // Update existing
       const { error } = await supabase
         .from('monthly_capacity')
-        .update({ max_clients: newMax })
+        .update(updates)
         .eq('id', stat.capacity_id);
 
       if (error) {
@@ -122,7 +125,8 @@ export function CapacitySettings() {
       // Insert new override
       const { error } = await supabase.from('monthly_capacity').insert({
         year_month: stat.year_month,
-        max_clients: newMax,
+        max_clients: updates.max_clients ?? stat.max_clients,
+        artificial_clients: updates.artificial_clients ?? 0,
       });
 
       if (error) {
@@ -177,10 +181,11 @@ export function CapacitySettings() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {monthStats.map((stat) => {
+              const totalClients = stat.current_clients + stat.artificial_clients;
               const percentage = stat.max_clients > 0 
-                ? Math.min((stat.current_clients / stat.max_clients) * 100, 100)
+                ? Math.min((totalClients / stat.max_clients) * 100, 100)
                 : 0;
-              const remaining = Math.max(stat.max_clients - stat.current_clients, 0);
+              const remaining = Math.max(stat.max_clients - totalClients, 0);
               const isFull = remaining === 0;
 
               return (
@@ -200,7 +205,12 @@ export function CapacitySettings() {
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">
-                          {stat.current_clients} / {stat.max_clients} clients
+                          {totalClients} / {stat.max_clients} clients
+                          {stat.artificial_clients > 0 && (
+                            <span className="text-yellow-600 ml-1">
+                              ({stat.current_clients} real + {stat.artificial_clients} artificial)
+                            </span>
+                          )}
                         </span>
                         <span className={`font-medium ${isFull ? 'text-destructive' : 'text-primary'}`}>
                           {remaining} spots left
@@ -209,22 +219,41 @@ export function CapacitySettings() {
                       <Progress value={percentage} className="h-2" />
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Label className="text-xs text-muted-foreground whitespace-nowrap">Max:</Label>
-                      <Input
-                        type="number"
-                        className="h-8 w-20"
-                        value={stat.max_clients}
-                        onChange={(e) => {
-                          const newStats = monthStats.map(s => 
-                            s.year_month === stat.year_month 
-                              ? { ...s, max_clients: Number(e.target.value) }
-                              : s
-                          );
-                          setMonthStats(newStats);
-                        }}
-                        onBlur={(e) => handleUpdateMonth(stat, Number(e.target.value))}
-                      />
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-xs text-muted-foreground whitespace-nowrap">Max:</Label>
+                        <Input
+                          type="number"
+                          className="h-8 w-20"
+                          value={stat.max_clients}
+                          onChange={(e) => {
+                            const newStats = monthStats.map(s => 
+                              s.year_month === stat.year_month 
+                                ? { ...s, max_clients: Number(e.target.value) }
+                                : s
+                            );
+                            setMonthStats(newStats);
+                          }}
+                          onBlur={(e) => handleUpdateMonth(stat, { max_clients: Number(e.target.value) })}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-xs text-yellow-600 whitespace-nowrap">Artificial:</Label>
+                        <Input
+                          type="number"
+                          className="h-8 w-20 border-yellow-500/50"
+                          value={stat.artificial_clients}
+                          onChange={(e) => {
+                            const newStats = monthStats.map(s => 
+                              s.year_month === stat.year_month 
+                                ? { ...s, artificial_clients: Number(e.target.value) }
+                                : s
+                            );
+                            setMonthStats(newStats);
+                          }}
+                          onBlur={(e) => handleUpdateMonth(stat, { artificial_clients: Number(e.target.value) })}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
