@@ -9,6 +9,7 @@ import { Calendar, Clock, Video, ChevronLeft, ChevronRight, Check, Loader2, Mail
 import { useAvailableSlots } from "@/hooks/useAvailableSlots";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { CalendarScarcity } from "@/components/CalendarScarcity";
 
 interface Question {
   id: string;
@@ -422,9 +423,10 @@ const BookingSection = () => {
           <h2 className="font-display text-3xl md:text-5xl font-bold mb-6">
             Book Your <span className="text-gradient-primary">Free Strategy Call</span>
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground mb-6">
             {settings?.appointment_duration_minutes || 30} minutes. Zero pressure. We'll audit your current processes and show you exactly where AI can save you time and money.
           </p>
+          <CalendarScarcity />
         </div>
 
         <div className="max-w-4xl mx-auto">

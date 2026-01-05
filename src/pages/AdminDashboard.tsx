@@ -9,7 +9,11 @@ import { BlockedDatesManager } from '@/components/admin/BlockedDatesManager';
 import { LeadsList } from '@/components/admin/LeadsList';
 import { AssessmentsList } from '@/components/admin/AssessmentsList';
 import { CalendarStatus } from '@/components/admin/CalendarStatus';
-import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList } from 'lucide-react';
+import { ClientsList } from '@/components/admin/ClientsList';
+import { ServicesManager } from '@/components/admin/ServicesManager';
+import { SupportPackagesManager } from '@/components/admin/SupportPackagesManager';
+import { CapacitySettings } from '@/components/admin/CapacitySettings';
+import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList, Briefcase, Package, TrendingUp } from 'lucide-react';
 
 function DashboardContent() {
   const { signOut } = useAuth();
@@ -47,26 +51,38 @@ function DashboardContent() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+          <TabsList className="grid grid-cols-4 lg:grid-cols-8 w-full">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">Appointments</span>
+              <span className="hidden lg:inline">Appointments</span>
+            </TabsTrigger>
+            <TabsTrigger value="clients" className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              <span className="hidden lg:inline">Clients</span>
             </TabsTrigger>
             <TabsTrigger value="assessments" className="flex items-center gap-2">
               <ClipboardList className="h-4 w-4" />
-              <span className="hidden sm:inline">Assessments</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </TabsTrigger>
-            <TabsTrigger value="blocked" className="flex items-center gap-2">
-              <Ban className="h-4 w-4" />
-              <span className="hidden sm:inline">Blocked</span>
+              <span className="hidden lg:inline">Assessments</span>
             </TabsTrigger>
             <TabsTrigger value="leads" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Leads</span>
+              <span className="hidden lg:inline">Leads</span>
+            </TabsTrigger>
+            <TabsTrigger value="services" className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              <span className="hidden lg:inline">Services</span>
+            </TabsTrigger>
+            <TabsTrigger value="capacity" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              <span className="hidden lg:inline">Capacity</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              <span className="hidden lg:inline">Settings</span>
+            </TabsTrigger>
+            <TabsTrigger value="blocked" className="flex items-center gap-2">
+              <Ban className="h-4 w-4" />
+              <span className="hidden lg:inline">Blocked</span>
             </TabsTrigger>
           </TabsList>
 
@@ -78,12 +94,47 @@ function DashboardContent() {
             <AppointmentsList />
           </TabsContent>
 
+          <TabsContent value="clients" className="animate-fade-in">
+            <div className="mb-4">
+              <h2 className="text-2xl font-display font-bold text-foreground">Clients</h2>
+              <p className="text-muted-foreground">Manage client relationships and assigned services</p>
+            </div>
+            <ClientsList />
+          </TabsContent>
+
           <TabsContent value="assessments" className="animate-fade-in">
             <div className="mb-4">
               <h2 className="text-2xl font-display font-bold text-foreground">AI Readiness Assessments</h2>
               <p className="text-muted-foreground">View submitted assessments and automation potential scores</p>
             </div>
             <AssessmentsList />
+          </TabsContent>
+
+          <TabsContent value="leads" className="animate-fade-in">
+            <div className="mb-4">
+              <h2 className="text-2xl font-display font-bold text-foreground">Leads</h2>
+              <p className="text-muted-foreground">View and export email submissions</p>
+            </div>
+            <LeadsList />
+          </TabsContent>
+
+          <TabsContent value="services" className="animate-fade-in">
+            <div className="mb-4">
+              <h2 className="text-2xl font-display font-bold text-foreground">Services & Packages</h2>
+              <p className="text-muted-foreground">Manage your service offerings and support packages</p>
+            </div>
+            <div className="space-y-8">
+              <ServicesManager />
+              <SupportPackagesManager />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="capacity" className="animate-fade-in">
+            <div className="mb-4">
+              <h2 className="text-2xl font-display font-bold text-foreground">Capacity Management</h2>
+              <p className="text-muted-foreground">Control monthly client capacity for urgency messaging</p>
+            </div>
+            <CapacitySettings />
           </TabsContent>
 
           <TabsContent value="settings" className="animate-fade-in">
@@ -103,14 +154,6 @@ function DashboardContent() {
               <p className="text-muted-foreground">Set dates when you're unavailable</p>
             </div>
             <BlockedDatesManager />
-          </TabsContent>
-
-          <TabsContent value="leads" className="animate-fade-in">
-            <div className="mb-4">
-              <h2 className="text-2xl font-display font-bold text-foreground">Leads</h2>
-              <p className="text-muted-foreground">View and export email submissions</p>
-            </div>
-            <LeadsList />
           </TabsContent>
         </Tabs>
       </main>

@@ -20,6 +20,7 @@ export type Database = {
           appointment_duration_minutes: number
           buffer_minutes: number
           created_at: string
+          default_monthly_capacity: number
           id: string
           timezone: string
           updated_at: string
@@ -29,6 +30,7 @@ export type Database = {
           appointment_duration_minutes?: number
           buffer_minutes?: number
           created_at?: string
+          default_monthly_capacity?: number
           id?: string
           timezone?: string
           updated_at?: string
@@ -38,6 +40,7 @@ export type Database = {
           appointment_duration_minutes?: number
           buffer_minutes?: number
           created_at?: string
+          default_monthly_capacity?: number
           id?: string
           timezone?: string
           updated_at?: string
@@ -172,6 +175,137 @@ export type Database = {
         }
         Relationships: []
       }
+      client_services: {
+        Row: {
+          agreed_price: number
+          client_id: string
+          created_at: string
+          end_date: string | null
+          id: string
+          service_id: string
+          start_date: string | null
+          status: Database["public"]["Enums"]["service_status"]
+        }
+        Insert: {
+          agreed_price?: number
+          client_id: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          service_id: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["service_status"]
+        }
+        Update: {
+          agreed_price?: number
+          client_id?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          service_id?: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["service_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_services_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          assessment_id: string | null
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          initial_appointment_id: string | null
+          lead_id: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          start_month: string | null
+          status: Database["public"]["Enums"]["client_status"]
+          support_package_id: string | null
+          total_contract_value: number
+          updated_at: string
+        }
+        Insert: {
+          assessment_id?: string | null
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          initial_appointment_id?: string | null
+          lead_id?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          start_month?: string | null
+          status?: Database["public"]["Enums"]["client_status"]
+          support_package_id?: string | null
+          total_contract_value?: number
+          updated_at?: string
+        }
+        Update: {
+          assessment_id?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          initial_appointment_id?: string | null
+          lead_id?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          start_month?: string | null
+          status?: Database["public"]["Enums"]["client_status"]
+          support_package_id?: string | null
+          total_contract_value?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_responses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_initial_appointment_id_fkey"
+            columns: ["initial_appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "lead_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_support_package_id_fkey"
+            columns: ["support_package_id"]
+            isOneToOne: false
+            referencedRelation: "support_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_submissions: {
         Row: {
           created_at: string
@@ -190,6 +324,33 @@ export type Database = {
           email?: string
           id?: string
           source?: string | null
+        }
+        Relationships: []
+      }
+      monthly_capacity: {
+        Row: {
+          created_at: string
+          id: string
+          max_clients: number
+          notes: string | null
+          updated_at: string
+          year_month: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_clients?: number
+          notes?: string | null
+          updated_at?: string
+          year_month: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_clients?: number
+          notes?: string | null
+          updated_at?: string
+          year_month?: string
         }
         Relationships: []
       }
@@ -220,6 +381,69 @@ export type Database = {
           is_admin?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          base_price: number
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          name: string
+        }
+        Insert: {
+          base_price?: number
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name: string
+        }
+        Update: {
+          base_price?: number
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+        }
+        Relationships: []
+      }
+      support_packages: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          hours_included: number
+          id: string
+          is_active: boolean
+          monthly_price: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          hours_included?: number
+          id?: string
+          is_active?: boolean
+          monthly_price?: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          hours_included?: number
+          id?: string
+          is_active?: boolean
+          monthly_price?: number
+          name?: string
         }
         Relationships: []
       }
@@ -289,6 +513,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      client_status: "lead" | "prospect" | "active" | "completed" | "churned"
+      service_status: "planned" | "in_progress" | "completed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -417,6 +643,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      client_status: ["lead", "prospect", "active", "completed", "churned"],
+      service_status: ["planned", "in_progress", "completed", "cancelled"],
     },
   },
 } as const
