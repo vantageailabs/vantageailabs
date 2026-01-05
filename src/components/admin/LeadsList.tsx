@@ -4,8 +4,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Download, Users, ClipboardList } from 'lucide-react';
+import { Mail, Download, Users, ClipboardList, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
+import { LeadDetailModal } from './LeadDetailModal';
 
 interface Lead {
   id: string;
@@ -14,11 +15,19 @@ interface Lead {
   created_at: string;
   type: 'lead_magnet' | 'assessment';
   assessment_score?: number;
+  answers?: Record<string, string>;
+  estimated_hours_saved?: number;
+  estimated_monthly_savings?: number;
+  business_type?: string | null;
+  monthly_revenue?: string | null;
+  tool_stack?: string | null;
+  timeline?: string | null;
 }
 
 export function LeadsList() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -60,6 +69,13 @@ export function LeadsList() {
             created_at: a.created_at,
             type: 'assessment' as const,
             assessment_score: a.overall_score,
+            answers: a.answers as Record<string, string>,
+            estimated_hours_saved: a.estimated_hours_saved,
+            estimated_monthly_savings: a.estimated_monthly_savings,
+            business_type: a.business_type,
+            monthly_revenue: a.monthly_revenue,
+            tool_stack: a.tool_stack,
+            timeline: a.timeline,
           })),
         ];
         
@@ -83,10 +99,12 @@ export function LeadsList() {
     }
 
     const csv = [
-      ['Email', 'Source', 'Date'],
+      ['Email', 'Source', 'Type', 'Score', 'Date'],
       ...leads.map((lead) => [
         lead.email,
         lead.source || '',
+        lead.type,
+        lead.assessment_score?.toString() || '',
         format(new Date(lead.created_at), 'yyyy-MM-dd HH:mm'),
       ]),
     ]
@@ -126,7 +144,11 @@ export function LeadsList() {
       ) : (
         <div className="space-y-2">
           {leads.map((lead) => (
-            <Card key={lead.id} className="border-border/50">
+            <Card 
+              key={lead.id} 
+              className="border-border/50 cursor-pointer hover:bg-muted/50 transition-colors"
+              onClick={() => setSelectedLead(lead)}
+            >
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {lead.type === 'assessment' ? (
@@ -151,16 +173,25 @@ export function LeadsList() {
                     </p>
                   </div>
                 </div>
-                {lead.source && (
-                  <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
-                    {lead.source}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {lead.source && (
+                    <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
+                      {lead.source}
+                    </span>
+                  )}
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
+
+      <LeadDetailModal
+        open={!!selectedLead}
+        onOpenChange={(open) => !open && setSelectedLead(null)}
+        lead={selectedLead}
+      />
     </div>
   );
 }
