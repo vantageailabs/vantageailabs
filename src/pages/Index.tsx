@@ -12,10 +12,12 @@ import GuaranteeSection from "@/components/GuaranteeSection";
 import LeadMagnet from "@/components/LeadMagnet";
 import BookingSection from "@/components/BookingSection";
 import Footer from "@/components/Footer";
+import { CapacityBanner } from "@/components/CapacityBanner";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <CapacityBanner />
       <Navbar />
       <Hero />
       <ProblemSection />

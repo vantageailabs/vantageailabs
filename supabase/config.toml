@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.fetch-calendar-events]
 verify_jwt = false
+
+[functions.get-capacity-status]
+verify_jwt = false
