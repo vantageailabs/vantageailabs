@@ -58,11 +58,15 @@ export function CapacityBanner() {
   const remaining = status.current_month.remaining;
 
   return (
-    <div className={`w-full py-3 px-4 text-center ${isFull ? 'bg-destructive/10 border-b border-destructive/20' : 'bg-primary/10 border-b border-primary/20'}`}>
+    <div className={`fixed top-0 left-0 right-0 z-[60] py-3 px-4 text-center backdrop-blur-sm ${
+      isFull 
+        ? 'bg-destructive/20 border-b border-destructive/30' 
+        : 'bg-primary/20 border-b border-primary/30 animate-scarcity-pulse'
+    }`}>
       <div className="container mx-auto flex items-center justify-center gap-2 flex-wrap">
         {isFull ? (
           <>
-            <AlertTriangle className="h-4 w-4 text-destructive" />
+            <AlertTriangle className="h-4 w-4 text-destructive animate-pulse" />
             <span className="text-sm font-medium text-destructive">
               {currentMonthName} is fully booked!
             </span>
@@ -74,7 +78,7 @@ export function CapacityBanner() {
           <>
             <Users className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-foreground">
-              Limited Availability:
+              🔥 Limited Availability:
             </span>
             <span className="text-sm text-muted-foreground">
               Only <strong className="text-primary">{remaining} {remaining === 1 ? 'spot' : 'spots'}</strong> left for {currentMonthName}!
