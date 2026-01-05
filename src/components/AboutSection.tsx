@@ -69,7 +69,7 @@ const AboutSection = () => {
                 "I believe every business deserves access to the same AI advantages that big companies have. Let me show
                 you what's possible."
               </p>
-              <p className="mt-3 font-semibold text-foreground">— [Your Name], Founder</p>
+              <p className="mt-3 font-semibold text-foreground">— Zach, Founder</p>
             </div>
           </div>
         </div>
