@@ -175,6 +175,44 @@ export type Database = {
         }
         Relationships: []
       }
+      client_costs: {
+        Row: {
+          amount: number
+          client_id: string
+          created_at: string
+          id: string
+          incurred_at: string
+          name: string
+          notes: string | null
+        }
+        Insert: {
+          amount?: number
+          client_id: string
+          created_at?: string
+          id?: string
+          incurred_at?: string
+          name: string
+          notes?: string | null
+        }
+        Update: {
+          amount?: number
+          client_id?: string
+          created_at?: string
+          id?: string
+          incurred_at?: string
+          name?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_costs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_services: {
         Row: {
           agreed_price: number

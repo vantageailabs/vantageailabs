@@ -41,6 +41,14 @@ interface ClientService {
   service?: Service;
 }
 
+interface ClientCost {
+  id: string;
+  name: string;
+  amount: number;
+  notes?: string;
+  incurred_at: string;
+}
+
 interface Props {
   client: Client | null;
   open: boolean;
@@ -55,6 +63,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
   const [services, setServices] = useState<Service[]>([]);
   const [packages, setPackages] = useState<SupportPackage[]>([]);
   const [clientServices, setClientServices] = useState<ClientService[]>([]);
+  const [clientCosts, setClientCosts] = useState<ClientCost[]>([]);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -83,6 +92,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           notes: client.notes || '',
         });
         fetchClientServices(client.id);
+        fetchClientCosts(client.id);
       } else {
         resetForm();
       }
@@ -101,6 +111,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
       notes: '',
     });
     setClientServices([]);
+    setClientCosts([]);
   };
 
   const fetchServicesAndPackages = async () => {
@@ -132,6 +143,18 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
     setLoading(false);
   };
 
+  const fetchClientCosts = async (clientId: string) => {
+    const { data } = await supabase
+      .from('client_costs')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('incurred_at', { ascending: false });
+
+    if (data) {
+      setClientCosts(data as ClientCost[]);
+    }
+  };
+
   const calculateTotal = () => {
     const servicesTotal = clientServices.reduce((sum, cs) => sum + Number(cs.agreed_price), 0);
     const packagePrice = packages.find(p => p.id === formData.support_package_id)?.monthly_price || 0;
@@ -150,6 +173,32 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
         service: services[0],
       },
     ]);
+  };
+
+  const handleAddCost = () => {
+    setClientCosts([
+      ...clientCosts,
+      {
+        id: `temp-${Date.now()}`,
+        name: '',
+        amount: 0,
+        incurred_at: new Date().toISOString().split('T')[0],
+      },
+    ]);
+  };
+
+  const handleRemoveCost = (index: number) => {
+    setClientCosts(clientCosts.filter((_, i) => i !== index));
+  };
+
+  const handleCostChange = (index: number, field: keyof ClientCost, value: string | number) => {
+    const updated = [...clientCosts];
+    updated[index] = { ...updated[index], [field]: value };
+    setClientCosts(updated);
+  };
+
+  const calculateTotalCosts = () => {
+    return clientCosts.reduce((sum, c) => sum + Number(c.amount), 0);
   };
 
   const handleRemoveService = (index: number) => {
@@ -227,6 +276,25 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
 
         const { error } = await supabase.from('client_services').insert(servicesToInsert);
         if (error) throw error;
+      }
+
+      // Save client costs
+      if (clientId) {
+        // Delete existing costs and re-insert
+        await supabase.from('client_costs').delete().eq('client_id', clientId);
+
+        if (clientCosts.length > 0) {
+          const costsToInsert = clientCosts.map(c => ({
+            client_id: clientId,
+            name: c.name,
+            amount: c.amount,
+            notes: c.notes || null,
+            incurred_at: c.incurred_at,
+          }));
+
+          const { error } = await supabase.from('client_costs').insert(costsToInsert);
+          if (error) throw error;
+        }
       }
 
       toast({ title: isNew ? 'Client created!' : 'Client updated!' });
@@ -397,6 +465,53 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
             )}
           </div>
 
+          {/* Costs */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Costs</Label>
+              <Button variant="outline" size="sm" onClick={handleAddCost}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add Cost
+              </Button>
+            </div>
+
+            {clientCosts.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No costs tracked yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {clientCosts.map((cost, index) => (
+                  <div key={cost.id} className="flex items-center gap-2 p-2 rounded border border-border/50 bg-muted/50">
+                    <Input
+                      className="flex-1"
+                      value={cost.name}
+                      onChange={(e) => handleCostChange(index, 'name', e.target.value)}
+                      placeholder="Cost name (e.g., Lovable credits)"
+                    />
+                    <Input
+                      type="number"
+                      className="w-28"
+                      value={cost.amount}
+                      onChange={(e) => handleCostChange(index, 'amount', Number(e.target.value))}
+                      placeholder="Amount"
+                    />
+                    <Input
+                      type="date"
+                      className="w-36"
+                      value={cost.incurred_at}
+                      onChange={(e) => handleCostChange(index, 'incurred_at', e.target.value)}
+                    />
+                    <Button variant="ghost" size="icon" onClick={() => handleRemoveCost(index)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+                <div className="flex justify-end text-sm text-muted-foreground">
+                  Total Costs: <span className="font-medium text-destructive ml-1">${calculateTotalCosts().toLocaleString()}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Notes */}
           <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
@@ -408,10 +523,20 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
             />
           </div>
 
-          {/* Total */}
-          <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/20">
-            <span className="font-medium">Total Contract Value</span>
-            <span className="text-2xl font-bold text-primary">${calculateTotal().toLocaleString()}</span>
+          {/* Totals */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <span className="font-medium">Total Contract Value</span>
+              <span className="text-2xl font-bold text-primary">${calculateTotal().toLocaleString()}</span>
+            </div>
+            {clientCosts.length > 0 && (
+              <div className="flex items-center justify-between p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <span className="font-medium">Net Profit</span>
+                <span className="text-xl font-bold text-foreground">
+                  ${(calculateTotal() - calculateTotalCosts()).toLocaleString()}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Actions */}
