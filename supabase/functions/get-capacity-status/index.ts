@@ -46,14 +46,24 @@ serve(async (req) => {
       .in('status', ['active', 'prospect'])
       .not('start_month', 'is', null);
 
-    const currentMonthCapacity = capacities?.find(c => c.year_month === currentMonth)?.max_clients ?? defaultCapacity;
-    const nextMonthCapacity = capacities?.find(c => c.year_month === nextMonthStr)?.max_clients ?? defaultCapacity;
+    const currentMonthData = capacities?.find(c => c.year_month === currentMonth);
+    const nextMonthData = capacities?.find(c => c.year_month === nextMonthStr);
+    
+    const currentMonthCapacity = currentMonthData?.max_clients ?? defaultCapacity;
+    const nextMonthCapacity = nextMonthData?.max_clients ?? defaultCapacity;
+    
+    const currentMonthArtificial = currentMonthData?.artificial_clients ?? 0;
+    const nextMonthArtificial = nextMonthData?.artificial_clients ?? 0;
 
     const currentMonthClients = clients?.filter(c => c.start_month?.startsWith(currentMonth)).length || 0;
     const nextMonthClients = clients?.filter(c => c.start_month?.startsWith(nextMonthStr)).length || 0;
 
-    const currentMonthRemaining = Math.max(currentMonthCapacity - currentMonthClients, 0);
-    const nextMonthRemaining = Math.max(nextMonthCapacity - nextMonthClients, 0);
+    // Total includes real + artificial clients
+    const currentMonthTotal = currentMonthClients + currentMonthArtificial;
+    const nextMonthTotal = nextMonthClients + nextMonthArtificial;
+
+    const currentMonthRemaining = Math.max(currentMonthCapacity - currentMonthTotal, 0);
+    const nextMonthRemaining = Math.max(nextMonthCapacity - nextMonthTotal, 0);
 
     // Get available appointment slots for this week
     const startOfWeek = new Date(now);
@@ -78,14 +88,14 @@ serve(async (req) => {
       current_month: {
         month: currentMonth,
         max_clients: currentMonthCapacity,
-        current_clients: currentMonthClients,
+        current_clients: currentMonthTotal,
         remaining: currentMonthRemaining,
         is_full: currentMonthRemaining === 0,
       },
       next_month: {
         month: nextMonthStr,
         max_clients: nextMonthCapacity,
-        current_clients: nextMonthClients,
+        current_clients: nextMonthTotal,
         remaining: nextMonthRemaining,
         is_full: nextMonthRemaining === 0,
       },

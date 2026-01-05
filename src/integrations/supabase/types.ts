@@ -329,6 +329,7 @@ export type Database = {
       }
       monthly_capacity: {
         Row: {
+          artificial_clients: number
           created_at: string
           id: string
           max_clients: number
@@ -337,6 +338,7 @@ export type Database = {
           year_month: string
         }
         Insert: {
+          artificial_clients?: number
           created_at?: string
           id?: string
           max_clients?: number
@@ -345,6 +347,7 @@ export type Database = {
           year_month: string
         }
         Update: {
+          artificial_clients?: number
           created_at?: string
           id?: string
           max_clients?: number
