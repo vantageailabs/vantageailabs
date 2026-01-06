@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Logo from "@/components/Logo";
 
 const Footer = () => {
   const scrollToBooking = () => {
@@ -26,9 +27,7 @@ const Footer = () => {
 
         {/* Footer links */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-border">
-          <div className="font-display font-bold text-xl">
-            <span className="text-gradient-primary">AI</span>Leverage
-          </div>
+          <Logo />
           
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
@@ -37,7 +36,7 @@ const Footer = () => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} AILeverage. All rights reserved.
+            © {new Date().getFullYear()} Vantage AI Labs. All rights reserved.
           </p>
         </div>
       </div>
