@@ -23,7 +23,7 @@ const Terms = () => {
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground">1. Acceptance of Terms</h2>
             <p>
-              By accessing and using AILeverage's services, you accept and agree to be bound by the terms 
+              By accessing and using Vantage AI Labs' services, you accept and agree to be bound by the terms 
               and provisions of this agreement. If you do not agree to these terms, please do not use our services.
             </p>
           </section>
@@ -31,7 +31,7 @@ const Terms = () => {
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground">2. Services Description</h2>
             <p>
-              AILeverage provides AI automation consulting and implementation services for small businesses. 
+              Vantage AI Labs provides AI automation consulting and implementation services for small businesses. 
               Our services include but are not limited to:
             </p>
             <ul className="list-disc pl-6 space-y-2">
@@ -65,7 +65,7 @@ const Terms = () => {
             <h2 className="text-2xl font-semibold text-foreground">5. Intellectual Property</h2>
             <p>
               All intellectual property rights in our methodologies, tools, and proprietary systems remain 
-              with AILeverage. Clients receive a license to use delivered solutions for their business purposes.
+              with Vantage AI Labs. Clients receive a license to use delivered solutions for their business purposes.
             </p>
           </section>
 
@@ -80,7 +80,7 @@ const Terms = () => {
           <section className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground">7. Limitation of Liability</h2>
             <p>
-              AILeverage shall not be liable for any indirect, incidental, special, consequential, or 
+              Vantage AI Labs shall not be liable for any indirect, incidental, special, consequential, or 
               punitive damages resulting from your use of our services.
             </p>
           </section>
