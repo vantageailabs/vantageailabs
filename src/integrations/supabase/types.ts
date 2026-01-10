@@ -61,6 +61,8 @@ export type Database = {
           meeting_id: string | null
           meeting_join_url: string | null
           notes: string | null
+          reminder_1h_sent: boolean | null
+          reminder_24h_sent: boolean | null
           status: string
           updated_at: string
         }
@@ -77,6 +79,8 @@ export type Database = {
           meeting_id?: string | null
           meeting_join_url?: string | null
           notes?: string | null
+          reminder_1h_sent?: boolean | null
+          reminder_24h_sent?: boolean | null
           status?: string
           updated_at?: string
         }
@@ -93,6 +97,8 @@ export type Database = {
           meeting_id?: string | null
           meeting_join_url?: string | null
           notes?: string | null
+          reminder_1h_sent?: boolean | null
+          reminder_24h_sent?: boolean | null
           status?: string
           updated_at?: string
         }
