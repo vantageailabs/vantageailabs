@@ -51,6 +51,7 @@ export type Database = {
         Row: {
           appointment_date: string
           appointment_time: string
+          cancel_token: string | null
           created_at: string
           duration_minutes: number
           guest_email: string
@@ -66,6 +67,7 @@ export type Database = {
         Insert: {
           appointment_date: string
           appointment_time: string
+          cancel_token?: string | null
           created_at?: string
           duration_minutes?: number
           guest_email: string
@@ -81,6 +83,7 @@ export type Database = {
         Update: {
           appointment_date?: string
           appointment_time?: string
+          cancel_token?: string | null
           created_at?: string
           duration_minutes?: number
           guest_email?: string
