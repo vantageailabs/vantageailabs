@@ -8,3 +8,18 @@ verify_jwt = false
 
 [functions.get-capacity-status]
 verify_jwt = false
+
+[functions.send-email]
+verify_jwt = false
+
+[functions.cancel-appointment]
+verify_jwt = false
+
+[functions.reschedule-appointment]
+verify_jwt = false
+
+[functions.send-reminders]
+verify_jwt = false
+# This function should be called via cron job every 15 minutes
+# Set up via Supabase Dashboard: Database > Extensions > pg_cron
+# Or call externally via: POST https://cketdqusxoymxbrxbkez.supabase.co/functions/v1/send-reminders
