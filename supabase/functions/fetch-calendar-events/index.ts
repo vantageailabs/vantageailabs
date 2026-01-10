@@ -39,6 +39,90 @@ function getDateFromISO(isoString: string, timezone: string): string {
   return formatter.format(date);
 }
 
+// Helper function to fetch events from a single calendar
+async function fetchCalendarEvents(
+  calendarId: string,
+  accessToken: string,
+  timeMin: string,
+  timeMax: string,
+  timezone: string
+): Promise<CalendarEvent[]> {
+  const calendarUrl = new URL(
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`
+  );
+  calendarUrl.searchParams.set('timeMin', timeMin);
+  calendarUrl.searchParams.set('timeMax', timeMax);
+  calendarUrl.searchParams.set('timeZone', timezone);
+  calendarUrl.searchParams.set('singleEvents', 'true');
+  calendarUrl.searchParams.set('orderBy', 'startTime');
+
+  const eventsResponse = await fetch(calendarUrl.toString(), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!eventsResponse.ok) {
+    const error = await eventsResponse.text();
+    console.error(`Failed to fetch calendar events from ${calendarId}:`, error);
+    return [];
+  }
+
+  const eventsData = await eventsResponse.json();
+  return eventsData.items || [];
+}
+
+// Helper function to extract busy periods from events
+function extractBusyPeriods(events: CalendarEvent[], date: string, timezone: string): BusyPeriod[] {
+  return events
+    .filter((event: CalendarEvent) => {
+      // Skip all-day events (they have 'date' instead of 'dateTime')
+      return event.start?.dateTime && event.end?.dateTime;
+    })
+    .map((event: CalendarEvent) => {
+      const eventStartDate = getDateFromISO(event.start.dateTime!, timezone);
+      const eventEndDate = getDateFromISO(event.end.dateTime!, timezone);
+      
+      // Handle events that might span midnight
+      let start = '00:00';
+      let end = '23:59';
+      
+      if (eventStartDate === date) {
+        start = getTimeFromISO(event.start.dateTime!, timezone);
+      }
+      if (eventEndDate === date) {
+        end = getTimeFromISO(event.end.dateTime!, timezone);
+      }
+      
+      return { start, end };
+    });
+}
+
+// Merge overlapping busy periods
+function mergeBusyPeriods(periods: BusyPeriod[]): BusyPeriod[] {
+  if (periods.length === 0) return [];
+  
+  // Sort by start time
+  const sorted = [...periods].sort((a, b) => a.start.localeCompare(b.start));
+  
+  const merged: BusyPeriod[] = [sorted[0]];
+  
+  for (let i = 1; i < sorted.length; i++) {
+    const current = sorted[i];
+    const last = merged[merged.length - 1];
+    
+    // If current period overlaps with or is adjacent to the last merged period
+    if (current.start <= last.end) {
+      // Extend the last period if needed
+      if (current.end > last.end) {
+        last.end = current.end;
+      }
+    } else {
+      merged.push(current);
+    }
+  }
+  
+  return merged;
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -59,11 +143,11 @@ serve(async (req) => {
 
     // Get Google credentials from secrets
     const serviceAccountKey = Deno.env.get('GOOGLE_SERVICE_ACCOUNT_KEY');
-    const calendarId = Deno.env.get('GOOGLE_CALENDAR_ID');
+    const businessCalendarId = Deno.env.get('GOOGLE_CALENDAR_ID'); // Business calendar (zach@vantageailabs.com)
+    const personalCalendarId = Deno.env.get('GOOGLE_PERSONAL_CALENDAR_ID'); // Personal calendar (zachwitt27@gmail.com)
 
-    if (!serviceAccountKey || !calendarId) {
+    if (!serviceAccountKey || !businessCalendarId) {
       console.log('Google Calendar credentials not configured, returning empty busy periods');
-      // Gracefully return empty array if not configured
       return new Response(
         JSON.stringify({ busyPeriods: [], configured: false }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -152,12 +236,9 @@ serve(async (req) => {
     const { access_token } = await tokenResponse.json();
 
     // Build RFC3339 timestamps for the given date in the specified timezone
-    // We need to calculate the UTC offset for the timezone to create proper RFC3339 timestamps
     const startDateTime = new Date(`${date}T00:00:00`);
-    const endDateTime = new Date(`${date}T23:59:59`);
     
-    // Get timezone offset by comparing local interpretation to UTC
-    // Create a date formatter that gives us the offset
+    // Get timezone offset
     const getTimezoneOffset = (tz: string, dt: Date): string => {
       const formatter = new Intl.DateTimeFormat('en-US', {
         timeZone: tz,
@@ -166,7 +247,6 @@ serve(async (req) => {
       const parts = formatter.formatToParts(dt);
       const offsetPart = parts.find(p => p.type === 'timeZoneName');
       if (offsetPart) {
-        // Extract offset like "GMT-07:00" -> "-07:00"
         const match = offsetPart.value.match(/GMT([+-]\d{2}:\d{2})/);
         if (match) return match[1];
       }
@@ -179,65 +259,35 @@ serve(async (req) => {
     
     console.log(`Time range: ${timeMin} to ${timeMax}`);
 
-    // Fetch events from Google Calendar
-    const calendarUrl = new URL(
-      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`
-    );
-    calendarUrl.searchParams.set('timeMin', timeMin);
-    calendarUrl.searchParams.set('timeMax', timeMax);
-    calendarUrl.searchParams.set('timeZone', timezone);
-    calendarUrl.searchParams.set('singleEvents', 'true');
-    calendarUrl.searchParams.set('orderBy', 'startTime');
-
-    const eventsResponse = await fetch(calendarUrl.toString(), {
-      headers: { Authorization: `Bearer ${access_token}` },
-    });
-
-    if (!eventsResponse.ok) {
-      const error = await eventsResponse.text();
-      console.error('Failed to fetch calendar events:', error);
-      return new Response(
-        JSON.stringify({ error: 'Failed to fetch calendar events' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Fetch events from both calendars in parallel
+    const calendarsToFetch = [businessCalendarId];
+    if (personalCalendarId) {
+      calendarsToFetch.push(personalCalendarId);
     }
 
-    const eventsData = await eventsResponse.json();
-    const events: CalendarEvent[] = eventsData.items || [];
+    console.log(`Fetching events from ${calendarsToFetch.length} calendar(s): ${calendarsToFetch.join(', ')}`);
 
-    console.log(`Found ${events.length} events for ${date} in timezone ${timezone}`);
-    events.forEach((event: any) => {
-      console.log(`Event: "${event.summary}", Start: ${event.start?.dateTime || event.start?.date}, End: ${event.end?.dateTime || event.end?.date}`);
-    });
+    const eventPromises = calendarsToFetch.map(calendarId => 
+      fetchCalendarEvents(calendarId, access_token, timeMin, timeMax, timezone)
+    );
 
-    // Extract busy periods from events
-    const busyPeriods: BusyPeriod[] = events
-      .filter((event: CalendarEvent) => {
-        // Skip all-day events (they have 'date' instead of 'dateTime')
-        return event.start?.dateTime && event.end?.dateTime;
-      })
-      .map((event: CalendarEvent) => {
-        const eventStartDate = getDateFromISO(event.start.dateTime!, timezone);
-        const eventEndDate = getDateFromISO(event.end.dateTime!, timezone);
-        
-        // Handle events that might span midnight
-        let start = '00:00';
-        let end = '23:59';
-        
-        if (eventStartDate === date) {
-          start = getTimeFromISO(event.start.dateTime!, timezone);
-        }
-        if (eventEndDate === date) {
-          end = getTimeFromISO(event.end.dateTime!, timezone);
-        }
-        
-        return { start, end };
-      });
+    const eventResults = await Promise.all(eventPromises);
+    
+    // Combine all events from both calendars
+    const allEvents: CalendarEvent[] = eventResults.flat();
 
-    console.log('Busy periods:', busyPeriods);
+    console.log(`Found ${allEvents.length} total events for ${date} across all calendars`);
+
+    // Extract busy periods from all events
+    const allBusyPeriods = extractBusyPeriods(allEvents, date, timezone);
+
+    // Merge overlapping busy periods
+    const mergedBusyPeriods = mergeBusyPeriods(allBusyPeriods);
+
+    console.log('Merged busy periods:', mergedBusyPeriods);
 
     return new Response(
-      JSON.stringify({ busyPeriods, configured: true }),
+      JSON.stringify({ busyPeriods: mergedBusyPeriods, configured: true }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
