@@ -17,8 +17,8 @@ interface Appointment {
   duration_minutes: number;
   status: string;
   notes: string | null;
-  zoom_join_url: string | null;
-  zoom_start_url: string | null;
+  meeting_id: string | null;
+  meeting_join_url: string | null;
 }
 
 interface AssessmentInfo {
@@ -167,11 +167,11 @@ export function AppointmentsList() {
                 {apt.notes && <p className="text-sm text-muted-foreground italic">{apt.notes}</p>}
               </div>
               <div className="flex items-center gap-2">
-                {apt.zoom_start_url && (
+                {apt.meeting_join_url && (
                   <Button variant="outline" size="sm" asChild>
-                    <a href={apt.zoom_start_url} target="_blank" rel="noopener noreferrer">
+                    <a href={apt.meeting_join_url} target="_blank" rel="noopener noreferrer">
                       <Video className="h-4 w-4 mr-1" />
-                      Start Zoom
+                      Join Meet
                     </a>
                   </Button>
                 )}

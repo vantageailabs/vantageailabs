@@ -1,8 +1,5 @@
 project_id = "cketdqusxoymxbrxbkez"
 
-[functions.create-zoom-meeting]
-verify_jwt = true
-
 [functions.create-appointment]
 verify_jwt = false
 
