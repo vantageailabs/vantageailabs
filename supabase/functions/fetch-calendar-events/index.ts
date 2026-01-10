@@ -260,23 +260,28 @@ serve(async (req) => {
     console.log(`Time range: ${timeMin} to ${timeMax}`);
 
     // Fetch events from both calendars in parallel
-    const calendarsToFetch = [businessCalendarId];
+    const calendarsToFetch: { id: string; name: string }[] = [
+      { id: businessCalendarId, name: 'business' }
+    ];
     if (personalCalendarId) {
-      calendarsToFetch.push(personalCalendarId);
+      calendarsToFetch.push({ id: personalCalendarId, name: 'personal' });
     }
 
-    console.log(`Fetching events from ${calendarsToFetch.length} calendar(s): ${calendarsToFetch.join(', ')}`);
+    console.log(`Fetching events from ${calendarsToFetch.length} calendar(s)`);
 
-    const eventPromises = calendarsToFetch.map(calendarId => 
-      fetchCalendarEvents(calendarId, access_token, timeMin, timeMax, timezone)
-    );
+    const eventPromises = calendarsToFetch.map(async (calendar) => {
+      console.log(`Fetching from ${calendar.name} calendar (${calendar.id.substring(0, 10)}...)`);
+      const events = await fetchCalendarEvents(calendar.id, access_token, timeMin, timeMax, timezone);
+      console.log(`${calendar.name} calendar: Found ${events.length} events`);
+      return events;
+    });
 
     const eventResults = await Promise.all(eventPromises);
     
     // Combine all events from both calendars
     const allEvents: CalendarEvent[] = eventResults.flat();
 
-    console.log(`Found ${allEvents.length} total events for ${date} across all calendars`);
+    console.log(`Found ${allEvents.length} total events for ${date} across all calendars in timezone ${timezone}`);
 
     // Extract busy periods from all events
     const allBusyPeriods = extractBusyPeriods(allEvents, date, timezone);
