@@ -137,6 +137,7 @@ function buildConfirmationEmail(
 ): string {
   const siteUrl = Deno.env.get('SITE_URL') || 'https://vantageailabs.com';
   const cancelUrl = `${siteUrl}/cancel-appointment?token=${cancelToken}`;
+  const rescheduleUrl = `${siteUrl}/reschedule?token=${cancelToken}`;
   
   const assessmentSection = assessment ? `
       <!-- Assessment Results -->
@@ -243,6 +244,7 @@ function buildConfirmationEmail(
     <div style="background-color: #f8f9fa; padding: 25px 30px; border-top: 1px solid #e9ecef;">
       <p style="color: #666; font-size: 13px; margin: 0 0 10px; text-align: center;">
         Need to make changes?
+        <a href="${rescheduleUrl}" style="color: #6366f1; text-decoration: none;"> Reschedule</a> |
         <a href="${cancelUrl}" style="color: #6366f1; text-decoration: none;"> Cancel appointment</a>
       </p>
       <p style="color: #999; font-size: 12px; margin: 0; text-align: center;">

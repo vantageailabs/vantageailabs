@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, CheckCircle2, Loader2, Calendar, ArrowLeft } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, Calendar, ArrowLeft, CalendarClock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface AppointmentInfo {
@@ -227,6 +227,12 @@ export default function CancelAppointment() {
           )}
           
           <div className="flex flex-col gap-3">
+            <Button variant="outline" asChild>
+              <Link to={`/reschedule?token=${token}`}>
+                <CalendarClock className="mr-2 h-4 w-4" />
+                Reschedule Instead
+              </Link>
+            </Button>
             <Button 
               variant="destructive" 
               onClick={handleCancel}
@@ -241,7 +247,7 @@ export default function CancelAppointment() {
                 'Yes, Cancel Appointment'
               )}
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="ghost" asChild>
               <Link to="/">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Keep Appointment
