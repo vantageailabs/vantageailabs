@@ -198,7 +198,7 @@ const BookingSection = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [step, setStep] = useState<'calendar' | 'form' | 'assessment' | 'success'>('calendar');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [bookingResult, setBookingResult] = useState<{ zoom_join_url: string } | null>(null);
+  const [bookingResult, setBookingResult] = useState<{ meeting_join_url: string } | null>(null);
   
   // Assessment state
   const [assessmentStep, setAssessmentStep] = useState(0);
@@ -440,14 +440,14 @@ const BookingSection = () => {
                 <p className="text-muted-foreground mb-6">
                   We've sent a confirmation email with all the meeting details.
                 </p>
-                {bookingResult?.zoom_join_url && (
+                {bookingResult?.meeting_join_url && (
                   <Button
                     variant="hero"
                     size="lg"
-                    onClick={() => window.open(bookingResult.zoom_join_url, '_blank')}
+                    onClick={() => window.open(bookingResult.meeting_join_url, '_blank')}
                   >
                     <Video className="w-5 h-5 mr-2" />
-                    Join Zoom Meeting
+                    Join Google Meet
                   </Button>
                 )}
               </div>
@@ -738,7 +738,7 @@ const BookingSection = () => {
                   <div className="mt-6 pt-6 border-t border-border space-y-3">
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       <Video className="w-5 h-5 text-primary" />
-                      <span>Video call via Zoom</span>
+                      <span>Video call via Google Meet</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       <Clock className="w-5 h-5 text-primary" />
