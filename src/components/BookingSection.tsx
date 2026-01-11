@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -211,8 +211,19 @@ const BookingSection = () => {
     company: '',
     phone: '',
   });
+  
+  // Check for existing assessment from standalone flow
+  const [existingAssessmentId, setExistingAssessmentId] = useState<string | null>(null);
 
   const { toast } = useToast();
+  
+  // Check localStorage for pending assessment on mount
+  useEffect(() => {
+    const pendingId = localStorage.getItem('pending_assessment_id');
+    if (pendingId) {
+      setExistingAssessmentId(pendingId);
+    }
+  }, []);
   const { availableSlots, isDateAvailable, formatTimeDisplay, loading, settings } = useAvailableSlots(selectedDate);
 
   const getDaysInMonth = (date: Date) => {
@@ -255,8 +266,69 @@ const BookingSection = () => {
 
   const handleContinueToAssessment = () => {
     if (formData.name && formData.email && formData.company) {
-      setStep('assessment');
-      setAssessmentStep(0);
+      // If user already completed standalone assessment, skip to booking
+      if (existingAssessmentId) {
+        handleBookingWithExistingAssessment();
+      } else {
+        setStep('assessment');
+        setAssessmentStep(0);
+      }
+    }
+  };
+
+  // Handle booking when assessment was already completed in standalone flow
+  const handleBookingWithExistingAssessment = async () => {
+    if (!selectedDate || !selectedTime || !formData.name || !formData.email) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const dateStr = selectedDate.toISOString().split('T')[0];
+      
+      const { data, error } = await supabase.functions.invoke('create-appointment', {
+        body: {
+          appointment_date: dateStr,
+          appointment_time: selectedTime,
+          guest_name: formData.name,
+          guest_email: formData.email,
+          guest_phone: formData.phone || undefined,
+          assessment_id: existingAssessmentId,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // Clear the pending assessment from localStorage
+      localStorage.removeItem('pending_assessment_id');
+      setExistingAssessmentId(null);
+
+      setBookingResult(data.appointment);
+      setStep('success');
+      
+      toast({
+        title: "Booking confirmed!",
+        description: "Check your email for the meeting details.",
+      });
+    } catch (error: any) {
+      console.error('Booking error:', error);
+      toast({
+        title: "Booking failed",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -374,6 +446,9 @@ const BookingSection = () => {
         throw new Error(data.error);
       }
 
+      // Clear any pending assessment from localStorage
+      localStorage.removeItem('pending_assessment_id');
+      
       setBookingResult(data.appointment);
       setStep('success');
       
@@ -565,9 +640,16 @@ const BookingSection = () => {
                 </button>
                 
                 <h3 className="font-display text-xl font-semibold mb-2">Your Details</h3>
-                <p className="text-sm text-muted-foreground mb-6">
+                <p className="text-sm text-muted-foreground mb-4">
                   {selectedDate?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at {selectedTime && formatTimeDisplay(selectedTime)}
                 </p>
+
+                {existingAssessmentId && (
+                  <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-3 rounded-lg mb-6">
+                    <Check className="w-5 h-5" />
+                    <span className="text-sm font-medium">Assessment already completed</span>
+                  </div>
+                )}
 
                 <div className="space-y-4">
                   <div>
@@ -610,10 +692,24 @@ const BookingSection = () => {
                     size="lg"
                     className="w-full mt-4"
                     onClick={handleContinueToAssessment}
-                    disabled={!formData.name || !formData.email || !formData.company}
+                    disabled={!formData.name || !formData.email || !formData.company || isSubmitting}
                   >
-                    Continue to Assessment
-                    <ChevronRight className="w-5 h-5 ml-2" />
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                        Booking...
+                      </>
+                    ) : existingAssessmentId ? (
+                      <>
+                        Confirm Booking
+                        <Check className="w-5 h-5 ml-2" />
+                      </>
+                    ) : (
+                      <>
+                        Continue to Assessment
+                        <ChevronRight className="w-5 h-5 ml-2" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
