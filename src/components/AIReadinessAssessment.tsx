@@ -345,9 +345,14 @@ const AIReadinessAssessment = () => {
 
       if (error) throw error;
 
-      // Store assessment ID in localStorage for booking flow to link
+      // Store assessment data in sessionStorage for booking flow to link (with TTL)
       if (data) {
-        localStorage.setItem('pending_assessment_id', data.id);
+        const pendingAssessment = {
+          id: data.id,
+          createdAt: Date.now(),
+          source: 'assessment_results'
+        };
+        sessionStorage.setItem('pending_assessment', JSON.stringify(pendingAssessment));
       }
 
       // Scroll to booking section

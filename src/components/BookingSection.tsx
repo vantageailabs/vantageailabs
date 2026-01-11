@@ -217,11 +217,25 @@ const BookingSection = () => {
 
   const { toast } = useToast();
   
-  // Check localStorage for pending assessment on mount
+  // Check sessionStorage for pending assessment on mount (with TTL validation)
   useEffect(() => {
-    const pendingId = localStorage.getItem('pending_assessment_id');
-    if (pendingId) {
-      setExistingAssessmentId(pendingId);
+    try {
+      const pendingData = sessionStorage.getItem('pending_assessment');
+      if (pendingData) {
+        const parsed = JSON.parse(pendingData);
+        const TTL_MS = 30 * 60 * 1000; // 30 minutes
+        const isExpired = Date.now() - parsed.createdAt > TTL_MS;
+        
+        if (isExpired) {
+          // Clear expired assessment
+          sessionStorage.removeItem('pending_assessment');
+        } else if (parsed.id) {
+          setExistingAssessmentId(parsed.id);
+        }
+      }
+    } catch (e) {
+      // Invalid JSON or missing data, clear it
+      sessionStorage.removeItem('pending_assessment');
     }
   }, []);
   const { availableSlots, isDateAvailable, formatTimeDisplay, loading, settings } = useAvailableSlots(selectedDate);
@@ -309,8 +323,8 @@ const BookingSection = () => {
         throw new Error(data.error);
       }
 
-      // Clear the pending assessment from localStorage
-      localStorage.removeItem('pending_assessment_id');
+      // Clear the pending assessment from sessionStorage
+      sessionStorage.removeItem('pending_assessment');
       setExistingAssessmentId(null);
 
       setBookingResult(data.appointment);
@@ -446,8 +460,8 @@ const BookingSection = () => {
         throw new Error(data.error);
       }
 
-      // Clear any pending assessment from localStorage
-      localStorage.removeItem('pending_assessment_id');
+      // Clear any pending assessment from sessionStorage
+      sessionStorage.removeItem('pending_assessment');
       
       setBookingResult(data.appointment);
       setStep('success');
@@ -645,9 +659,21 @@ const BookingSection = () => {
                 </p>
 
                 {existingAssessmentId && (
-                  <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-3 rounded-lg mb-6">
-                    <Check className="w-5 h-5" />
-                    <span className="text-sm font-medium">Assessment already completed</span>
+                  <div className="flex items-center justify-between bg-primary/10 text-primary px-4 py-3 rounded-lg mb-6">
+                    <div className="flex items-center gap-2">
+                      <Check className="w-5 h-5" />
+                      <span className="text-sm font-medium">Assessment already completed</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sessionStorage.removeItem('pending_assessment');
+                        setExistingAssessmentId(null);
+                      }}
+                      className="text-xs underline hover:no-underline opacity-80 hover:opacity-100"
+                    >
+                      Start over
+                    </button>
                   </div>
                 )}
 
