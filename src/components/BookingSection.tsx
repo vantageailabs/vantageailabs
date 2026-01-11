@@ -217,8 +217,8 @@ const BookingSection = () => {
 
   const { toast } = useToast();
   
-  // Check sessionStorage for pending assessment on mount (with TTL validation)
-  useEffect(() => {
+  // Helper to read and validate pending assessment from sessionStorage
+  const readPendingAssessment = (): string | null => {
     try {
       const pendingData = sessionStorage.getItem('pending_assessment');
       if (pendingData) {
@@ -227,15 +227,22 @@ const BookingSection = () => {
         const isExpired = Date.now() - parsed.createdAt > TTL_MS;
         
         if (isExpired) {
-          // Clear expired assessment
           sessionStorage.removeItem('pending_assessment');
-        } else if (parsed.id) {
-          setExistingAssessmentId(parsed.id);
+          return null;
         }
+        return parsed.id || null;
       }
     } catch (e) {
-      // Invalid JSON or missing data, clear it
       sessionStorage.removeItem('pending_assessment');
+    }
+    return null;
+  };
+  
+  // Check sessionStorage for pending assessment on mount
+  useEffect(() => {
+    const pendingId = readPendingAssessment();
+    if (pendingId) {
+      setExistingAssessmentId(pendingId);
     }
   }, []);
   const { availableSlots, isDateAvailable, formatTimeDisplay, loading, settings } = useAvailableSlots(selectedDate);
@@ -280,9 +287,13 @@ const BookingSection = () => {
 
   const handleContinueToAssessment = () => {
     if (formData.name && formData.email && formData.company) {
-      // If user already completed standalone assessment, skip to booking
-      if (existingAssessmentId) {
-        handleBookingWithExistingAssessment();
+      // Re-check sessionStorage in case user just clicked "Schedule Call" from standalone assessment
+      const freshPendingId = readPendingAssessment();
+      if (freshPendingId) {
+        setExistingAssessmentId(freshPendingId);
+        handleBookingWithExistingAssessment(freshPendingId);
+      } else if (existingAssessmentId) {
+        handleBookingWithExistingAssessment(existingAssessmentId);
       } else {
         setStep('assessment');
         setAssessmentStep(0);
@@ -291,7 +302,8 @@ const BookingSection = () => {
   };
 
   // Handle booking when assessment was already completed in standalone flow
-  const handleBookingWithExistingAssessment = async () => {
+  const handleBookingWithExistingAssessment = async (assessmentId?: string) => {
+    const idToUse = assessmentId || existingAssessmentId;
     if (!selectedDate || !selectedTime || !formData.name || !formData.email) {
       toast({
         title: "Missing information",
@@ -313,7 +325,7 @@ const BookingSection = () => {
           guest_name: formData.name,
           guest_email: formData.email,
           guest_phone: formData.phone || undefined,
-          assessment_id: existingAssessmentId,
+          assessment_id: idToUse,
         },
       });
 
@@ -525,9 +537,29 @@ const BookingSection = () => {
                 <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Check className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="font-display text-2xl font-bold mb-4">Booking Confirmed!</h3>
+                <h3 className="font-display text-2xl font-bold mb-4">You're All Set! 🎉</h3>
+                
+                {/* Show scheduled date/time */}
+                {selectedDate && selectedTime && (
+                  <div className="bg-muted/50 rounded-lg p-4 mb-6 inline-block">
+                    <p className="text-sm text-muted-foreground mb-1">Your strategy call is scheduled for</p>
+                    <p className="font-semibold text-lg">
+                      {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                    </p>
+                    <p className="font-semibold text-lg text-primary">
+                      {formatTimeDisplay(selectedTime)}
+                    </p>
+                  </div>
+                )}
+                
+                {/* Assessment completed indicator */}
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-6">
+                  <Check className="w-4 h-4 text-primary" />
+                  <span>Assessment completed — results included in your confirmation email</span>
+                </div>
+                
                 <p className="text-muted-foreground mb-6">
-                  We've sent a confirmation email with all the meeting details.
+                  Check your email for the meeting details and your AI Readiness Assessment results.
                 </p>
                 {bookingResult?.meeting_join_url && (
                   <Button
@@ -620,12 +652,12 @@ const BookingSection = () => {
                       {isSubmitting ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                          Booking...
+                          Scheduling...
                         </>
                       ) : (
                         <>
-                          Confirm Booking
-                          <Check className="w-5 h-5 ml-2" />
+                          Schedule Call
+                          <Calendar className="w-5 h-5 ml-2" />
                         </>
                       )}
                     </Button>
