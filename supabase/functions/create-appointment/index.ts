@@ -325,10 +325,15 @@ serve(async (req) => {
     // Create the Google Calendar event with Meet link
     const startDateTime = `${appointmentData.appointment_date}T${appointmentData.appointment_time}:00`;
     
-    console.log('Getting Google access token...');
+    // The calendar ID is typically the email of the calendar owner for workspace calendars
+    // We need to impersonate this user for domain-wide delegation to work
+    const impersonateEmail = calendarId.includes('@') ? calendarId : 'zach@vantageailabs.com';
+    
+    console.log('Getting Google access token with impersonation:', impersonateEmail);
     const accessToken = await getGoogleAccessToken(
       serviceAccount,
-      ['https://www.googleapis.com/auth/calendar']
+      ['https://www.googleapis.com/auth/calendar'],
+      impersonateEmail
     );
     
     console.log('Creating Google Calendar event with Meet...');
