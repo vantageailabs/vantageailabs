@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
+import Assessment from "./pages/Assessment";
 import CancelAppointment from "./pages/CancelAppointment";
 import RescheduleAppointment from "./pages/RescheduleAppointment";
 import NotFound from "./pages/NotFound";
@@ -23,6 +24,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/assessment" element={<Assessment />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/privacy" element={<Privacy />} />
