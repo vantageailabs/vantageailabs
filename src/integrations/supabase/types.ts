@@ -574,7 +574,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      appointment_availability: {
+        Row: {
+          appointment_date: string | null
+          appointment_time: string | null
+          duration_minutes: number | null
+        }
+        Insert: {
+          appointment_date?: string | null
+          appointment_time?: string | null
+          duration_minutes?: number | null
+        }
+        Update: {
+          appointment_date?: string | null
+          appointment_time?: string | null
+          duration_minutes?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
