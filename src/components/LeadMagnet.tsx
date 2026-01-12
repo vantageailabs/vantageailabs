@@ -17,17 +17,30 @@ const LeadMagnet = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase
+      // Save email to lead_submissions
+      const { error: dbError } = await supabase
         .from('lead_submissions')
         .insert({
           email: email.trim(),
           source: 'lead_magnet'
         });
 
-      if (error) throw error;
+      if (dbError) throw dbError;
+      
+      // Send the playbook email
+      const { error: emailError } = await supabase.functions.invoke('send-playbook-email', {
+        body: { email: email.trim() }
+      });
+
+      if (emailError) {
+        console.error('Error sending playbook email:', emailError);
+        // Still show success since we saved their email
+        toast.success("You're signed up! If you don't see the email, check spam.");
+      } else {
+        toast.success("Check your email for the AI Playbook!");
+      }
       
       setIsSubmitted(true);
-      toast.success("Check your email for the free guide!");
     } catch (error) {
       console.error('Error submitting lead:', error);
       toast.error("Something went wrong. Please try again.");
