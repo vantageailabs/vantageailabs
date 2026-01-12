@@ -1,9 +1,13 @@
 // Shared Google authentication helper for edge functions
 // Supports domain-wide delegation for impersonating workspace users
 
-// Helper: Base64URL encode (handles UTF-8 characters)
+// Helper: Base64URL encode (for ASCII strings and binary data)
 export function base64url(str: string): string {
-  // Encode string to UTF-8 bytes first, then base64
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+// Helper: Base64URL encode UTF-8 strings (handles emojis and special characters)
+export function base64urlUtf8(str: string): string {
   const utf8Bytes = new TextEncoder().encode(str);
   let binary = '';
   for (let i = 0; i < utf8Bytes.length; i++) {

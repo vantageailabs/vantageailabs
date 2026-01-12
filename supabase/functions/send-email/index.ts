@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { getGoogleAccessToken, base64url } from "../_shared/google-auth.ts";
+import { getGoogleAccessToken, base64urlUtf8 } from "../_shared/google-auth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -82,8 +82,8 @@ serve(async (req) => {
     // Build RFC822 email
     const rfc822Email = buildRfc822Email(senderEmail, to, toName, subject, htmlBody);
     
-    // Base64URL encode the email for Gmail API
-    const encodedEmail = base64url(rfc822Email);
+    // Base64URL encode the email for Gmail API (using UTF-8 version for emoji support)
+    const encodedEmail = base64urlUtf8(rfc822Email);
 
     // Send via Gmail API
     const gmailResponse = await fetch(
