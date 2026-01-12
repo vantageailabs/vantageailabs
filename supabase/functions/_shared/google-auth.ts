@@ -1,9 +1,15 @@
 // Shared Google authentication helper for edge functions
 // Supports domain-wide delegation for impersonating workspace users
 
-// Helper: Base64URL encode
+// Helper: Base64URL encode (handles UTF-8 characters)
 export function base64url(str: string): string {
-  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  // Encode string to UTF-8 bytes first, then base64
+  const utf8Bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < utf8Bytes.length; i++) {
+    binary += String.fromCharCode(utf8Bytes[i]);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 // Get Google access token using service account with optional impersonation
