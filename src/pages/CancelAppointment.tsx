@@ -74,18 +74,14 @@ export default function CancelAppointment() {
     setError(null);
 
     try {
-      const response = await supabase.functions.invoke('cancel-appointment', {
-        body: null,
-        headers: {},
-      });
-
-      // The function expects the token as a query param, so we need to call it directly
-      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cancel-appointment?token=${token}`;
+      // Send token in POST body for security (avoids URL parameter leakage in logs/referrers)
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cancel-appointment`;
       const result = await fetch(functionUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ token }),
       });
 
       const data = await result.json();

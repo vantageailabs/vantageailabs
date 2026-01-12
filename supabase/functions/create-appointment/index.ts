@@ -7,6 +7,39 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Validation patterns
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^[\d\s\-+()]{7,20}$/;
+
+function isValidUUID(str: string): boolean {
+  return UUID_REGEX.test(str);
+}
+
+function isValidDate(str: string): boolean {
+  if (!DATE_REGEX.test(str)) return false;
+  const date = new Date(str);
+  return !isNaN(date.getTime());
+}
+
+function isValidTime(str: string): boolean {
+  return TIME_REGEX.test(str);
+}
+
+function isValidEmail(str: string): boolean {
+  return EMAIL_REGEX.test(str) && str.length <= 254;
+}
+
+function isValidPhone(str: string): boolean {
+  return PHONE_REGEX.test(str);
+}
+
+function sanitizeString(str: string, maxLength: number = 500): string {
+  return str.trim().slice(0, maxLength);
+}
+
 interface AppointmentRequest {
   appointment_date: string; // YYYY-MM-DD
   appointment_time: string; // HH:MM (24-hour format)
@@ -267,9 +300,64 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const appointmentData: AppointmentRequest = await req.json();
+    const rawData = await req.json();
     
-    console.log('Creating appointment:', appointmentData);
+    // Validate required fields
+    if (!rawData.appointment_date || !rawData.appointment_time || !rawData.guest_name || !rawData.guest_email) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required fields: appointment_date, appointment_time, guest_name, guest_email' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate and sanitize input
+    if (!isValidDate(rawData.appointment_date)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid date format. Use YYYY-MM-DD' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!isValidTime(rawData.appointment_time)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid time format. Use HH:MM (24-hour)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!isValidEmail(rawData.guest_email)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid email format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (rawData.guest_phone && !isValidPhone(rawData.guest_phone)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid phone format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (rawData.assessment_id && !isValidUUID(rawData.assessment_id)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid assessment ID format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Sanitize string inputs
+    const appointmentData: AppointmentRequest = {
+      appointment_date: rawData.appointment_date,
+      appointment_time: rawData.appointment_time,
+      guest_name: sanitizeString(rawData.guest_name, 100),
+      guest_email: rawData.guest_email.trim().toLowerCase(),
+      guest_phone: rawData.guest_phone ? sanitizeString(rawData.guest_phone, 20) : undefined,
+      notes: rawData.notes ? sanitizeString(rawData.notes, 1000) : undefined,
+      assessment_id: rawData.assessment_id,
+    };
+    
+    console.log('Creating appointment:', { ...appointmentData, guest_email: '[REDACTED]' });
 
     // Get admin settings for duration and timezone
     const { data: settings, error: settingsError } = await supabase
