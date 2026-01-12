@@ -7,6 +7,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// UUID v4 validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isValidUUID(str: string): boolean {
+  return UUID_REGEX.test(str);
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -14,12 +21,35 @@ serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const token = url.searchParams.get('token');
+    // Accept token from POST body (preferred for security) or URL params (legacy support)
+    let token: string | null = null;
+    
+    if (req.method === 'POST') {
+      try {
+        const body = await req.json();
+        token = body?.token || null;
+      } catch {
+        // If body parsing fails, fall back to URL params
+      }
+    }
+    
+    // Fallback to URL params for backwards compatibility
+    if (!token) {
+      const url = new URL(req.url);
+      token = url.searchParams.get('token');
+    }
 
     if (!token) {
       return new Response(
         JSON.stringify({ error: 'Missing cancel token' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate token format to prevent injection attacks
+    if (!isValidUUID(token)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid token format' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

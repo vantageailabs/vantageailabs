@@ -7,6 +7,29 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// UUID v4 validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// Date format validation (YYYY-MM-DD)
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+// Time format validation (HH:MM)
+const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+function isValidUUID(str: string): boolean {
+  return UUID_REGEX.test(str);
+}
+
+function isValidDate(str: string): boolean {
+  if (!DATE_REGEX.test(str)) return false;
+  const date = new Date(str);
+  return !isNaN(date.getTime());
+}
+
+function isValidTime(str: string): boolean {
+  return TIME_REGEX.test(str);
+}
+
 interface RescheduleRequest {
   token: string;
   new_date: string; // YYYY-MM-DD
@@ -40,6 +63,7 @@ serve(async (req) => {
   }
 
   // Handle GET request to fetch appointment details
+  // For GET requests, we accept token from URL params (read-only operation)
   if (req.method === 'GET') {
     try {
       const url = new URL(req.url);
@@ -48,6 +72,14 @@ serve(async (req) => {
       if (!token) {
         return new Response(
           JSON.stringify({ error: 'Missing token parameter' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Validate token format
+      if (!isValidUUID(token)) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid token format' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -90,6 +122,28 @@ serve(async (req) => {
     if (!token || !new_date || !new_time) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields: token, new_date, new_time' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate all input formats
+    if (!isValidUUID(token)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid token format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!isValidDate(new_date)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid date format. Use YYYY-MM-DD' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!isValidTime(new_time)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid time format. Use HH:MM (24-hour)' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
