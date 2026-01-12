@@ -43,12 +43,16 @@ const AboutSection = () => {
 
             <div className="space-y-4 text-muted-foreground text-lg leading-relaxed mb-8">
               <p>
-                I started this journey because I saw too many small business owners drowning in repetitive
-                tasks—spending hours on work that could be automated in seconds.
+                I started this journey after five years in corporate America, where I watched the biggest companies 
+                in the world move at a snail's pace—resistant to automation, hesitant to adopt AI, and clinging to 
+                outdated processes. Despite having the resources, there was a fundamental unwillingness to embrace 
+                the technological future ahead.
               </p>
               <p>
-                After five years in the workforce, building systems for enterprise companies, I realized the same
-                powerful AI tools should be available to everyone, not just corporations with massive budgets.
+                So I turned to small businesses, expecting more flexibility and innovation. Instead, I discovered 
+                something that shocked me: countless business owners buried in manual, mundane tasks. Critical 
+                automation opportunities missed. Important processes falling through the cracks. And too many 
+                trying to force their unique workflows into antiquated software that was never built for them.
               </p>
               <p>
                 <span className="text-foreground font-medium">My mission is simple:</span> help business owners reclaim
