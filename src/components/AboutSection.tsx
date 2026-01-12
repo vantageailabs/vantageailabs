@@ -1,10 +1,11 @@
 import { CheckCircle2 } from "lucide-react";
 
 const credentials = [
-  "10+ years in software development & automation",
+  "5+ years in software development & automation",
+  "Small Business Owner using AI & custom sofware daily",
   "Helped 50+ businesses implement AI solutions",
-  "Former tech lead at Fortune 500 company",
-  "Passionate about making AI accessible to all",
+  "Former Center of Excellence Manager at Fortune 500 company",
+  "Passionate about making AI & software accessible to all",
 ];
 
 const AboutSection = () => {
@@ -46,8 +47,8 @@ const AboutSection = () => {
                 tasks—spending hours on work that could be automated in seconds.
               </p>
               <p>
-                After a decade in tech, building systems for enterprise companies, I realized the same powerful AI tools
-                should be available to everyone, not just corporations with massive budgets.
+                After five years in the workforce, building systems for enterprise companies, I realized the same
+                powerful AI tools should be available to everyone, not just corporations with massive budgets.
               </p>
               <p>
                 <span className="text-foreground font-medium">My mission is simple:</span> help business owners reclaim
@@ -66,8 +67,8 @@ const AboutSection = () => {
 
             <div className="p-6 bg-muted/50 rounded-xl border border-border/50">
               <p className="italic text-muted-foreground">
-                "I believe every business deserves access to the same AI advantages that big companies have. Let me show
-                you what's possible."
+                "I believe every business deserves access to the advantages of AI and custom software. Let me show you
+                what's possible."
               </p>
               <p className="mt-3 font-semibold text-foreground">— Zach, Founder</p>
             </div>
