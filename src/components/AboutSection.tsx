@@ -1,4 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
+import founderPhoto from "@/assets/founder-photo.jpg";
 
 const credentials = [
   "5+ years in software development & automation",
@@ -15,16 +16,12 @@ const AboutSection = () => {
         <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image Side */}
           <div className="relative">
-            <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
-              {/* Placeholder for founder photo */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="w-32 h-32 mx-auto rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center mb-4">
-                    <span className="text-4xl font-display font-bold text-primary">JD</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Replace with founder photo</p>
-                </div>
-              </div>
+          <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
+              <img 
+                src={founderPhoto} 
+                alt="Zach, Founder of Vantage AI Solutions" 
+                className="w-full h-full object-cover object-top"
+              />
             </div>
             {/* Decorative elements */}
             <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-primary/10 rounded-2xl -z-10" />
