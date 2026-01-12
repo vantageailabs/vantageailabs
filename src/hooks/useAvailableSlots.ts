@@ -94,20 +94,20 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
       // Get existing appointments for this date
       const dateStr = selectedDate.toISOString().split('T')[0];
       
-      // Fetch appointments and Google Calendar events in parallel
-      const [appointmentsResult, calendarResult] = await Promise.all([
+      // Fetch appointment availability (via secure view) and Google Calendar events in parallel
+      // Using appointment_availability view which only exposes date/time/duration (no PII)
+      const [availabilityResult, calendarResult] = await Promise.all([
         supabase
-          .from('appointments')
+          .from('appointment_availability' as any)
           .select('appointment_time')
-          .eq('appointment_date', dateStr)
-          .neq('status', 'cancelled'),
+          .eq('appointment_date', dateStr),
         supabase.functions.invoke('fetch-calendar-events', {
           body: { date: dateStr, timezone: settings.timezone }
         })
       ]);
 
       const bookedTimes = new Set(
-        appointmentsResult.data?.map(a => a.appointment_time.slice(0, 5)) || []
+        availabilityResult.data?.map((a: any) => a.appointment_time.slice(0, 5)) || []
       );
 
       // Extract busy periods from Google Calendar
