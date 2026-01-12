@@ -1,12 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Download, Users, ClipboardList, ChevronRight } from 'lucide-react';
+import { Mail, Download, Users, ClipboardList, ChevronRight, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { LeadDetailModal } from './LeadDetailModal';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface Lead {
   id: string;
@@ -24,10 +31,13 @@ interface Lead {
   timeline?: string | null;
 }
 
+type FilterType = 'all' | 'lead_magnet' | 'assessment';
+
 export function LeadsList() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [filterType, setFilterType] = useState<FilterType>('all');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -92,15 +102,21 @@ export function LeadsList() {
     fetchLeads();
   }, []);
 
+  // Filter leads based on selected filter type
+  const filteredLeads = useMemo(() => {
+    if (filterType === 'all') return leads;
+    return leads.filter(lead => lead.type === filterType);
+  }, [leads, filterType]);
+
   const exportLeads = () => {
-    if (leads.length === 0) {
+    if (filteredLeads.length === 0) {
       toast({ title: 'No leads to export', variant: 'destructive' });
       return;
     }
 
     const csv = [
       ['Email', 'Source', 'Type', 'Score', 'Date'],
-      ...leads.map((lead) => [
+      ...filteredLeads.map((lead) => [
         lead.email,
         lead.source || '',
         lead.type,
@@ -126,24 +142,43 @@ export function LeadsList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-muted-foreground">{leads.length} total leads</p>
-        <Button variant="outline" onClick={exportLeads} disabled={leads.length === 0}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={filterType} onValueChange={(value: FilterType) => setFilterType(value)}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Leads</SelectItem>
+                <SelectItem value="lead_magnet">Lead Magnet</SelectItem>
+                <SelectItem value="assessment">Assessment</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="text-muted-foreground text-sm">
+            {filteredLeads.length} {filterType === 'all' ? 'total' : filterType.replace('_', ' ')} leads
+          </p>
+        </div>
+        <Button variant="outline" onClick={exportLeads} disabled={filteredLeads.length === 0}>
           <Download className="h-4 w-4 mr-2" />
           Export CSV
         </Button>
       </div>
 
-      {leads.length === 0 ? (
+      {filteredLeads.length === 0 ? (
         <Card className="border-border/50">
           <CardContent className="py-12 text-center">
             <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">No leads yet</p>
+            <p className="text-muted-foreground">
+              {filterType === 'all' ? 'No leads yet' : `No ${filterType.replace('_', ' ')} leads found`}
+            </p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-2">
-          {leads.map((lead) => (
+          {filteredLeads.map((lead) => (
             <Card 
               key={lead.id} 
               className="border-border/50 cursor-pointer hover:bg-muted/50 transition-colors"
