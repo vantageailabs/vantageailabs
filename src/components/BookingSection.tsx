@@ -59,7 +59,7 @@ const BookingSection = () => {
     }
   }, []);
   
-  const { availableSlots, isDateAvailable, formatTimeDisplay, loading, settings } = useAvailableSlots(selectedDate);
+  const { availableSlots, isDateAvailable, formatTimeDisplay, loading, loadingSlots, settings } = useAvailableSlots(selectedDate);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -497,7 +497,12 @@ const BookingSection = () => {
                       <h3 className="font-display font-semibold mb-4">
                         Available times for {selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </h3>
-                      {availableSlots.length > 0 ? (
+                      {loadingSlots ? (
+                        <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                          <Loader2 className="w-6 h-6 animate-spin mb-2" />
+                          <span className="text-sm">Fetching available time slots...</span>
+                        </div>
+                      ) : availableSlots.length > 0 ? (
                         <>
                           <div className="grid grid-cols-2 gap-2 mb-6 max-h-64 overflow-y-auto">
                             {availableSlots.map(time => (

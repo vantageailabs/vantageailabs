@@ -47,6 +47,7 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
   const [settings, setSettings] = useState<AdminSettings | null>(null);
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [calendarConfigured, setCalendarConfigured] = useState(false);
 
   // Fetch working hours, settings, and blocked dates on mount
@@ -78,6 +79,7 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
     const generateSlots = async () => {
       if (!selectedDate || !settings || workingHours.length === 0) {
         setAvailableSlots([]);
+        setLoadingSlots(false);
         return;
       }
 
@@ -149,8 +151,12 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
       }
 
       setAvailableSlots(slots);
+      setLoadingSlots(false);
     };
 
+    if (selectedDate && settings && workingHours.length > 0) {
+      setLoadingSlots(true);
+    }
     generateSlots();
   }, [selectedDate, workingHours, settings]);
 
@@ -194,6 +200,7 @@ export const useAvailableSlots = (selectedDate: Date | null) => {
     isDateAvailable,
     formatTimeDisplay,
     loading,
+    loadingSlots,
     settings,
     blockedDates,
     calendarConfigured,
