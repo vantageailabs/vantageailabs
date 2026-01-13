@@ -2,11 +2,11 @@ import { CheckCircle2 } from "lucide-react";
 import founderPhoto from "@/assets/founder-photo.jpg";
 
 const credentials = [
-  "5+ years in software development & automation",
-  "Small Business Owner using AI & custom sofware daily",
+  "Over 5 years in software development and automation",
+  "Small business owner using AI and custom software daily",
   "Helped 50+ businesses implement AI solutions",
-  "Former Center of Excellence Manager at Fortune 500 company",
-  "Passionate about making AI & software accessible to all",
+  "Former Center of Excellence Manager at a Fortune 500 company",
+  "Passionate about making AI and software accessible to all",
 ];
 
 const AboutSection = () => {
@@ -71,7 +71,7 @@ const AboutSection = () => {
                 "I believe every business deserves access to the advantages of AI and custom software. Let me show you
                 what's possible."
               </p>
-              <p className="mt-3 font-semibold text-foreground">— Zach, Founder</p>
+              <p className="mt-3 font-semibold text-foreground">Zach, Founder</p>
             </div>
           </div>
         </div>
