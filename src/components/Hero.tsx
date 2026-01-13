@@ -3,6 +3,7 @@ import { ArrowRight, Zap, Play } from "lucide-react";
 import premierPaintLogo from "@/assets/premier-paint-logo.png";
 import elevation180Logo from "@/assets/elevation180-logo.png";
 import bestBuyDrugsLogo from "@/assets/best-buy-drugs-logo.png";
+import chenLegalLogo from "@/assets/chen-legal-logo.png";
 
 const Hero = () => {
   const scrollToBooking = () => {
@@ -60,9 +61,10 @@ const Hero = () => {
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-muted-foreground animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                {[1, 2].map((i) => (
-                  <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/50 to-accent/50 border-2 border-background" />
-                ))}
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/50 to-accent/50 border-2 border-background" />
+                <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden bg-white">
+                  <img src={chenLegalLogo} alt="Chen Legal Services" className="w-full h-full object-cover" />
+                </div>
                 <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden bg-white">
                   <img src={bestBuyDrugsLogo} alt="Best Buy Drugs" className="w-full h-full object-cover" />
                 </div>
