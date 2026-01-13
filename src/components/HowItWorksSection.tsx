@@ -50,9 +50,9 @@ const HowItWorksSection = () => {
             
             {steps.map((step, index) => (
               <div key={index} className="relative group">
-                {/* Mobile connector */}
+                {/* Mobile connector - centered under the number circles */}
                 {index < steps.length - 1 && (
-                  <div className="md:hidden absolute left-8 top-20 bottom-0 w-0.5 bg-gradient-to-b from-primary/40 to-primary/10 -mb-8" />
+                  <div className="md:hidden absolute left-1/2 -translate-x-[1px] top-20 bottom-0 w-0.5 bg-gradient-to-b from-primary/40 to-primary/10 -mb-8" />
                 )}
                 
                 <div className="flex flex-col items-center text-center">

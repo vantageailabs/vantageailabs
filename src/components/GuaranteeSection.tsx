@@ -41,8 +41,8 @@ const GuaranteeSection = () => {
 
         {/* Main Guarantee Card */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="relative p-8 md:p-12 bg-card rounded-2xl border-2 border-primary/30 shadow-lg">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-primary text-primary-foreground rounded-full font-semibold text-sm">
+          <div className="relative pt-10 md:pt-8 p-8 md:p-12 bg-card rounded-2xl border-2 border-primary/30 shadow-lg">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 md:px-6 py-2 bg-primary text-primary-foreground rounded-full font-semibold text-xs md:text-sm whitespace-nowrap">
               Our Promise to You
             </div>
             <div className="text-center">
