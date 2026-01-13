@@ -2,11 +2,11 @@ import { CheckCircle2 } from "lucide-react";
 import founderPhoto from "@/assets/founder-photo.jpg";
 
 const credentials = [
-  "Over 5 years in software development and automation",
-  "Small business owner using AI and custom software daily",
-  "Helped 50+ businesses implement AI solutions",
-  "Former Center of Excellence Manager at a Fortune 500 company",
-  "Passionate about making AI and software accessible to all",
+  "5+ years in software development & automation",
+  "Small Business Owner using AI & custom sofware daily",
+  "Helped 20+ businesses implement AI solutions",
+  "Former Center of Excellence Manager at Fortune 500 company",
+  "Passionate about making AI & software accessible to all",
 ];
 
 const AboutSection = () => {
@@ -16,10 +16,10 @@ const AboutSection = () => {
         <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image Side */}
           <div className="relative">
-          <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
-              <img 
-                src={founderPhoto} 
-                alt="Zach, Founder of Vantage AI Solutions" 
+            <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
+              <img
+                src={founderPhoto}
+                alt="Zach, Founder of Vantage AI Solutions"
                 className="w-full h-full object-cover object-top"
               />
             </div>
@@ -40,20 +40,20 @@ const AboutSection = () => {
 
             <div className="space-y-4 text-muted-foreground text-lg leading-relaxed mb-8">
               <p>
-                I started this journey after five years in corporate America, where I watched the biggest companies 
-                in the world move at a snail's pace. They were resistant to automation, hesitant to adopt AI, and clinging to 
-                outdated processes. Despite having the resources, there was a fundamental unwillingness to embrace 
-                the technological future ahead.
+                I started this journey after five years in corporate America, where I watched the biggest companies in
+                the world move at a snail's pace—resistant to automation, hesitant to adopt AI, and clinging to outdated
+                processes. Despite having the resources, there was a fundamental unwillingness to embrace the
+                technological future ahead.
               </p>
               <p>
-                So I turned to small businesses, expecting more flexibility and innovation. Instead, I discovered 
-                something that shocked me: countless business owners buried in manual, mundane tasks. Critical 
-                automation opportunities missed. Important processes falling through the cracks. And too many 
-                trying to force their unique workflows into antiquated software that was never built for them.
+                So I turned to small businesses, expecting more flexibility and innovation. Instead, I discovered
+                something that shocked me: countless business owners buried in manual, mundane tasks. Critical
+                automation opportunities missed. Important processes falling through the cracks. And too many trying to
+                force their unique workflows into antiquated software that was never built for them.
               </p>
               <p>
                 <span className="text-foreground font-medium">My mission is simple:</span> help business owners reclaim
-                their time so they can focus on what they do best. Growing their business and serving their customers.
+                their time so they can focus on what they do best—growing their business and serving their customers.
               </p>
             </div>
 
@@ -71,7 +71,7 @@ const AboutSection = () => {
                 "I believe every business deserves access to the advantages of AI and custom software. Let me show you
                 what's possible."
               </p>
-              <p className="mt-3 font-semibold text-foreground">Zach, Founder</p>
+              <p className="mt-3 font-semibold text-foreground">— Zach, Founder</p>
             </div>
           </div>
         </div>
