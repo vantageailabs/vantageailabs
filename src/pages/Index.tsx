@@ -15,7 +15,7 @@ import { CapacityBanner } from "@/components/CapacityBanner";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background pt-[48px]">
+    <div className="min-h-screen bg-background pt-24 md:pt-[48px]">
       <CapacityBanner />
       <Navbar />
       <Hero />
