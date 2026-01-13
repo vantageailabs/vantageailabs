@@ -1,18 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Play } from "lucide-react";
-import premierPaintLogo from "@/assets/premier-paint-logo.png";
-import elevation180Logo from "@/assets/elevation180-logo.png";
-import bestBuyDrugsLogo from "@/assets/best-buy-drugs-logo.png";
-import chenLegalLogo from "@/assets/chen-legal-logo.png";
-import canyonClubLogo from "@/assets/canyon-club-logo.png";
 
 const Hero = () => {
   const scrollToBooking = () => {
-    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const scrollToAssessment = () => {
-    document.getElementById('assessment')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById("assessment")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -20,7 +15,10 @@ const Hero = () => {
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
+        <div
+          className="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float"
+          style={{ animationDelay: "-3s" }}
+        />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
       </div>
 
@@ -41,13 +39,20 @@ const Hero = () => {
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            We build custom AI solutions that automate your busywork, 
-            <span className="text-foreground font-medium"> cut operational costs by 40%</span>, and free you to scale without hiring.
+          <p
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 animate-slide-up"
+            style={{ animationDelay: "0.1s" }}
+          >
+            We build custom AI solutions that automate your busywork,
+            <span className="text-foreground font-medium"> cut operational costs by 40%</span>, and free you to scale
+            without hiring.
           </p>
 
           {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-slide-up"
+            style={{ animationDelay: "0.2s" }}
+          >
             <Button variant="hero" size="xl" onClick={scrollToBooking} className="group">
               Book Your Free Strategy Call
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -59,26 +64,20 @@ const Hero = () => {
           </div>
 
           {/* Social proof */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-muted-foreground animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <div
+            className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 text-muted-foreground animate-fade-in"
+            style={{ animationDelay: "0.4s" }}
+          >
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden bg-white">
-                  <img src={canyonClubLogo} alt="Canyon Club" className="w-full h-full object-cover" />
-                </div>
-                <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden bg-white">
-                  <img src={chenLegalLogo} alt="Chen Legal Services" className="w-full h-full object-cover" />
-                </div>
-                <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden bg-white">
-                  <img src={bestBuyDrugsLogo} alt="Best Buy Drugs" className="w-full h-full object-cover" />
-                </div>
-                <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden bg-white">
-                  <img src={elevation180Logo} alt="Elevation180" className="w-full h-full object-cover" />
-                </div>
-                <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden bg-white">
-                  <img src={premierPaintLogo} alt="Premier Paint" className="w-full h-full object-cover" />
-                </div>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div
+                    key={i}
+                    className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/50 to-accent/50 border-2 border-background"
+                  />
+                ))}
               </div>
-              <span className="text-sm">50+ Businesses Transformed</span>
+              <span className="text-sm">20+ Businesses Transformed</span>
             </div>
             <div className="hidden md:block w-px h-6 bg-border" />
             <div className="text-sm">
