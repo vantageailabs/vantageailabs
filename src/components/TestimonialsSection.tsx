@@ -24,11 +24,11 @@ const testimonials = [
     previewComponent: "elevation180",
   },
   {
-    quote: "I was skeptical about AI automation. But they built a system that handles our entire invoicing and follow-up process. I've literally gotten 25 hours of my week back.",
+    quote: "I was skeptical about AI automation. But they built a system that handles our entire invoicing and follow-up process. I've literally gotten 10 hours of my week back.",
     name: "Marcus Chen",
     role: "CEO",
     company: "Chen Legal Services",
-    result: "25 hours saved weekly",
+    result: "10 hours saved weekly",
     avatar: "MC",
     previewComponent: "chenLegal",
   },

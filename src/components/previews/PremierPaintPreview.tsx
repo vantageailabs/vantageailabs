@@ -19,9 +19,9 @@ const PremierPaintPreview = () => {
           <h2 className="text-2xl font-bold">Premier Paint Inventory</h2>
           <p className="text-slate-400 text-sm">Real-time warehouse management</p>
         </div>
-        <div className="flex items-center gap-2 text-emerald-400 text-sm">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          Live Sync
+        <div className="flex items-center gap-2 bg-slate-800 text-slate-400 text-xs px-3 py-1.5 rounded-full">
+          <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+          Mock Data
         </div>
       </div>
 
