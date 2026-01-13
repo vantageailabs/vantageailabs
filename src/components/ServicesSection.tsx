@@ -21,9 +21,9 @@ const services = [
   },
   {
     icon: Target,
-    title: "Lead Generation Systems",
-    description: "Automated outreach, follow-ups, and CRM integrations that fill your pipeline.",
-    highlight: "3x your qualified leads",
+    title: "Lead Capture & Follow-Up",
+    description: "Automated forms, instant responses, and smart follow-up sequences that convert visitors into customers.",
+    highlight: "Never lose a lead again",
   },
   {
     icon: Shield,
