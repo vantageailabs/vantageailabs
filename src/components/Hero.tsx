@@ -35,7 +35,7 @@ const Hero = () => {
 
           {/* Main headline */}
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 animate-slide-up">
-            Stop Leaving <span className="text-gradient-accent">$100K+</span> On The Table Every Year
+            Stop Leaving <span className="text-gradient-accent">Money</span> On The Table Every Year
           </h1>
 
           {/* Subheadline */}
@@ -77,7 +77,7 @@ const Hero = () => {
                   />
                 ))}
               </div>
-              <span className="text-sm">20+ Businesses Transformed</span>
+              <span className="text-sm">50+ Businesses Transformed</span>
             </div>
             <div className="hidden md:block w-px h-6 bg-border" />
             <div className="text-sm">
