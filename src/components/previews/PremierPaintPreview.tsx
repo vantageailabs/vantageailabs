@@ -1,4 +1,4 @@
-import { Package, TrendingDown, DollarSign, BarChart3, AlertTriangle, CheckCircle, ArrowDown, ArrowUp } from "lucide-react";
+import { Package, TrendingDown, DollarSign, BarChart3, AlertTriangle, CheckCircle, ArrowDown, ArrowUp, Truck, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
@@ -8,7 +8,19 @@ const PremierPaintPreview = () => {
     { name: "Benjamin Moore Regal Select", sku: "BM-RS-INT-01", stock: 89, max: 150, location: "B-04", status: "low" },
     { name: "PPG Diamond Interior", sku: "PPG-DI-EGG", stock: 156, max: 200, location: "A-08", status: "optimal" },
     { name: "Behr Premium Plus", sku: "BHR-PP-SAT", stock: 12, max: 100, location: "C-15", status: "critical" },
-    { name: "Dunn-Edwards Aristoshield", sku: "DE-AS-EXT", stock: 78, max: 120, location: "D-02", status: "optimal" },
+  ];
+
+  const warehouseZones = [
+    { zone: "A", name: "Interior Paints", utilization: 87, capacity: "2,400 gal" },
+    { zone: "B", name: "Exterior Paints", utilization: 62, capacity: "1,800 gal" },
+    { zone: "C", name: "Specialty Coatings", utilization: 45, capacity: "900 gal" },
+    { zone: "D", name: "Primers & Sealers", utilization: 78, capacity: "1,200 gal" },
+  ];
+
+  const incomingDeliveries = [
+    { supplier: "Sherwin-Williams", items: 48, eta: "Today, 2:30 PM", status: "in-transit" },
+    { supplier: "Benjamin Moore", items: 24, eta: "Tomorrow, 9:00 AM", status: "scheduled" },
+    { supplier: "PPG Industries", items: 36, eta: "Jan 15, 10:30 AM", status: "scheduled" },
   ];
 
   return (
@@ -26,7 +38,7 @@ const PremierPaintPreview = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card className="bg-slate-900/50 border-slate-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
@@ -78,34 +90,77 @@ const PremierPaintPreview = () => {
         </Card>
       </div>
 
-      {/* Year over Year Chart Mockup */}
-      <Card className="bg-slate-900/50 border-slate-800 mb-6">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-300">Waste Budget: Year Over Year</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-end gap-2 h-24">
-            {[65, 58, 48, 42, 35, 28, 22, 18, 15, 13, 12, 11].map((height, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div 
-                  className="w-full bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-sm transition-all"
-                  style={{ height: `${height}%` }}
-                />
-                <span className="text-[10px] text-slate-500">{['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}</span>
+      {/* Two Column Layout */}
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
+        {/* Warehouse Utilization */}
+        <Card className="bg-slate-900/50 border-slate-800">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-blue-400" />
+              <CardTitle className="text-sm font-medium text-slate-300">Warehouse Utilization</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {warehouseZones.map((zone, i) => (
+              <div key={i} className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded bg-slate-800 flex items-center justify-center text-xs font-bold text-blue-400">
+                      {zone.zone}
+                    </span>
+                    <span className="text-white">{zone.name}</span>
+                  </div>
+                  <span className="text-slate-400">{zone.capacity}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full ${
+                        zone.utilization > 80 ? 'bg-amber-500' : 
+                        zone.utilization > 60 ? 'bg-blue-500' : 'bg-emerald-500'
+                      }`}
+                      style={{ width: `${zone.utilization}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-slate-400 w-10 text-right">{zone.utilization}%</span>
+                </div>
               </div>
             ))}
-          </div>
-          <div className="flex items-center justify-between mt-4 text-xs text-slate-400">
-            <span>Previous Year: $62,000</span>
-            <span className="text-emerald-400 font-medium">Current Year: $12,400 (-80%)</span>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        {/* Incoming Deliveries */}
+        <Card className="bg-slate-900/50 border-slate-800">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <Truck className="w-4 h-4 text-emerald-400" />
+              <CardTitle className="text-sm font-medium text-slate-300">Incoming Deliveries</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {incomingDeliveries.map((delivery, i) => (
+              <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-white">{delivery.supplier}</p>
+                  <p className="text-xs text-slate-400">{delivery.items} units • {delivery.eta}</p>
+                </div>
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  delivery.status === 'in-transit' 
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                    : 'bg-slate-700/50 text-slate-400 border border-slate-600/50'
+                }`}>
+                  {delivery.status === 'in-transit' ? 'In Transit' : 'Scheduled'}
+                </span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Inventory Table */}
       <Card className="bg-slate-900/50 border-slate-800">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-slate-300">Live Inventory Levels</CardTitle>
+          <CardTitle className="text-sm font-medium text-slate-300">Inventory Levels</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
