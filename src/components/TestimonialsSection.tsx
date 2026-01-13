@@ -2,12 +2,12 @@ import { Star, Quote } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "We were drowning in customer inquiries. Within 2 weeks of implementing their AI chatbot, response times dropped from hours to seconds—and we're closing 40% more leads.",
-    name: "Sarah Mitchell",
+    quote: "We've been in business for over 30 years and spent years trying to bundle our proprietary work into a SaaS for passive income. Now over half our business comes from the platform that was built for us.",
+    name: "Jerry",
     role: "Founder",
-    company: "Coastal Property Management",
-    result: "40% more leads closed",
-    avatar: "SM",
+    company: "Elevation180",
+    result: "50%+ revenue from SaaS",
+    avatar: "JE",
   },
   {
     quote: "I was skeptical about AI automation. But they built a system that handles our entire invoicing and follow-up process. I've literally gotten 25 hours of my week back.",
