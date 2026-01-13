@@ -13,6 +13,7 @@ import Assessment from "./pages/Assessment";
 import CancelAppointment from "./pages/CancelAppointment";
 import RescheduleAppointment from "./pages/RescheduleAppointment";
 import NotFound from "./pages/NotFound";
+import BusinessCard from "./pages/BusinessCard";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/cancel-appointment" element={<CancelAppointment />} />
           <Route path="/reschedule" element={<RescheduleAppointment />} />
+          <Route path="/business-card" element={<BusinessCard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
