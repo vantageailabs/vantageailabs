@@ -1,6 +1,7 @@
 import { Star, Quote } from "lucide-react";
 import premierPaintLogo from "@/assets/premier-paint-logo.png";
 import elevation180Logo from "@/assets/elevation180-logo.png";
+import chenLegalLogo from "@/assets/chen-legal-logo.png";
 
 const testimonials = [
   {
@@ -84,6 +85,10 @@ const TestimonialsSection = () => {
                 ) : testimonial.avatar === "JE" ? (
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-border">
                     <img src={elevation180Logo} alt="Elevation180" className="w-full h-full object-cover" />
+                  </div>
+                ) : testimonial.avatar === "MC" ? (
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-border">
+                    <img src={chenLegalLogo} alt="Chen Legal Services" className="w-full h-full object-cover" />
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">
