@@ -1,7 +1,17 @@
-import { Star, Quote } from "lucide-react";
+import { useState } from "react";
+import { Star, Quote, ExternalLink } from "lucide-react";
 import premierPaintLogo from "@/assets/premier-paint-logo.png";
 import elevation180Logo from "@/assets/elevation180-logo.png";
 import chenLegalLogo from "@/assets/chen-legal-logo.png";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import PremierPaintPreview from "./previews/PremierPaintPreview";
+import ChenLegalPreview from "./previews/ChenLegalPreview";
+import Elevation180Preview from "./previews/Elevation180Preview";
 
 const testimonials = [
   {
@@ -11,6 +21,7 @@ const testimonials = [
     company: "Elevation180",
     result: "50%+ revenue from SaaS",
     avatar: "JE",
+    previewComponent: "elevation180",
   },
   {
     quote: "I was skeptical about AI automation. But they built a system that handles our entire invoicing and follow-up process. I've literally gotten 25 hours of my week back.",
@@ -19,6 +30,7 @@ const testimonials = [
     company: "Chen Legal Services",
     result: "25 hours saved weekly",
     avatar: "MC",
+    previewComponent: "chenLegal",
   },
   {
     quote: "Our new inventory system has allowed us to better locate our inventory in the warehouse causing an 80% reduction in our waste budget, keep 20% less inventory on hand while still servicing customers at a high level, and has saved countless hours of headaches related to inventory.",
@@ -27,10 +39,26 @@ const testimonials = [
     company: "Premier Paint",
     result: "80% waste reduction",
     avatar: "JP",
+    previewComponent: "premierPaint",
   },
 ];
 
 const TestimonialsSection = () => {
+  const [selectedTestimonial, setSelectedTestimonial] = useState<typeof testimonials[0] | null>(null);
+
+  const renderPreview = (previewComponent: string) => {
+    switch (previewComponent) {
+      case "premierPaint":
+        return <PremierPaintPreview />;
+      case "chenLegal":
+        return <ChenLegalPreview />;
+      case "elevation180":
+        return <Elevation180Preview />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <section id="testimonials" className="py-20 md:py-32 bg-muted/30 relative">
       <div className="container px-4">
@@ -50,7 +78,8 @@ const TestimonialsSection = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="card-elevated p-6 group hover:border-primary/30 transition-all duration-500 flex flex-col"
+              onClick={() => setSelectedTestimonial(testimonial)}
+              className="card-elevated p-6 group hover:border-primary/30 transition-all duration-500 flex flex-col cursor-pointer"
             >
               {/* Quote icon */}
               <div className="mb-4">
@@ -101,11 +130,30 @@ const TestimonialsSection = () => {
                     {testimonial.role}, {testimonial.company}
                   </p>
                 </div>
+                {/* View Preview hint */}
+                <div className="flex items-center gap-1 text-primary/60 group-hover:text-primary text-xs mt-2 transition-colors">
+                  <ExternalLink className="w-3 h-3" />
+                  <span>View what we built</span>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Preview Dialog */}
+      <Dialog open={!!selectedTestimonial} onOpenChange={() => setSelectedTestimonial(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+          <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-xl">
+              Built for {selectedTestimonial?.company}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="p-4">
+            {selectedTestimonial && renderPreview(selectedTestimonial.previewComponent)}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
