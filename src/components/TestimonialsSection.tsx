@@ -18,12 +18,12 @@ const testimonials = [
     avatar: "MC",
   },
   {
-    quote: "The ROI was insane. Their lead gen automation paid for itself in the first month. We went from 50 to 150+ qualified leads per month with the same team size.",
-    name: "Jennifer Okafor",
-    role: "Marketing Director",
-    company: "GrowthPath Consulting",
-    result: "3x lead generation",
-    avatar: "JO",
+    quote: "Our new inventory system has allowed us to better locate our inventory in the warehouse causing an 80% reduction in our waste budget, keep 20% less inventory on hand while still servicing customers at a high level, and has saved countless hours of headaches related to inventory.",
+    name: "John",
+    role: "Owner",
+    company: "Premier Paint",
+    result: "80% waste reduction",
+    avatar: "JP",
   },
 ];
 
