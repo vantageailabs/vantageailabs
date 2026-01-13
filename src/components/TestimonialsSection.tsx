@@ -1,4 +1,5 @@
 import { Star, Quote } from "lucide-react";
+import premierPaintLogo from "@/assets/premier-paint-logo.png";
 
 const testimonials = [
   {
@@ -75,9 +76,15 @@ const TestimonialsSection = () => {
 
               {/* Author */}
               <div className="flex items-center gap-3 pt-4 border-t border-border/50">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">
-                  {testimonial.avatar}
-                </div>
+                {testimonial.avatar === "JP" ? (
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-border">
+                    <img src={premierPaintLogo} alt="Premier Paint" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">
+                    {testimonial.avatar}
+                  </div>
+                )}
                 <div>
                   <p className="font-semibold text-sm">{testimonial.name}</p>
                   <p className="text-muted-foreground text-xs">
