@@ -33,7 +33,7 @@ const serviceCategories: ServiceCategoryData[] = [
     tiers: [
       {
         name: "Starter",
-        price: "$2,500",
+        price: "$1,500",
         priceNote: "one-time",
         description: "Perfect for new businesses needing a professional online presence.",
         icon: Sparkles,
