@@ -1,7 +1,16 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Play } from "lucide-react";
+import { ArrowRight, Zap, Play, Shield, CheckCircle, Clock, Headphones } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Hero = () => {
+  const [guaranteeOpen, setGuaranteeOpen] = useState(false);
+
   const scrollToBooking = () => {
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -50,7 +59,7 @@ const Hero = () => {
 
           {/* CTA buttons */}
           <div
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-slide-up"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 animate-slide-up"
             style={{ animationDelay: "0.2s" }}
           >
             <Button variant="hero" size="xl" onClick={scrollToBooking} className="group">
@@ -62,6 +71,78 @@ const Hero = () => {
               Take the Assessment
             </Button>
           </div>
+
+          {/* Guarantee teaser */}
+          <button
+            onClick={() => setGuaranteeOpen(true)}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-12 animate-slide-up group"
+            style={{ animationDelay: "0.3s" }}
+          >
+            <Shield className="w-4 h-4 text-accent" />
+            <span>Backed by our <span className="text-accent font-medium">Risk-Free Guarantee</span></span>
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+          </button>
+
+          {/* Guarantee Dialog */}
+          <Dialog open={guaranteeOpen} onOpenChange={setGuaranteeOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-xl">
+                  <Shield className="w-6 h-6 text-accent" />
+                  Our Risk-Free Guarantee
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                  <h3 className="font-semibold text-lg text-accent mb-2">Results or Your Money Back</h3>
+                  <p className="text-sm text-muted-foreground">
+                    If you don't see measurable improvement in efficiency within 60 days of implementation, 
+                    we'll refund your investment in full—no questions asked.
+                  </p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-sm">100% Satisfaction</p>
+                      <p className="text-xs text-muted-foreground">Unlimited revisions until you're thrilled</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-sm">On-Time Delivery</p>
+                      <p className="text-xs text-muted-foreground">We meet deadlines or you don't pay</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Headphones className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-sm">30-Day Support</p>
+                      <p className="text-xs text-muted-foreground">Free post-launch support included</p>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-center text-sm font-medium text-muted-foreground pt-2 border-t">
+                  Zero risk. 100% peace of mind.
+                </p>
+
+                <Button 
+                  variant="hero" 
+                  className="w-full" 
+                  onClick={() => {
+                    setGuaranteeOpen(false);
+                    scrollToBooking();
+                  }}
+                >
+                  Book Your Free Strategy Call
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Social proof */}
           <div
