@@ -16,7 +16,8 @@ import {
   Mail,
   Download,
   TrendingUp,
-  Trash2
+  Trash2,
+  UserCheck
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -86,21 +87,40 @@ const timelineLabels: Record<string, string> = {
 
 export function AssessmentsList() {
   const [assessments, setAssessments] = useState<AssessmentResponse[]>([]);
+  const [convertedAssessmentIds, setConvertedAssessmentIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchAssessments = async () => {
-    const { data, error } = await supabase
-      .from('assessment_responses')
-      .select('*, appointments(id, status)')
-      .order('created_at', { ascending: false });
+    // Fetch assessments and clients in parallel
+    const [assessmentsRes, clientsRes] = await Promise.all([
+      supabase
+        .from('assessment_responses')
+        .select('*, appointments(id, status)')
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('clients')
+        .select('assessment_id')
+        .not('assessment_id', 'is', null)
+    ]);
 
-    if (error) {
-      toast({ title: 'Error loading assessments', description: error.message, variant: 'destructive' });
+    if (assessmentsRes.error) {
+      toast({ title: 'Error loading assessments', description: assessmentsRes.error.message, variant: 'destructive' });
     } else {
-      setAssessments((data as AssessmentResponse[]) || []);
+      setAssessments((assessmentsRes.data as AssessmentResponse[]) || []);
     }
+
+    // Build set of converted assessment IDs
+    if (clientsRes.data) {
+      const convertedIds = new Set(
+        clientsRes.data
+          .map(c => c.assessment_id)
+          .filter((id): id is string => id !== null)
+      );
+      setConvertedAssessmentIds(convertedIds);
+    }
+
     setLoading(false);
   };
 
@@ -208,7 +228,12 @@ export function AssessmentsList() {
                   <Badge className={getScoreColor(assessment.overall_score)}>
                     {assessment.overall_score}/100 - {getScoreLabel(assessment.overall_score)}
                   </Badge>
-                  {assessment.appointment_id ? (
+                  {convertedAssessmentIds.has(assessment.id) ? (
+                    <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
+                      <UserCheck className="h-3 w-3 mr-1" />
+                      Converted to Client
+                    </Badge>
+                  ) : assessment.appointment_id ? (
                     assessment.appointments?.status === 'cancelled' ? (
                       <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
                         <Calendar className="h-3 w-3 mr-1" />
