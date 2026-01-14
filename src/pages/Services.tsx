@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard } from "lucide-react";
+import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard, Clock, Calendar, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -427,6 +427,136 @@ const Services = () => {
                 <div className="text-3xl font-bold">$25</div>
                 <div className="text-sm text-muted-foreground">/month</div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Support Section */}
+        <div className="mt-20 max-w-5xl mx-auto">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-4">
+            Ongoing <span className="text-gradient-accent">Support</span>
+          </h2>
+          <p className="text-center text-muted-foreground mb-4">
+            Keep your digital presence running smoothly with flexible support options.
+          </p>
+          
+          {/* 30-day free support banner */}
+          <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 mb-8 text-center">
+            <p className="text-sm font-medium">
+              <span className="text-primary">✓</span> All Starter, Professional, and Enterprise packages include{" "}
+              <span className="font-bold text-primary">30 days of free full support</span>
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Pay-As-You-Go */}
+            <div className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors">
+              <div className="text-center mb-6">
+                <div className="inline-flex p-3 rounded-xl bg-muted mb-4">
+                  <Clock className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <h3 className="font-display text-xl font-bold mb-2">Pay-As-You-Go</h3>
+                <div className="mb-2">
+                  <span className="text-3xl font-bold">$100</span>
+                  <span className="text-sm text-muted-foreground ml-1">/hour</span>
+                </div>
+                <p className="text-sm text-muted-foreground">For occasional updates and fixes</p>
+              </div>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>No commitment required</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Billed in 30-min increments</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>48-hour response time</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Email support</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Monthly Retainer */}
+            <div className="bg-primary/5 border-2 border-primary rounded-2xl p-6 relative">
+              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
+                Best Value
+              </Badge>
+              <div className="text-center mb-6">
+                <div className="inline-flex p-3 rounded-xl bg-primary/20 mb-4">
+                  <Calendar className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-display text-xl font-bold mb-2">Monthly Retainer</h3>
+                <div className="mb-2">
+                  <span className="text-3xl font-bold">$300</span>
+                  <span className="text-sm text-muted-foreground ml-1">/month</span>
+                </div>
+                <p className="text-sm text-muted-foreground">5 hours included ($60/hr value)</p>
+              </div>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>5 hours of support included</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Rollover unused hours (up to 10)</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>24-hour response time</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Email & phone support</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Monthly check-in call</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Priority Support */}
+            <div className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors">
+              <div className="text-center mb-6">
+                <div className="inline-flex p-3 rounded-xl bg-muted mb-4">
+                  <Headphones className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <h3 className="font-display text-xl font-bold mb-2">Priority Support</h3>
+                <div className="mb-2">
+                  <span className="text-3xl font-bold">$500</span>
+                  <span className="text-sm text-muted-foreground ml-1">/month</span>
+                </div>
+                <p className="text-sm text-muted-foreground">10 hours included ($50/hr value)</p>
+              </div>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>10 hours of support included</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Same-day response</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Dedicated Slack channel</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Priority in queue</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Weekly strategy calls</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
