@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, Zap, Rocket } from "lucide-react";
+import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -379,8 +379,59 @@ const Services = () => {
           ))}
         </div>
 
-        {/* Add-ons Section */}
+        {/* Hosting & Maintenance Section */}
         <div className="mt-20 max-w-4xl mx-auto">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-4">
+            Hosting & <span className="text-gradient-accent">Maintenance</span>
+          </h2>
+          <p className="text-center text-muted-foreground mb-8">
+            Keep your website secure, fast, and up-to-date with our monthly maintenance package.
+          </p>
+          <div className="bg-card border-2 border-primary/30 rounded-2xl p-8 shadow-lg">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-xl bg-primary/10">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-display text-xl font-bold mb-2">Monthly Care Package</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Everything you need to keep your website running smoothly.
+                  </p>
+                  <ul className="grid sm:grid-cols-2 gap-2">
+                    <li className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>Secure cloud hosting</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>SSL certificate</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>Daily backups</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>Minor content updates</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span>Technical support</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="text-center md:text-right">
+                <div className="text-3xl font-bold">$25</div>
+                <div className="text-sm text-muted-foreground">/month</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Add-ons Section */}
+        <div className="mt-16 max-w-4xl mx-auto">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
             Add-ons & <span className="text-gradient-accent">Extras</span>
           </h2>
@@ -388,7 +439,7 @@ const Services = () => {
             <div className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 rounded-lg bg-muted">
-                  <Sparkles className="h-5 w-5 text-primary" />
+                  <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-semibold">Google Business Profile</h3>
               </div>
