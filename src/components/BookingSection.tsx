@@ -10,6 +10,7 @@ import { CalendarScarcity } from "@/components/CalendarScarcity";
 import AssessmentFlow from "@/components/assessment/AssessmentFlow";
 import { calculateAssessmentResults, type AssessmentResults, type CategoryResult } from "@/lib/assessmentQuestions";
 import { formatPhoneNumber } from "@/lib/formatPhone";
+import { useFormAnalytics } from "@/hooks/useFormAnalytics";
 
 const BookingSection = () => {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const BookingSection = () => {
   const [existingAssessmentId, setExistingAssessmentId] = useState<string | null>(null);
 
   const { toast } = useToast();
+  const { trackStep, trackFieldBlur, trackPartialData, trackAssessmentQuestion, trackComplete } = useFormAnalytics();
   
   // Helper to read and validate pending assessment from sessionStorage
   const readPendingAssessment = (): string | null => {
@@ -98,6 +100,7 @@ const BookingSection = () => {
   const handleContinueToForm = () => {
     if (selectedDate && selectedTime) {
       setStep('form');
+      trackStep('form');
     }
   };
 
@@ -112,6 +115,7 @@ const BookingSection = () => {
         handleBookingWithExistingAssessment(existingAssessmentId);
       } else {
         setStep('assessment');
+        trackStep('assessment');
       }
     }
   };
@@ -153,6 +157,9 @@ const BookingSection = () => {
       // Clear the pending assessment from sessionStorage
       sessionStorage.removeItem('pending_assessment');
       setExistingAssessmentId(null);
+      
+      // Track completion
+      trackComplete();
 
       // Redirect to confirmation page
       const meetUrl = data.appointment?.meeting_join_url ? encodeURIComponent(data.appointment.meeting_join_url) : '';
@@ -235,6 +242,9 @@ const BookingSection = () => {
       // Clear any pending assessment from sessionStorage
       sessionStorage.removeItem('pending_assessment');
       
+      // Track completion
+      trackComplete();
+      
       // Redirect to confirmation page
       const meetUrl = data.appointment?.meeting_join_url ? encodeURIComponent(data.appointment.meeting_join_url) : '';
       navigate(`/booking-confirmed?date=${dateStr}&time=${selectedTime}${meetUrl ? `&meet=${meetUrl}` : ''}`);
@@ -294,6 +304,7 @@ const BookingSection = () => {
                 onComplete={handleAssessmentComplete}
                 onBack={() => setStep('form')}
                 isSubmitting={isSubmitting}
+                onQuestionChange={trackAssessmentQuestion}
               />
             ) : step === 'form' ? (
               <div className="max-w-md mx-auto">
@@ -334,7 +345,11 @@ const BookingSection = () => {
                     <label className="text-sm font-medium mb-1 block">Name *</label>
                     <Input
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, name: e.target.value });
+                        trackPartialData('name', e.target.value);
+                      }}
+                      onBlur={() => trackFieldBlur('name', !!formData.name)}
                       placeholder="Your full name"
                     />
                   </div>
@@ -343,7 +358,11 @@ const BookingSection = () => {
                     <Input
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, email: e.target.value });
+                        trackPartialData('email', e.target.value);
+                      }}
+                      onBlur={() => trackFieldBlur('email', !!formData.email)}
                       placeholder="your@email.com"
                     />
                   </div>
@@ -352,6 +371,7 @@ const BookingSection = () => {
                     <Input
                       value={formData.company}
                       onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      onBlur={() => trackFieldBlur('company', !!formData.company)}
                       placeholder="Your company name"
                     />
                   </div>
@@ -361,6 +381,7 @@ const BookingSection = () => {
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
+                      onBlur={() => trackFieldBlur('phone', !!formData.phone)}
                       placeholder="(555) 123-4567"
                     />
                   </div>

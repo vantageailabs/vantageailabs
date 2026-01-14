@@ -37,9 +37,10 @@ interface AssessmentFlowProps {
   onComplete: (results: AssessmentResults & { categories: CategoryResult[] }, answers: Record<string, string>, additionalNotes?: string) => void;
   onBack?: () => void;
   isSubmitting?: boolean;
+  onQuestionChange?: (questionNumber: number) => void;
 }
 
-const AssessmentFlow = ({ mode, onComplete, onBack, isSubmitting = false }: AssessmentFlowProps) => {
+const AssessmentFlow = ({ mode, onComplete, onBack, isSubmitting = false, onQuestionChange }: AssessmentFlowProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
@@ -66,7 +67,9 @@ const AssessmentFlow = ({ mode, onComplete, onBack, isSubmitting = false }: Asse
 
   const handleNext = () => {
     if (currentStep < assessmentQuestions.length - 1) {
-      setCurrentStep((prev) => prev + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      onQuestionChange?.(nextStep + 1); // 1-indexed for display
     } else {
       // Last question - behavior depends on mode
       if (mode === "booking") {
@@ -82,7 +85,9 @@ const AssessmentFlow = ({ mode, onComplete, onBack, isSubmitting = false }: Asse
 
   const handleBack = () => {
     if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
+      const prevStep = currentStep - 1;
+      setCurrentStep(prevStep);
+      onQuestionChange?.(prevStep + 1); // 1-indexed for display
     } else if (onBack) {
       onBack();
     }
