@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { formatPhoneNumber } from "@/lib/formatPhone";
 import { 
   Mail, 
   Database, 
@@ -613,7 +614,7 @@ const AIReadinessAssessment = () => {
                           type="tel"
                           placeholder="(555) 123-4567"
                           value={contactInfo.phone}
-                          onChange={(e) => setContactInfo(prev => ({ ...prev, phone: e.target.value }))}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, phone: formatPhoneNumber(e.target.value) }))}
                         />
                       </div>
                     </div>
