@@ -496,16 +496,24 @@ const Services = () => {
                   <span className="text-3xl font-bold">$300</span>
                   <span className="text-sm text-muted-foreground ml-1">/month</span>
                 </div>
-                <p className="text-sm text-muted-foreground">5 hours included ($60/hr value)</p>
+                <p className="text-sm text-muted-foreground">Includes hosting + 5 hrs support</p>
               </div>
               <ul className="space-y-3 mb-6">
-                <li className="flex items-start gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span>5 hours of support included</span>
+                <li className="flex items-start gap-2 text-sm font-medium text-primary">
+                  <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>Monthly Care Package included</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Rollover unused hours (up to 10)</span>
+                  <span>Secure hosting & SSL</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Daily backups</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>5 hours of support included</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
