@@ -377,6 +377,57 @@ export type Database = {
         }
         Relationships: []
       }
+      form_analytics: {
+        Row: {
+          abandoned: boolean | null
+          assessment_question_number: number | null
+          completed: boolean | null
+          created_at: string | null
+          current_step: string
+          fields_completed: string[] | null
+          id: string
+          last_field_focused: string | null
+          partial_email: string | null
+          partial_name: string | null
+          session_id: string
+          step_started_at: string | null
+          time_on_step_seconds: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          abandoned?: boolean | null
+          assessment_question_number?: number | null
+          completed?: boolean | null
+          created_at?: string | null
+          current_step: string
+          fields_completed?: string[] | null
+          id?: string
+          last_field_focused?: string | null
+          partial_email?: string | null
+          partial_name?: string | null
+          session_id: string
+          step_started_at?: string | null
+          time_on_step_seconds?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          abandoned?: boolean | null
+          assessment_question_number?: number | null
+          completed?: boolean | null
+          created_at?: string | null
+          current_step?: string
+          fields_completed?: string[] | null
+          id?: string
+          last_field_focused?: string | null
+          partial_email?: string | null
+          partial_name?: string | null
+          session_id?: string
+          step_started_at?: string | null
+          time_on_step_seconds?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       lead_submissions: {
         Row: {
           created_at: string
