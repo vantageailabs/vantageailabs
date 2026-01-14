@@ -101,10 +101,12 @@ export function ConvertLeadModal({ open, onClose, onConverted }: Props) {
       supabase.from('appointments').select('*').order('appointment_date', { ascending: false }),
     ]);
 
-    // Filter out already converted ones
+    // Filter out already converted ones and cancelled appointments
     setLeads((leadsRes.data || []).filter((l: Lead) => !usedLeadIds.includes(l.id)));
     setAssessments((assessmentsRes.data || []).filter((a: Assessment) => !usedAssessmentIds.includes(a.id)));
-    setAppointments((appointmentsRes.data || []).filter((a: Appointment) => !usedAppointmentIds.includes(a.id)));
+    setAppointments((appointmentsRes.data || []).filter((a: Appointment) => 
+      !usedAppointmentIds.includes(a.id) && a.status !== 'cancelled'
+    ));
     
     setLoading(false);
   };

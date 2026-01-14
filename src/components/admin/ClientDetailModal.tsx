@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -306,6 +317,27 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
     }
   };
 
+  const handleDelete = async () => {
+    if (!client?.id) return;
+    
+    setSaving(true);
+    try {
+      // Delete related records first
+      await supabase.from('client_services').delete().eq('client_id', client.id);
+      await supabase.from('client_costs').delete().eq('client_id', client.id);
+      
+      const { error } = await supabase.from('clients').delete().eq('id', client.id);
+      if (error) throw error;
+
+      toast({ title: 'Client deleted' });
+      onSaved();
+    } catch (error: any) {
+      toast({ title: 'Error deleting client', description: error.message, variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -540,12 +572,41 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-              {isNew ? 'Create Client' : 'Save Changes'}
-            </Button>
+          <div className="flex justify-between gap-2">
+            {!isNew && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Client
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Client</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete this client? This will also remove all associated services and costs. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+            <div className="flex gap-2 ml-auto">
+              <Button variant="outline" onClick={onClose}>Cancel</Button>
+              <Button onClick={handleSave} disabled={saving}>
+                {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                {isNew ? 'Create Client' : 'Save Changes'}
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
