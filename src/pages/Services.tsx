@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard, Clock, Calendar, Headphones } from "lucide-react";
+import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard, Clock, Calendar, Headphones, Palette, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -562,38 +562,68 @@ const Services = () => {
         </div>
 
         {/* Add-ons Section */}
-        <div className="mt-16 max-w-4xl mx-auto">
+        <div className="mt-16 max-w-5xl mx-auto">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
             Add-ons & <span className="text-gradient-accent">Extras</span>
           </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-colors">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 rounded-lg bg-muted">
                   <MapPin className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-semibold">Google Business Profile</h3>
+                <h3 className="font-semibold text-sm">Google Business Profile</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Complete setup and optimization of your Google Business Profile (Maps) for local visibility.
+              <p className="text-xs text-muted-foreground mb-4">
+                Complete setup and optimization of your Google Business Profile for local visibility.
               </p>
               <div className="flex items-baseline justify-between">
-                <span className="text-2xl font-bold">$300</span>
+                <span className="text-xl font-bold">$300</span>
                 <span className="text-xs text-muted-foreground">one-time</span>
               </div>
             </div>
-            <div className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-colors">
+            <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 rounded-lg bg-muted">
                   <LayoutDashboard className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-semibold">Advanced CMS</h3>
+                <h3 className="font-semibold text-sm">Advanced CMS</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Full content management with blog management, multiple user roles, and unlimited editable pages.
+              <p className="text-xs text-muted-foreground mb-4">
+                Full content management with blog, user roles, and unlimited editable pages.
               </p>
               <div className="flex items-baseline justify-between">
-                <span className="text-2xl font-bold">$350</span>
+                <span className="text-xl font-bold">$350</span>
+                <span className="text-xs text-muted-foreground">one-time</span>
+              </div>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 rounded-lg bg-muted">
+                  <Palette className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-semibold text-sm">Logo & Brand Design</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">
+                Custom logo design with brand guidelines, color palette, and typography.
+              </p>
+              <div className="flex items-baseline justify-between">
+                <span className="text-xl font-bold">$500</span>
+                <span className="text-xs text-muted-foreground">one-time</span>
+              </div>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 rounded-lg bg-muted">
+                  <Search className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-semibold text-sm">SEO Starter Package</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">
+                Keyword research, on-page optimization, and Google Search Console setup.
+              </p>
+              <div className="flex items-baseline justify-between">
+                <span className="text-xl font-bold">$250</span>
                 <span className="text-xs text-muted-foreground">one-time</span>
               </div>
             </div>
