@@ -51,7 +51,7 @@ const serviceCategories: ServiceCategoryData[] = [
       },
       {
         name: "Professional",
-        price: "$7,500",
+        price: "$3000",
         priceNote: "one-time",
         description: "For established businesses ready to stand out and convert more leads.",
         icon: Zap,
@@ -72,7 +72,7 @@ const serviceCategories: ServiceCategoryData[] = [
       },
       {
         name: "Enterprise",
-        price: "$18,000",
+        price: "$7000",
         priceNote: "starting at",
         description: "Full-scale digital presence with advanced functionality and integrations.",
         icon: Rocket,
@@ -300,7 +300,8 @@ const Services = () => {
             Our Services & <span className="text-gradient-accent">Pricing</span>
           </h1>
           <p className="text-lg text-muted-foreground">
-            Transparent pricing for AI-powered solutions that grow your business. Every project includes strategy, implementation, and ongoing support.
+            Transparent pricing for AI-powered solutions that grow your business. Every project includes strategy,
+            implementation, and ongoing support.
           </p>
         </div>
 
@@ -322,9 +323,7 @@ const Services = () => {
         </div>
 
         {/* Category Description */}
-        <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-          {currentCategory.description}
-        </p>
+        <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">{currentCategory.description}</p>
 
         {/* Pricing Tiers */}
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -344,23 +343,13 @@ const Services = () => {
               )}
 
               <div className="text-center mb-6">
-                <div
-                  className={`inline-flex p-3 rounded-xl mb-4 ${
-                    tier.highlighted ? "bg-primary/20" : "bg-muted"
-                  }`}
-                >
-                  <tier.icon
-                    className={`h-6 w-6 ${
-                      tier.highlighted ? "text-primary" : "text-muted-foreground"
-                    }`}
-                  />
+                <div className={`inline-flex p-3 rounded-xl mb-4 ${tier.highlighted ? "bg-primary/20" : "bg-muted"}`}>
+                  <tier.icon className={`h-6 w-6 ${tier.highlighted ? "text-primary" : "text-muted-foreground"}`} />
                 </div>
                 <h3 className="font-display text-xl font-bold mb-2">{tier.name}</h3>
                 <div className="mb-2">
                   <span className="text-3xl md:text-4xl font-bold">{tier.price}</span>
-                  {tier.priceNote && (
-                    <span className="text-sm text-muted-foreground ml-1">{tier.priceNote}</span>
-                  )}
+                  {tier.priceNote && <span className="text-sm text-muted-foreground ml-1">{tier.priceNote}</span>}
                 </div>
                 <p className="text-sm text-muted-foreground">{tier.description}</p>
               </div>
@@ -377,9 +366,7 @@ const Services = () => {
               <Link to="/book">
                 <Button
                   className={`w-full ${
-                    tier.highlighted
-                      ? "bg-primary hover:bg-primary/90"
-                      : "bg-muted hover:bg-muted/80 text-foreground"
+                    tier.highlighted ? "bg-primary hover:bg-primary/90" : "bg-muted hover:bg-muted/80 text-foreground"
                   }`}
                 >
                   {tier.cta}
