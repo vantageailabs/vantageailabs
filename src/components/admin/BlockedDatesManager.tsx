@@ -8,7 +8,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { Calendar as CalendarIcon, Plus, Trash2 } from 'lucide-react';
-import { format, eachDayOfInterval, isBefore, startOfDay } from 'date-fns';
+import { format, eachDayOfInterval, isBefore, startOfDay, parseISO } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 
@@ -58,10 +58,13 @@ export function BlockedDatesManager() {
     const datesToBlock = eachDayOfInterval({ start: startDate, end: endDate });
     
     // Filter out dates that are already blocked
+    // Use date strings directly to avoid timezone issues
     const existingBlockedSet = new Set(blockedDates.map(bd => bd.blocked_date));
-    const newDatesToBlock = datesToBlock.filter(
-      date => !existingBlockedSet.has(format(date, 'yyyy-MM-dd'))
-    );
+    const newDatesToBlock = datesToBlock.filter(date => {
+      // Format using local date to match stored format
+      const dateStr = format(date, 'yyyy-MM-dd');
+      return !existingBlockedSet.has(dateStr);
+    });
 
     if (newDatesToBlock.length === 0) {
       toast({ title: 'All selected dates are already blocked', variant: 'destructive' });
@@ -180,7 +183,7 @@ export function BlockedDatesManager() {
                   <CalendarIcon className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium text-foreground">
-                      {format(new Date(bd.blocked_date), 'EEEE, MMMM d, yyyy')}
+                      {format(parseISO(bd.blocked_date), 'EEEE, MMMM d, yyyy')}
                     </p>
                     {bd.reason && <p className="text-sm text-muted-foreground">{bd.reason}</p>}
                   </div>
