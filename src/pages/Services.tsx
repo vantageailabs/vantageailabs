@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin } from "lucide-react";
+import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -64,6 +64,7 @@ const serviceCategories: ServiceCategoryData[] = [
           "Interactive estimators",
           "Online booking integration",
           "Blog/content section",
+          "Basic CMS dashboard",
           "Analytics dashboard",
           "Speed optimization",
           "3 rounds of revisions",
@@ -448,6 +449,21 @@ const Services = () => {
               </p>
               <div className="flex items-baseline justify-between">
                 <span className="text-2xl font-bold">$300</span>
+                <span className="text-xs text-muted-foreground">one-time</span>
+              </div>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-colors">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 rounded-lg bg-muted">
+                  <LayoutDashboard className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-semibold">Advanced CMS</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Full content management with blog management, multiple user roles, and unlimited editable pages.
+              </p>
+              <div className="flex items-baseline justify-between">
+                <span className="text-2xl font-bold">$350</span>
                 <span className="text-xs text-muted-foreground">one-time</span>
               </div>
             </div>
