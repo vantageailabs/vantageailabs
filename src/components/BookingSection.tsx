@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CalendarScarcity } from "@/components/CalendarScarcity";
 import AssessmentFlow from "@/components/assessment/AssessmentFlow";
 import { calculateAssessmentResults, type AssessmentResults, type CategoryResult } from "@/lib/assessmentQuestions";
+import { formatPhoneNumber } from "@/lib/formatPhone";
 
 const BookingSection = () => {
   const navigate = useNavigate();
@@ -359,8 +360,8 @@ const BookingSection = () => {
                     <Input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+1 (555) 123-4567"
+                      onChange={(e) => setFormData({ ...formData, phone: formatPhoneNumber(e.target.value) })}
+                      placeholder="(555) 123-4567"
                     />
                   </div>
                   

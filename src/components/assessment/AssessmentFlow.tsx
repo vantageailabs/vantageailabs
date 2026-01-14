@@ -28,6 +28,7 @@ import {
   type AssessmentResults,
   type CategoryResult
 } from "@/lib/assessmentQuestions";
+import { formatPhoneNumber } from "@/lib/formatPhone";
 
 export type AssessmentMode = "booking" | "standalone";
 
@@ -265,7 +266,7 @@ const AssessmentFlow = ({ mode, onComplete, onBack, isSubmitting = false }: Asse
                         type="tel"
                         placeholder="(555) 123-4567"
                         value={contactInfo.phone}
-                        onChange={(e) => setContactInfo(prev => ({ ...prev, phone: e.target.value }))}
+                        onChange={(e) => setContactInfo(prev => ({ ...prev, phone: formatPhoneNumber(e.target.value) }))}
                       />
                     </div>
                   </div>
