@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Clock, Mail, Phone, Video, Trash2, ClipboardList } from 'lucide-react';
-import { format } from 'date-fns';
+import { Calendar, Clock, Mail, Phone, Video, Trash2, ClipboardList, Search } from 'lucide-react';
+import { format, parseISO, isAfter, startOfDay } from 'date-fns';
 
 interface Appointment {
   id: string;
@@ -32,7 +35,27 @@ export function AppointmentsList() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [assessmentMap, setAssessmentMap] = useState<Record<string, AssessmentInfo>>({});
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showCancelled, setShowCancelled] = useState(false);
   const { toast } = useToast();
+
+  // Filter and sort appointments
+  const filteredAppointments = useMemo(() => {
+    const today = startOfDay(new Date());
+    
+    return appointments
+      .filter(apt => showCancelled || apt.status !== 'cancelled')
+      .filter(apt => apt.guest_name.toLowerCase().includes(searchQuery.toLowerCase()))
+      .sort((a, b) => {
+        // Sort by date and time ascending (upcoming first)
+        const dateA = parseISO(a.appointment_date);
+        const dateB = parseISO(b.appointment_date);
+        if (dateA.getTime() !== dateB.getTime()) {
+          return dateA.getTime() - dateB.getTime();
+        }
+        return a.appointment_time.localeCompare(b.appointment_time);
+      });
+  }, [appointments, searchQuery, showCancelled]);
 
   const fetchAppointments = async () => {
     const { data, error } = await supabase
@@ -117,7 +140,41 @@ export function AppointmentsList() {
 
   return (
     <div className="space-y-4">
-      {appointments.map((apt) => (
+      {/* Filter toolbar */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch
+            id="show-cancelled"
+            checked={showCancelled}
+            onCheckedChange={setShowCancelled}
+          />
+          <Label htmlFor="show-cancelled" className="text-sm text-muted-foreground">
+            Show cancelled
+          </Label>
+        </div>
+      </div>
+
+      {/* Empty state after filtering */}
+      {filteredAppointments.length === 0 ? (
+        <Card className="border-border/50">
+          <CardContent className="py-12 text-center">
+            <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <p className="text-muted-foreground">
+              {searchQuery ? 'No appointments match your search' : 'No active appointments'}
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        filteredAppointments.map((apt) => (
         <Card key={apt.id} className="border-border/50">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -184,7 +241,8 @@ export function AppointmentsList() {
             </div>
           </CardContent>
         </Card>
-      ))}
+        ))
+      )}
     </div>
   );
 }
