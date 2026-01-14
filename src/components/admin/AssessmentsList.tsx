@@ -31,6 +31,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 
+interface AppointmentInfo {
+  id: string;
+  status: string;
+}
+
 interface AssessmentResponse {
   id: string;
   created_at: string;
@@ -44,6 +49,7 @@ interface AssessmentResponse {
   monthly_revenue: string | null;
   tool_stack: string | null;
   timeline: string | null;
+  appointments?: AppointmentInfo | null;
 }
 
 const businessTypeLabels: Record<string, string> = {
@@ -87,7 +93,7 @@ export function AssessmentsList() {
   const fetchAssessments = async () => {
     const { data, error } = await supabase
       .from('assessment_responses')
-      .select('*')
+      .select('*, appointments(id, status)')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -203,10 +209,17 @@ export function AssessmentsList() {
                     {assessment.overall_score}/100 - {getScoreLabel(assessment.overall_score)}
                   </Badge>
                   {assessment.appointment_id ? (
-                    <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      Has Appointment
-                    </Badge>
+                    assessment.appointments?.status === 'cancelled' ? (
+                      <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        Appointment Cancelled
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        Has Appointment
+                      </Badge>
+                    )
                   ) : (
                     <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
                       No Appointment - Follow Up
