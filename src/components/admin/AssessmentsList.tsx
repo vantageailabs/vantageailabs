@@ -307,9 +307,9 @@ export function AssessmentsList() {
                       <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
                       <AlertDialogDescription>
                         Are you sure you want to delete this assessment? This action cannot be undone.
-                        {assessment.appointment_id && (
+                        {assessment.appointment_id && assessment.appointments?.status !== 'cancelled' && (
                           <span className="block mt-2 text-yellow-600">
-                            Note: This assessment is linked to an appointment. The appointment will remain but lose its assessment data.
+                            Note: This assessment is linked to an active appointment. The appointment will remain but lose its assessment data.
                           </span>
                         )}
                       </AlertDialogDescription>
