@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield } from "lucide-react";
+import { ArrowLeft, Check, Sparkles, Zap, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -52,7 +52,7 @@ const serviceCategories: ServiceCategoryData[] = [
       },
       {
         name: "Professional",
-        price: "$3000",
+        price: "$4,000",
         priceNote: "one-time",
         description: "For established businesses ready to stand out and convert more leads.",
         icon: Zap,
@@ -74,7 +74,7 @@ const serviceCategories: ServiceCategoryData[] = [
       },
       {
         name: "Enterprise",
-        price: "$7000",
+        price: "$7,000",
         priceNote: "starting at",
         description: "Full-scale digital presence with advanced functionality and integrations.",
         icon: Rocket,
@@ -398,43 +398,6 @@ const Services = () => {
               <div className="flex items-baseline justify-between">
                 <span className="text-2xl font-bold">$300</span>
                 <span className="text-xs text-muted-foreground">one-time</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Hosting & Maintenance Section */}
-        <div className="mt-20 max-w-4xl mx-auto">
-          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
-            Hosting & <span className="text-gradient-accent">Maintenance</span>
-          </h2>
-          <div className="bg-card border border-border rounded-xl p-8 hover:border-primary/30 transition-colors">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Shield className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-semibold">Monthly Hosting Package</h3>
-                </div>
-                <ul className="grid sm:grid-cols-2 gap-2">
-                  {[
-                    "Secure cloud hosting",
-                    "SSL certificate",
-                    "Daily backups",
-                    "Minor content updates",
-                    "Technical support"
-                  ].map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="text-center md:text-right">
-                <div className="text-4xl font-bold text-primary">$25</div>
-                <div className="text-sm text-muted-foreground">/month</div>
               </div>
             </div>
           </div>
