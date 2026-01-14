@@ -46,12 +46,12 @@ const AssessmentFlow = ({ mode, onComplete, onBack, isSubmitting = false }: Asse
   const [showEmailCapture, setShowEmailCapture] = useState(false);
   const [contactInfo, setContactInfo] = useState({ name: '', email: '', phone: '' });
 
-  const taskQuestions = assessmentQuestions.filter(q => q.weight > 0);
   const businessQuestions = assessmentQuestions.filter(q => q.weight === 0);
-  const isBusinessPhase = currentStep >= taskQuestions.length;
+  const taskQuestions = assessmentQuestions.filter(q => q.weight > 0);
+  const isBusinessPhase = currentStep < businessQuestions.length;
   const phaseProgress = isBusinessPhase 
-    ? ((currentStep - taskQuestions.length + 1) / businessQuestions.length) * 100
-    : ((currentStep + 1) / taskQuestions.length) * 100;
+    ? ((currentStep + 1) / businessQuestions.length) * 100
+    : ((currentStep - businessQuestions.length + 1) / taskQuestions.length) * 100;
 
   const progress = ((currentStep + 1) / assessmentQuestions.length) * 100;
   const isLastQuestion = currentStep === assessmentQuestions.length - 1;
@@ -431,15 +431,15 @@ const AssessmentFlow = ({ mode, onComplete, onBack, isSubmitting = false }: Asse
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
           <Sparkles className="h-4 w-4" />
-          {isBusinessPhase ? "Almost Done!" : "Free Assessment"}
+          {isBusinessPhase ? "Getting Started" : "Almost Done!"}
         </div>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          {isBusinessPhase ? "Help Us Personalize Your Results" : "Discover Your Automation Opportunities"}
+          {isBusinessPhase ? "Tell Us About Your Business" : "Discover Your Automation Opportunities"}
         </h2>
         <p className="text-lg text-muted-foreground">
           {isBusinessPhase 
-            ? "A few more questions to tailor your automation roadmap"
-            : "Answer a few quick questions to see where AI can save you the most time"
+            ? "A few quick questions to personalize your assessment"
+            : "Now let's see where AI can save you the most time"
           }
         </p>
       </div>
@@ -449,20 +449,20 @@ const AssessmentFlow = ({ mode, onComplete, onBack, isSubmitting = false }: Asse
         <div className="flex justify-between text-sm text-muted-foreground mb-2">
           <span>
             {isBusinessPhase 
-              ? `Business Profile ${currentStep - taskQuestions.length + 1} of ${businessQuestions.length}`
-              : `Task Assessment ${currentStep + 1} of ${taskQuestions.length}`
+              ? `Business Profile ${currentStep + 1} of ${businessQuestions.length}`
+              : `Task Assessment ${currentStep - businessQuestions.length + 1} of ${taskQuestions.length}`
             }
           </span>
           <span>Question {currentStep + 1} of {assessmentQuestions.length}</span>
         </div>
         <div className="flex gap-2">
           <div className="flex-1">
-            <Progress value={isBusinessPhase ? 100 : phaseProgress} className="h-2" />
-            <p className="text-xs text-muted-foreground mt-1">Task Questions</p>
+            <Progress value={isBusinessPhase ? phaseProgress : 100} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-1">Business Profile</p>
           </div>
           <div className="flex-1">
-            <Progress value={isBusinessPhase ? phaseProgress : 0} className="h-2" />
-            <p className="text-xs text-muted-foreground mt-1">Business Profile</p>
+            <Progress value={isBusinessPhase ? 0 : phaseProgress} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-1">Task Questions</p>
           </div>
         </div>
       </div>
