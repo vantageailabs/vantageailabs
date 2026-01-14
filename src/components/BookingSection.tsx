@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar, Clock, Video, ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
@@ -10,13 +11,13 @@ import AssessmentFlow from "@/components/assessment/AssessmentFlow";
 import { calculateAssessmentResults, type AssessmentResults, type CategoryResult } from "@/lib/assessmentQuestions";
 
 const BookingSection = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [step, setStep] = useState<'calendar' | 'form' | 'assessment' | 'success'>('calendar');
+  const [step, setStep] = useState<'calendar' | 'form' | 'assessment'>('calendar');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [bookingResult, setBookingResult] = useState<{ meeting_join_url: string } | null>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -152,8 +153,9 @@ const BookingSection = () => {
       sessionStorage.removeItem('pending_assessment');
       setExistingAssessmentId(null);
 
-      setBookingResult(data.appointment);
-      setStep('success');
+      // Redirect to confirmation page
+      const meetUrl = data.appointment?.meeting_join_url ? encodeURIComponent(data.appointment.meeting_join_url) : '';
+      navigate(`/booking-confirmed?date=${dateStr}&time=${selectedTime}${meetUrl ? `&meet=${meetUrl}` : ''}`);
       
       toast({
         title: "Booking confirmed!",
@@ -232,8 +234,9 @@ const BookingSection = () => {
       // Clear any pending assessment from sessionStorage
       sessionStorage.removeItem('pending_assessment');
       
-      setBookingResult(data.appointment);
-      setStep('success');
+      // Redirect to confirmation page
+      const meetUrl = data.appointment?.meeting_join_url ? encodeURIComponent(data.appointment.meeting_join_url) : '';
+      navigate(`/booking-confirmed?date=${dateStr}&time=${selectedTime}${meetUrl ? `&meet=${meetUrl}` : ''}`);
       
       toast({
         title: "Booking confirmed!",
@@ -284,47 +287,7 @@ const BookingSection = () => {
 
         <div className="max-w-4xl mx-auto">
           <div className="card-elevated p-8">
-            {step === 'success' ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Check className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="font-display text-2xl font-bold mb-4">You're All Set! 🎉</h3>
-                
-                {/* Show scheduled date/time */}
-                {selectedDate && selectedTime && (
-                  <div className="bg-muted/50 rounded-lg p-4 mb-6 inline-block">
-                    <p className="text-sm text-muted-foreground mb-1">Your strategy call is scheduled for</p>
-                    <p className="font-semibold text-lg">
-                      {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-                    </p>
-                    <p className="font-semibold text-lg text-primary">
-                      {formatTimeDisplay(selectedTime)}
-                    </p>
-                  </div>
-                )}
-                
-                {/* Assessment completed indicator */}
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-6">
-                  <Check className="w-4 h-4 text-primary" />
-                  <span>Assessment completed — results included in your confirmation email</span>
-                </div>
-                
-                <p className="text-muted-foreground mb-6">
-                  Check your email for the meeting details and your AI Readiness Assessment results.
-                </p>
-                {bookingResult?.meeting_join_url && (
-                  <Button
-                    variant="hero"
-                    size="lg"
-                    onClick={() => window.open(bookingResult.meeting_join_url, '_blank')}
-                  >
-                    <Video className="w-5 h-5 mr-2" />
-                    Join Google Meet
-                  </Button>
-                )}
-              </div>
-            ) : step === 'assessment' ? (
+            {step === 'assessment' ? (
               <AssessmentFlow
                 mode="booking"
                 onComplete={handleAssessmentComplete}
@@ -554,18 +517,16 @@ const BookingSection = () => {
           </div>
 
           {/* Meeting Info */}
-          {step !== 'success' && (
-            <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>{settings?.appointment_duration_minutes || 30} min meeting</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Video className="w-4 h-4" />
-                <span>Google Meet</span>
-              </div>
+          <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span>{settings?.appointment_duration_minutes || 30} min meeting</span>
             </div>
-          )}
+            <div className="flex items-center gap-2">
+              <Video className="w-4 h-4" />
+              <span>Google Meet</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
