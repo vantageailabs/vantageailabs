@@ -15,8 +15,20 @@ import {
   Clock,
   Mail,
   Download,
-  TrendingUp
+  TrendingUp,
+  Trash2
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 
 interface AssessmentResponse {
@@ -89,6 +101,20 @@ export function AssessmentsList() {
   useEffect(() => {
     fetchAssessments();
   }, []);
+
+  const deleteAssessment = async (id: string) => {
+    const { error } = await supabase
+      .from('assessment_responses')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({ title: 'Error deleting assessment', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Assessment deleted' });
+      fetchAssessments();
+    }
+  };
 
   const getScoreColor = (score: number) => {
     if (score >= 70) return 'bg-green-500/10 text-green-500 border-green-500/20';
@@ -238,23 +264,55 @@ export function AssessmentsList() {
                 </div>
               </div>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setExpandedId(expandedId === assessment.id ? null : assessment.id)}
-              >
-                {expandedId === assessment.id ? (
-                  <>
-                    <ChevronUp className="h-4 w-4 mr-1" />
-                    Less
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown className="h-4 w-4 mr-1" />
-                    Details
-                  </>
-                )}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setExpandedId(expandedId === assessment.id ? null : assessment.id)}
+                >
+                  {expandedId === assessment.id ? (
+                    <>
+                      <ChevronUp className="h-4 w-4 mr-1" />
+                      Less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-4 w-4 mr-1" />
+                      Details
+                    </>
+                  )}
+                </Button>
+                
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Assessment</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete this assessment? This action cannot be undone.
+                        {assessment.appointment_id && (
+                          <span className="block mt-2 text-yellow-600">
+                            Note: This assessment is linked to an appointment. The appointment will remain but lose its assessment data.
+                          </span>
+                        )}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteAssessment(assessment.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
 
             {/* Expanded details */}
