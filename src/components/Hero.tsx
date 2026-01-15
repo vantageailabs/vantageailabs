@@ -6,12 +6,7 @@ import elevation180Logo from "@/assets/elevation180-logo.png";
 import chenLegalLogo from "@/assets/chen-legal-logo.png";
 import canyonClubLogo from "@/assets/canyon-club-logo.png";
 import bestBuyDrugsLogo from "@/assets/best-buy-drugs-logo.png";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Hero = () => {
   const [guaranteeOpen, setGuaranteeOpen] = useState(false);
@@ -84,7 +79,9 @@ const Hero = () => {
             style={{ animationDelay: "0.3s" }}
           >
             <Shield className="w-4 h-4 text-accent" />
-            <span>Backed by our <span className="text-accent font-medium">Risk-Free Guarantee</span></span>
+            <span>
+              Backed by our <span className="text-accent font-medium">Risk-Free Guarantee</span>
+            </span>
             <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
           </button>
 
@@ -101,11 +98,11 @@ const Hero = () => {
                 <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
                   <h3 className="font-semibold text-lg text-accent mb-2">Results or Your Money Back</h3>
                   <p className="text-sm text-muted-foreground">
-                    If you don't see measurable improvement in efficiency within 60 days of implementation, 
-                    we'll refund your investment in full—no questions asked.
+                    If you don't see measurable improvement in efficiency within 60 days of implementation, we'll refund
+                    your investment in full—no questions asked.
                   </p>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
@@ -134,9 +131,9 @@ const Hero = () => {
                   Zero risk. 100% peace of mind.
                 </p>
 
-                <Button 
-                  variant="hero" 
-                  className="w-full" 
+                <Button
+                  variant="hero"
+                  className="w-full"
                   onClick={() => {
                     setGuaranteeOpen(false);
                     scrollToBooking();
@@ -163,15 +160,12 @@ const Hero = () => {
                   { src: canyonClubLogo, alt: "Canyon Club" },
                   { src: bestBuyDrugsLogo, alt: "Best Buy Drugs" },
                 ].map((logo, i) => (
-                  <div
-                    key={i}
-                    className="w-8 h-8 rounded-full bg-white border-2 border-background overflow-hidden"
-                  >
+                  <div key={i} className="w-8 h-8 rounded-full bg-white border-2 border-background overflow-hidden">
                     <img src={logo.src} alt={logo.alt} className="w-full h-full object-cover" />
                   </div>
                 ))}
               </div>
-              <span className="text-sm">50+ Businesses Transformed</span>
+              <span className="text-sm">20+ Businesses Transformed</span>
             </div>
             <div className="hidden md:block w-px h-6 bg-border" />
             <div className="text-sm">
