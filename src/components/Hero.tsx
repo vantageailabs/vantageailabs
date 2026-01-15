@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Play, Shield, CheckCircle, Clock, Headphones } from "lucide-react";
+import premierPaintLogo from "@/assets/premier-paint-logo.png";
+import elevation180Logo from "@/assets/elevation180-logo.png";
+import chenLegalLogo from "@/assets/chen-legal-logo.png";
+import canyonClubLogo from "@/assets/canyon-club-logo.png";
+import bestBuyDrugsLogo from "@/assets/best-buy-drugs-logo.png";
 import {
   Dialog,
   DialogContent,
@@ -151,11 +156,19 @@ const Hero = () => {
           >
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                {[1, 2, 3, 4, 5].map((i) => (
+                {[
+                  { src: premierPaintLogo, alt: "Premier Paint" },
+                  { src: elevation180Logo, alt: "Elevation180" },
+                  { src: chenLegalLogo, alt: "Chen Legal" },
+                  { src: canyonClubLogo, alt: "Canyon Club" },
+                  { src: bestBuyDrugsLogo, alt: "Best Buy Drugs" },
+                ].map((logo, i) => (
                   <div
                     key={i}
-                    className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/50 to-accent/50 border-2 border-background"
-                  />
+                    className="w-8 h-8 rounded-full bg-white border-2 border-background overflow-hidden"
+                  >
+                    <img src={logo.src} alt={logo.alt} className="w-full h-full object-cover" />
+                  </div>
                 ))}
               </div>
               <span className="text-sm">50+ Businesses Transformed</span>
