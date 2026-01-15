@@ -41,7 +41,7 @@ const AboutSection = () => {
             <div className="space-y-4 text-muted-foreground text-lg leading-relaxed mb-8">
               <p>
                 I started this journey after five years in corporate America, where I watched the biggest companies in
-                the world move at a snail's pace—resistant to automation, hesitant to adopt AI, and clinging to outdated
+                the world move at a snail's pace. They were resistant to automation, hesitant to adopt AI, and clinging to outdated
                 processes. Despite having the resources, there was a fundamental unwillingness to embrace the
                 technological future ahead.
               </p>
@@ -53,7 +53,7 @@ const AboutSection = () => {
               </p>
               <p>
                 <span className="text-foreground font-medium">My mission is simple:</span> help business owners reclaim
-                their time so they can focus on what they do best—growing their business and serving their customers.
+                their time so they can focus on what they do best: growing their business and serving their customers.
               </p>
             </div>
 
