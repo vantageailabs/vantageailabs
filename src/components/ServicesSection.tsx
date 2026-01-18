@@ -27,9 +27,9 @@ const services = [
   },
   {
     icon: Shield,
-    title: "Data & Analytics",
-    description: "Turn your business data into actionable insights with AI-powered dashboards.",
-    highlight: "Make smarter decisions",
+    title: "Website + Business Coaching",
+    description: "Full website build plus hands-on guidance—funnels, client management, automated emails, and strategy.",
+    highlight: "Done-for-you + taught",
   },
   {
     icon: Rocket,
