@@ -56,7 +56,7 @@ serve(async (req) => {
 
     // Get Google credentials
     const serviceAccountKey = Deno.env.get('GOOGLE_SERVICE_ACCOUNT_KEY');
-    const senderEmail = 'info@vantageailabs.com';
+    const senderEmail = 'contact@vantageailabs.com';
     const notifyEmail = 'zach@vantageailabs.com';
 
     if (!serviceAccountKey) {
