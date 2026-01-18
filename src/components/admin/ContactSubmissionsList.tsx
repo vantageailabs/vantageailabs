@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { Mail, Check, Archive, Loader2 } from 'lucide-react';
+import { Mail, Check, Archive, Loader2, Trash2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -51,6 +51,21 @@ export function ContactSubmissionsList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-submissions'] });
+    },
+  });
+
+  const deleteSubmission = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contact-submissions'] });
+      setSelectedSubmission(null);
     },
   });
 
@@ -186,6 +201,19 @@ export function ContactSubmissionsList() {
                     <Mail className="h-4 w-4 mr-1" />
                     Reply
                   </a>
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (confirm('Are you sure you want to delete this submission?')) {
+                      deleteSubmission.mutate(selectedSubmission.id);
+                    }
+                  }}
+                  disabled={deleteSubmission.isPending}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
                 </Button>
               </div>
             </div>
