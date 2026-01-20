@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Trash2, Save, Star, Send, Calendar, Clock } from 'lucide-react';
+import { Loader2, Plus, Trash2, Save, Star, Send, Calendar, Clock, Tag } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { Client, ClientStatus } from './ClientsList';
 import { Separator } from '@/components/ui/separator';
@@ -45,6 +45,14 @@ interface SupportPackage {
   hours_included: number;
 }
 
+interface Coupon {
+  id: string;
+  code: string;
+  name: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+}
+
 type ServiceStatus = 'planned' | 'in_progress' | 'completed' | 'cancelled';
 
 interface ClientService {
@@ -54,7 +62,9 @@ interface ClientService {
   status: ServiceStatus;
   start_date: string | null;
   end_date: string | null;
+  coupon_id: string | null;
   service?: Service;
+  coupon?: Coupon;
 }
 
 interface ClientCost {
@@ -79,6 +89,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
   const [sendingReview, setSendingReview] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [packages, setPackages] = useState<SupportPackage[]>([]);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [clientServices, setClientServices] = useState<ClientService[]>([]);
   const [clientCosts, setClientCosts] = useState<ClientCost[]>([]);
   const { toast } = useToast();
@@ -135,20 +146,22 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
   };
 
   const fetchServicesAndPackages = async () => {
-    const [servicesRes, packagesRes] = await Promise.all([
+    const [servicesRes, packagesRes, couponsRes] = await Promise.all([
       supabase.from('services').select('*').eq('is_active', true).order('display_order'),
       supabase.from('support_packages').select('*').eq('is_active', true).order('display_order'),
+      supabase.from('coupons').select('*').eq('is_active', true).order('code'),
     ]);
 
     if (servicesRes.data) setServices(servicesRes.data as Service[]);
     if (packagesRes.data) setPackages(packagesRes.data as SupportPackage[]);
+    if (couponsRes.data) setCoupons(couponsRes.data as Coupon[]);
   };
 
   const fetchClientServices = async (clientId: string) => {
     setLoading(true);
     const { data, error } = await supabase
       .from('client_services')
-      .select('*, services(*)')
+      .select('*, services(*), coupons(*)')
       .eq('client_id', clientId);
 
     if (data) {
@@ -159,7 +172,9 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
         status: cs.status,
         start_date: cs.start_date,
         end_date: cs.end_date,
+        coupon_id: cs.coupon_id,
         service: cs.services,
+        coupon: cs.coupons,
       })));
     }
     setLoading(false);
@@ -178,8 +193,24 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
   };
 
   const calculateTotal = () => {
-    const servicesTotal = clientServices.reduce((sum, cs) => sum + Number(cs.agreed_price), 0);
+    const servicesTotal = clientServices.reduce((sum, cs) => {
+      const discountedPrice = calculateDiscountedPrice(cs);
+      return sum + discountedPrice;
+    }, 0);
     const packagePrice = packages.find(p => p.id === formData.support_package_id)?.monthly_price || 0;
+    return servicesTotal + Number(packagePrice);
+  };
+
+  const calculateDiscountedPrice = (cs: ClientService) => {
+    if (!cs.coupon_id) return Number(cs.agreed_price);
+    const coupon = coupons.find(c => c.id === cs.coupon_id) || cs.coupon;
+    if (!coupon) return Number(cs.agreed_price);
+    
+    if (coupon.discount_type === 'percentage') {
+      return Number(cs.agreed_price) * (1 - coupon.discount_value / 100);
+    }
+    return Math.max(0, Number(cs.agreed_price) - coupon.discount_value);
+  };
     return servicesTotal + Number(packagePrice);
   };
 
@@ -194,6 +225,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
         status: 'planned' as ServiceStatus,
         start_date: null,
         end_date: null,
+        coupon_id: null,
         service: services[0],
       },
     ]);
@@ -298,6 +330,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           status: cs.status,
           start_date: cs.start_date || null,
           end_date: cs.end_date || null,
+          coupon_id: cs.coupon_id || null,
         }));
 
         const { error } = await supabase.from('client_services').insert(servicesToInsert);
@@ -481,6 +514,9 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
                   const duration = cs.start_date && cs.end_date 
                     ? differenceInDays(parseISO(cs.end_date), parseISO(cs.start_date)) + 1
                     : null;
+                  const discountedPrice = calculateDiscountedPrice(cs);
+                  const hasDiscount = cs.coupon_id && discountedPrice !== Number(cs.agreed_price);
+                  const activeCoupon = cs.coupon_id ? (coupons.find(c => c.id === cs.coupon_id) || cs.coupon) : null;
                   
                   return (
                     <div key={cs.id} className="p-3 rounded-lg border border-border/50 bg-muted/50 space-y-2">
@@ -550,6 +586,37 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
                             <Clock className="h-3 w-3" />
                             {duration} day{duration !== 1 ? 's' : ''}
                           </Badge>
+                        )}
+                      </div>
+
+                      {/* Row 3: Coupon and Final Price */}
+                      <div className="flex items-center gap-2 pt-1 border-t border-border/30">
+                        <div className="flex items-center gap-1.5 flex-1">
+                          <Tag className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Select
+                            value={cs.coupon_id || 'none'}
+                            onValueChange={(v) => handleServiceChange(index, 'coupon_id', v === 'none' ? null : v)}
+                          >
+                            <SelectTrigger className="h-8 text-sm flex-1">
+                              <SelectValue placeholder="No coupon" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">No coupon</SelectItem>
+                              {coupons.map((c) => (
+                                <SelectItem key={c.id} value={c.id}>
+                                  {c.code} - {c.discount_type === 'percentage' ? `${c.discount_value}%` : `$${c.discount_value}`} off
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {hasDiscount && activeCoupon && (
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-sm text-muted-foreground line-through">${Number(cs.agreed_price).toFixed(0)}</span>
+                            <Badge variant="default" className="bg-green-600 hover:bg-green-600">
+                              ${discountedPrice.toFixed(0)}
+                            </Badge>
+                          </div>
                         )}
                       </div>
                     </div>
