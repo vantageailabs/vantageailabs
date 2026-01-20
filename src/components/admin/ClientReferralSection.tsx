@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Gift, Loader2, Plus, Check, UserPlus, Clock } from 'lucide-react';
+import { Copy, Gift, Loader2, Plus, Check, UserPlus, Clock, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Dialog,
@@ -36,6 +36,8 @@ interface Referral {
 
 interface Props {
   clientId: string;
+  clientName: string;
+  clientEmail: string;
   referralCode: string | null;
   onCodeGenerated: (code: string) => void;
 }
@@ -59,7 +61,7 @@ function getRewardTier(referralCount: number) {
   return REWARD_TIERS.find(tier => referralCount >= tier.min && referralCount <= tier.max) || REWARD_TIERS[0];
 }
 
-export function ClientReferralSection({ clientId, referralCode, onCodeGenerated }: Props) {
+export function ClientReferralSection({ clientId, clientName, clientEmail, referralCode, onCodeGenerated }: Props) {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -67,6 +69,7 @@ export function ClientReferralSection({ clientId, referralCode, onCodeGenerated 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [newReferral, setNewReferral] = useState({ name: '', email: '' });
   const [addingReferral, setAddingReferral] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -127,6 +130,63 @@ export function ClientReferralSection({ clientId, referralCode, onCodeGenerated 
     setCopied(true);
     toast({ title: 'Code copied!' });
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSendToClient = async () => {
+    if (!referralCode || !clientEmail) return;
+    
+    setSendingEmail(true);
+    try {
+      const htmlBody = `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #18181b; margin-bottom: 24px;">Share the Love, Earn Rewards! 🎁</h1>
+          
+          <p style="color: #3f3f46; font-size: 16px; line-height: 1.6;">Hi ${clientName},</p>
+          
+          <p style="color: #3f3f46; font-size: 16px; line-height: 1.6;">Thank you for being a valued client! We'd love for you to share your experience with others. When you refer a friend, they get <strong>20% off their first service</strong>, and you earn rewards too!</p>
+          
+          <div style="background: linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 100%); border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
+            <p style="color: #71717a; font-size: 14px; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px;">Your Referral Code</p>
+            <p style="color: #18181b; font-size: 32px; font-weight: bold; font-family: monospace; margin: 0; letter-spacing: 3px;">${referralCode}</p>
+          </div>
+          
+          <div style="background: #fef3c7; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="color: #92400e; font-size: 14px; margin: 0; font-weight: 600;">🏆 Your Rewards:</p>
+            <ul style="color: #92400e; font-size: 14px; margin: 8px 0 0 0; padding-left: 20px;">
+              <li>1-2 referrals: 1 free month OR 20% off</li>
+              <li>3-4 referrals: 2 free months OR 25% off</li>
+              <li>5+ referrals: 3 free months OR 30% off</li>
+            </ul>
+          </div>
+          
+          <p style="color: #3f3f46; font-size: 16px; line-height: 1.6;">Simply share your code with friends who could benefit from our services. When they mention your code, you both win!</p>
+          
+          <p style="color: #3f3f46; font-size: 16px; line-height: 1.6;">Thanks for spreading the word,<br><strong>The Vantage AI Labs Team</strong></p>
+        </div>
+      `;
+
+      const { error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: clientEmail,
+          toName: clientName,
+          subject: `Your Referral Code: ${referralCode} 🎁`,
+          htmlBody,
+        },
+      });
+
+      if (error) throw error;
+      
+      toast({ title: 'Email sent!', description: `Referral code sent to ${clientEmail}` });
+    } catch (error: any) {
+      console.error('Error sending referral email:', error);
+      toast({ 
+        title: 'Error sending email', 
+        description: error.message || 'Please try again', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   const handleAddReferral = async () => {
@@ -203,12 +263,28 @@ export function ClientReferralSection({ clientId, referralCode, onCodeGenerated 
         <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 space-y-3">
           <Label className="text-xs text-muted-foreground uppercase tracking-wide">Referral Code</Label>
           {referralCode ? (
-            <div className="flex items-center gap-2">
-              <code className="flex-1 px-3 py-2 rounded bg-background border font-mono text-lg tracking-wider">
-                {referralCode}
-              </code>
-              <Button variant="outline" size="sm" onClick={handleCopyCode}>
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <code className="flex-1 px-3 py-2 rounded bg-background border font-mono text-lg tracking-wider">
+                  {referralCode}
+                </code>
+                <Button variant="outline" size="sm" onClick={handleCopyCode}>
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={handleSendToClient} 
+                disabled={sendingEmail || !clientEmail}
+                className="w-full"
+              >
+                {sendingEmail ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Mail className="h-4 w-4 mr-2" />
+                )}
+                Send Code to Client
               </Button>
             </div>
           ) : (
