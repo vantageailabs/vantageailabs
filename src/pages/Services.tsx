@@ -276,7 +276,7 @@ const serviceCategories: ServiceCategoryData[] = [
 
 const Services = () => {
   const [activeCategory, setActiveCategory] = useState<ServiceCategory>("websites");
-
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const currentCategory = serviceCategories.find((cat) => cat.id === activeCategory)!;
 
   return (
@@ -386,9 +386,30 @@ const Services = () => {
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-4">
             Hosting & <span className="text-gradient-accent">Maintenance</span>
           </h2>
-          <p className="text-center text-muted-foreground mb-8">
+          <p className="text-center text-muted-foreground mb-4">
             Choose how you want your website hosted and maintained.
           </p>
+          
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <span className={`text-sm font-medium transition-colors ${billingPeriod === "monthly" ? "text-foreground" : "text-muted-foreground"}`}>
+              Monthly
+            </span>
+            <button
+              onClick={() => setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly")}
+              className={`relative w-14 h-7 rounded-full transition-colors ${billingPeriod === "yearly" ? "bg-primary" : "bg-muted"}`}
+            >
+              <span
+                className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${billingPeriod === "yearly" ? "translate-x-7" : "translate-x-0"}`}
+              />
+            </button>
+            <span className={`text-sm font-medium transition-colors ${billingPeriod === "yearly" ? "text-foreground" : "text-muted-foreground"}`}>
+              Yearly
+            </span>
+            <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary border-0">
+              Save up to 17%
+            </Badge>
+          </div>
           
           <TooltipProvider>
             <div className="grid md:grid-cols-3 gap-6">
@@ -441,10 +462,12 @@ const Services = () => {
                   </div>
                   <h3 className="font-display text-xl font-bold mb-2">Care Package Lite</h3>
                   <div className="mb-2">
-                    <span className="text-3xl font-bold">$29</span>
-                    <span className="text-sm text-muted-foreground ml-1">/month</span>
+                    <span className="text-3xl font-bold">{billingPeriod === "monthly" ? "$29" : "$299"}</span>
+                    <span className="text-sm text-muted-foreground ml-1">{billingPeriod === "monthly" ? "/month" : "/year"}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">or $299/year (save $49)</p>
+                  {billingPeriod === "yearly" && (
+                    <p className="text-xs text-primary font-medium">Save $49/year</p>
+                  )}
                   <p className="text-sm text-muted-foreground mt-2">Essential hosting with care</p>
                 </div>
                 <ul className="space-y-3 mb-6">
@@ -496,10 +519,12 @@ const Services = () => {
                   </div>
                   <h3 className="font-display text-xl font-bold mb-2">Care Package</h3>
                   <div className="mb-2">
-                    <span className="text-3xl font-bold">$49</span>
-                    <span className="text-sm text-muted-foreground ml-1">/month</span>
+                    <span className="text-3xl font-bold">{billingPeriod === "monthly" ? "$49" : "$499"}</span>
+                    <span className="text-sm text-muted-foreground ml-1">{billingPeriod === "monthly" ? "/month" : "/year"}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">or $499/year (save $89)</p>
+                  {billingPeriod === "yearly" && (
+                    <p className="text-xs text-primary font-medium">Save $89/year</p>
+                  )}
                   <p className="text-sm text-muted-foreground mt-2">Full hosting and maintenance</p>
                 </div>
                 <ul className="space-y-3 mb-6">
@@ -605,10 +630,12 @@ const Services = () => {
                 </div>
                 <h3 className="font-display text-xl font-bold mb-2">Monthly Retainer</h3>
                 <div className="mb-2">
-                  <span className="text-3xl font-bold">$300</span>
-                  <span className="text-sm text-muted-foreground ml-1">/month</span>
+                  <span className="text-3xl font-bold">{billingPeriod === "monthly" ? "$300" : "$3,000"}</span>
+                  <span className="text-sm text-muted-foreground ml-1">{billingPeriod === "monthly" ? "/month" : "/year"}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">or $3,000/year (save $600)</p>
+                {billingPeriod === "yearly" && (
+                  <p className="text-xs text-primary font-medium">Save $600/year</p>
+                )}
                 <p className="text-sm text-muted-foreground mt-2">Includes hosting + 5 hrs support</p>
               </div>
               <ul className="space-y-3 mb-6">
@@ -643,10 +670,12 @@ const Services = () => {
                 </div>
                 <h3 className="font-display text-xl font-bold mb-2">Priority Support</h3>
                 <div className="mb-2">
-                  <span className="text-3xl font-bold">$500</span>
-                  <span className="text-sm text-muted-foreground ml-1">/month</span>
+                  <span className="text-3xl font-bold">{billingPeriod === "monthly" ? "$600" : "$6,000"}</span>
+                  <span className="text-sm text-muted-foreground ml-1">{billingPeriod === "monthly" ? "/month" : "/year"}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">or $5,000/year (save $1,000)</p>
+                {billingPeriod === "yearly" && (
+                  <p className="text-xs text-primary font-medium">Save $1,200/year</p>
+                )}
                 <p className="text-sm text-muted-foreground mt-2">10 hrs + hosting included</p>
               </div>
               <ul className="space-y-3 mb-6">
