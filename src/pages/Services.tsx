@@ -531,7 +531,7 @@ const Services = () => {
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>Email + text support (2-day turnaround)</span>
+                    <span>2-day email turnaround</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -608,20 +608,13 @@ const Services = () => {
                   <span className="text-3xl font-bold">$300</span>
                   <span className="text-sm text-muted-foreground ml-1">/month</span>
                 </div>
-                <p className="text-sm text-muted-foreground">Includes hosting + 5 hrs support</p>
+                <p className="text-xs text-muted-foreground">or $3,000/year (save $600)</p>
+                <p className="text-sm text-muted-foreground mt-2">Includes hosting + 5 hrs support</p>
               </div>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start gap-2 text-sm font-medium text-primary">
                   <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" />
                   <span>Monthly Care Package included</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Secure hosting & SSL</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Daily backups</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -653,9 +646,14 @@ const Services = () => {
                   <span className="text-3xl font-bold">$500</span>
                   <span className="text-sm text-muted-foreground ml-1">/month</span>
                 </div>
-                <p className="text-sm text-muted-foreground">10 hours included ($50/hr value)</p>
+                <p className="text-xs text-muted-foreground">or $5,000/year (save $1,000)</p>
+                <p className="text-sm text-muted-foreground mt-2">10 hrs + hosting included</p>
               </div>
               <ul className="space-y-3 mb-6">
+                <li className="flex items-start gap-2 text-sm font-medium text-primary">
+                  <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>Monthly Care Package included</span>
+                </li>
                 <li className="flex items-start gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                   <span>10 hours of support included</span>
@@ -666,15 +664,11 @@ const Services = () => {
                 </li>
                 <li className="flex items-start gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Dedicated Slack channel</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                   <span>Priority in queue</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm">
                   <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Weekly strategy calls</span>
+                  <span>On-demand check-ins</span>
                 </li>
               </ul>
             </div>
