@@ -327,6 +327,7 @@ export type Database = {
           name: string
           notes: string | null
           phone: string | null
+          referral_code: string | null
           review_request_sent_at: string | null
           start_month: string | null
           status: Database["public"]["Enums"]["client_status"]
@@ -345,6 +346,7 @@ export type Database = {
           name: string
           notes?: string | null
           phone?: string | null
+          referral_code?: string | null
           review_request_sent_at?: string | null
           start_month?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -363,6 +365,7 @@ export type Database = {
           name?: string
           notes?: string | null
           phone?: string | null
+          referral_code?: string | null
           review_request_sent_at?: string | null
           start_month?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -606,6 +609,63 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referrals: {
+        Row: {
+          converted_at: string | null
+          created_at: string | null
+          id: string
+          referral_code_used: string
+          referred_client_id: string | null
+          referred_email: string | null
+          referred_name: string | null
+          referrer_client_id: string
+          reward_claimed: boolean | null
+          reward_type: string | null
+          status: string
+        }
+        Insert: {
+          converted_at?: string | null
+          created_at?: string | null
+          id?: string
+          referral_code_used: string
+          referred_client_id?: string | null
+          referred_email?: string | null
+          referred_name?: string | null
+          referrer_client_id: string
+          reward_claimed?: boolean | null
+          reward_type?: string | null
+          status?: string
+        }
+        Update: {
+          converted_at?: string | null
+          created_at?: string | null
+          id?: string
+          referral_code_used?: string
+          referred_client_id?: string | null
+          referred_email?: string | null
+          referred_name?: string | null
+          referrer_client_id?: string
+          reward_claimed?: boolean | null
+          reward_type?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_client_id_fkey"
+            columns: ["referred_client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_client_id_fkey"
+            columns: ["referrer_client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {
