@@ -18,8 +18,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Trash2, Save, Star, Send } from 'lucide-react';
-import { format } from 'date-fns';
+import { Loader2, Plus, Trash2, Save, Star, Send, Calendar, Clock } from 'lucide-react';
+import { format, differenceInDays, parseISO } from 'date-fns';
 import { Client, ClientStatus } from './ClientsList';
 import { Separator } from '@/components/ui/separator';
 import { ClientCredentialsSection } from './ClientCredentialsSection';
@@ -52,6 +52,8 @@ interface ClientService {
   service_id: string;
   agreed_price: number;
   status: ServiceStatus;
+  start_date: string | null;
+  end_date: string | null;
   service?: Service;
 }
 
@@ -155,6 +157,8 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
         service_id: cs.service_id,
         agreed_price: cs.agreed_price,
         status: cs.status,
+        start_date: cs.start_date,
+        end_date: cs.end_date,
         service: cs.services,
       })));
     }
@@ -188,6 +192,8 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
         service_id: services[0].id,
         agreed_price: services[0].base_price,
         status: 'planned' as ServiceStatus,
+        start_date: null,
+        end_date: null,
         service: services[0],
       },
     ]);
@@ -290,6 +296,8 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           service_id: cs.service_id,
           agreed_price: cs.agreed_price,
           status: cs.status,
+          start_date: cs.start_date || null,
+          end_date: cs.end_date || null,
         }));
 
         const { error } = await supabase.from('client_services').insert(servicesToInsert);
@@ -468,48 +476,85 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
             ) : clientServices.length === 0 ? (
               <p className="text-sm text-muted-foreground">No services assigned yet.</p>
             ) : (
-              <div className="space-y-2">
-                {clientServices.map((cs, index) => (
-                  <div key={cs.id} className="flex items-center gap-2 p-2 rounded border border-border/50 bg-muted/50">
-                    <Select
-                      value={cs.service_id}
-                      onValueChange={(v) => handleServiceChange(index, 'service_id', v)}
-                    >
-                      <SelectTrigger className="flex-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {services.map((s) => (
-                          <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      type="number"
-                      className="w-28"
-                      value={cs.agreed_price}
-                      onChange={(e) => handleServiceChange(index, 'agreed_price', Number(e.target.value))}
-                      placeholder="Price"
-                    />
-                    <Select
-                      value={cs.status}
-                      onValueChange={(v) => handleServiceChange(index, 'status', v)}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="planned">Planned</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button variant="ghost" size="icon" onClick={() => handleRemoveService(index)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                ))}
+              <div className="space-y-3">
+                {clientServices.map((cs, index) => {
+                  const duration = cs.start_date && cs.end_date 
+                    ? differenceInDays(parseISO(cs.end_date), parseISO(cs.start_date)) + 1
+                    : null;
+                  
+                  return (
+                    <div key={cs.id} className="p-3 rounded-lg border border-border/50 bg-muted/50 space-y-2">
+                      {/* Row 1: Service, Price, Status, Delete */}
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={cs.service_id}
+                          onValueChange={(v) => handleServiceChange(index, 'service_id', v)}
+                        >
+                          <SelectTrigger className="flex-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {services.map((s) => (
+                              <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          type="number"
+                          className="w-28"
+                          value={cs.agreed_price}
+                          onChange={(e) => handleServiceChange(index, 'agreed_price', Number(e.target.value))}
+                          placeholder="Price"
+                        />
+                        <Select
+                          value={cs.status}
+                          onValueChange={(v) => handleServiceChange(index, 'status', v)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="planned">Planned</SelectItem>
+                            <SelectItem value="in_progress">In Progress</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button variant="ghost" size="icon" onClick={() => handleRemoveService(index)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                      
+                      {/* Row 2: Dates and Duration */}
+                      <div className="flex items-center gap-2 pt-1 border-t border-border/30">
+                        <div className="flex items-center gap-1.5 flex-1">
+                          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Input
+                            type="date"
+                            className="h-8 text-sm"
+                            value={cs.start_date || ''}
+                            onChange={(e) => handleServiceChange(index, 'start_date', e.target.value || null)}
+                            placeholder="Start"
+                          />
+                          <span className="text-muted-foreground text-sm">→</span>
+                          <Input
+                            type="date"
+                            className="h-8 text-sm"
+                            value={cs.end_date || ''}
+                            onChange={(e) => handleServiceChange(index, 'end_date', e.target.value || null)}
+                            placeholder="End"
+                          />
+                        </div>
+                        {duration !== null && (
+                          <Badge variant="secondary" className="flex items-center gap-1 shrink-0">
+                            <Clock className="h-3 w-3" />
+                            {duration} day{duration !== 1 ? 's' : ''}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
