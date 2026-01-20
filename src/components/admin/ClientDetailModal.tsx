@@ -22,6 +22,7 @@ import { Loader2, Plus, Trash2, Save, Star, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { Client, ClientStatus } from './ClientsList';
 import { Separator } from '@/components/ui/separator';
+import { ClientCredentialsSection } from './ClientCredentialsSection';
 import {
   Select,
   SelectContent,
@@ -591,6 +592,15 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
               rows={3}
             />
           </div>
+
+          {/* Client Credentials Section */}
+          {!isNew && client?.id && (
+            <ClientCredentialsSection
+              clientId={client.id}
+              clientEmail={client.email}
+              onRefresh={onSaved}
+            />
+          )}
 
           {/* Google Review Request */}
           {!isNew && (

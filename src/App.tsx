@@ -15,6 +15,7 @@ import Contact from "./pages/Contact";
 import Assessment from "./pages/Assessment";
 import CancelAppointment from "./pages/CancelAppointment";
 import RescheduleAppointment from "./pages/RescheduleAppointment";
+import CredentialSubmission from "./pages/CredentialSubmission";
 import NotFound from "./pages/NotFound";
 
 
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/cancel-appointment" element={<CancelAppointment />} />
           <Route path="/reschedule" element={<RescheduleAppointment />} />
+          <Route path="/credentials/:token" element={<CredentialSubmission />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

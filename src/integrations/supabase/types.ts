@@ -216,6 +216,57 @@ export type Database = {
           },
         ]
       }
+      client_credentials: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          password: string
+          request_id: string | null
+          service_name: string
+          username: string
+          website_url: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          password: string
+          request_id?: string | null
+          service_name: string
+          username: string
+          website_url?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          password?: string
+          request_id?: string | null
+          service_name?: string
+          username?: string
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_credentials_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_credentials_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "credential_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_services: {
         Row: {
           agreed_price: number
@@ -379,6 +430,50 @@ export type Database = {
           subject?: string
         }
         Relationships: []
+      }
+      credential_requests: {
+        Row: {
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          request_token: string | null
+          service_name: string
+          status: string
+          website_url: string | null
+        }
+        Insert: {
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          request_token?: string | null
+          service_name: string
+          status?: string
+          website_url?: string | null
+        }
+        Update: {
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          request_token?: string | null
+          service_name?: string
+          status?: string
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credential_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       form_analytics: {
         Row: {
