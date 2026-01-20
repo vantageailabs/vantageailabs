@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard, Clock, Calendar, Headphones, Palette, Search } from "lucide-react";
+import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard, Clock, Calendar, Headphones, Palette, Search, Download, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -381,54 +382,165 @@ const Services = () => {
         </div>
 
         {/* Hosting & Maintenance Section */}
-        <div className="mt-20 max-w-4xl mx-auto">
+        <div className="mt-20 max-w-5xl mx-auto">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-4">
             Hosting & <span className="text-gradient-accent">Maintenance</span>
           </h2>
           <p className="text-center text-muted-foreground mb-8">
-            Keep your website secure, fast, and up-to-date with our monthly maintenance package.
+            Choose how you want your website hosted and maintained.
           </p>
-          <div className="bg-card border-2 border-primary/30 rounded-2xl p-8 shadow-lg">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-xl bg-primary/10">
-                  <Shield className="h-6 w-6 text-primary" />
+          
+          <TooltipProvider>
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* On Your Own */}
+              <div className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors">
+                <div className="text-center mb-6">
+                  <div className="inline-flex p-3 rounded-xl bg-muted mb-4">
+                    <Download className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold mb-2">On Your Own</h3>
+                  <div className="mb-2">
+                    <span className="text-3xl font-bold">$0</span>
+                    <span className="text-sm text-muted-foreground ml-1">/month</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Self-host on your own platform</p>
                 </div>
-                <div>
-                  <h3 className="font-display text-xl font-bold mb-2">Monthly Care Package</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Everything you need to keep your website running smoothly.
-                  </p>
-                  <ul className="grid sm:grid-cols-2 gap-2">
-                    <li className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      <span>Secure cloud hosting</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      <span>SSL certificate</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      <span>Daily backups</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      <span>Minor content updates</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                      <span>Technical support</span>
-                    </li>
-                  </ul>
-                </div>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Full code ownership</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Deploy anywhere you want</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>No ongoing commitment</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="h-4 w-4 mt-0.5 flex-shrink-0">—</span>
+                    <span>You manage hosting & SSL</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="h-4 w-4 mt-0.5 flex-shrink-0">—</span>
+                    <span>You manage backups</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="h-4 w-4 mt-0.5 flex-shrink-0">—</span>
+                    <span>No included support</span>
+                  </li>
+                </ul>
               </div>
-              <div className="text-center md:text-right">
-                <div className="text-3xl font-bold">$25</div>
-                <div className="text-sm text-muted-foreground">/month</div>
+
+              {/* Care Package Lite */}
+              <div className="bg-card border border-border rounded-2xl p-6 hover:border-primary/30 transition-colors">
+                <div className="text-center mb-6">
+                  <div className="inline-flex p-3 rounded-xl bg-muted mb-4">
+                    <Sparkles className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold mb-2">Care Package Lite</h3>
+                  <div className="mb-2">
+                    <span className="text-3xl font-bold">$29</span>
+                    <span className="text-sm text-muted-foreground ml-1">/month</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">or $299/year (save $49)</p>
+                  <p className="text-sm text-muted-foreground mt-2">Essential hosting with care</p>
+                </div>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Secure cloud hosting</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>SSL certificate</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Weekly backups</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="flex items-center gap-1">
+                      Minor content updates
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-xs">Text changes, image swaps, contact info updates, and seasonal banners. Does not include new pages, layout redesigns, or feature additions.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Email support (5-day turnaround)</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <img src={vantageIcon} alt="" className="h-4 w-4 mt-0.5 flex-shrink-0 opacity-70" />
+                    <span className="text-muted-foreground">"Powered by Vantage AI Labs" badge</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Care Package */}
+              <div className="bg-primary/5 border-2 border-primary rounded-2xl p-6 relative">
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
+                  Most Popular
+                </Badge>
+                <div className="text-center mb-6">
+                  <div className="inline-flex p-3 rounded-xl bg-primary/20 mb-4">
+                    <Shield className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold mb-2">Care Package</h3>
+                  <div className="mb-2">
+                    <span className="text-3xl font-bold">$49</span>
+                    <span className="text-sm text-muted-foreground ml-1">/month</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">or $499/year (save $89)</p>
+                  <p className="text-sm text-muted-foreground mt-2">Full hosting and maintenance</p>
+                </div>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Secure cloud hosting</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>SSL certificate</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Daily backups</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="flex items-center gap-1">
+                      Minor content updates
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-xs">Text changes, image swaps, contact info updates, and seasonal banners. Does not include new pages, layout redesigns, or feature additions.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Email + text support (2-day turnaround)</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>No badge required</span>
+                  </li>
+                </ul>
               </div>
             </div>
-          </div>
+          </TooltipProvider>
         </div>
 
         {/* Support Section */}
