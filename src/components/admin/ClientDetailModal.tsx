@@ -610,6 +610,8 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           {!isNew && client?.id && (
             <ClientReferralSection
               clientId={client.id}
+              clientName={formData.name || ''}
+              clientEmail={formData.email || ''}
               referralCode={formData.referral_code}
               onCodeGenerated={(code) => setFormData({ ...formData, referral_code: code })}
             />
