@@ -276,6 +276,7 @@ export type Database = {
           name: string
           notes: string | null
           phone: string | null
+          review_request_sent_at: string | null
           start_month: string | null
           status: Database["public"]["Enums"]["client_status"]
           support_package_id: string | null
@@ -293,6 +294,7 @@ export type Database = {
           name: string
           notes?: string | null
           phone?: string | null
+          review_request_sent_at?: string | null
           start_month?: string | null
           status?: Database["public"]["Enums"]["client_status"]
           support_package_id?: string | null
@@ -310,6 +312,7 @@ export type Database = {
           name?: string
           notes?: string | null
           phone?: string | null
+          review_request_sent_at?: string | null
           start_month?: string | null
           status?: Database["public"]["Enums"]["client_status"]
           support_package_id?: string | null

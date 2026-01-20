@@ -18,9 +18,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Trash2, Save } from 'lucide-react';
+import { Loader2, Plus, Trash2, Save, Star, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { Client, ClientStatus } from './ClientsList';
+import { Separator } from '@/components/ui/separator';
 import {
   Select,
   SelectContent,
@@ -71,6 +72,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
   const isNew = !client?.id;
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sendingReview, setSendingReview] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [packages, setPackages] = useState<SupportPackage[]>([]);
   const [clientServices, setClientServices] = useState<ClientService[]>([]);
@@ -338,6 +340,41 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
     }
   };
 
+  const handleRequestReview = async () => {
+    if (!client?.id || !client.email) {
+      toast({ title: 'Client email is required', variant: 'destructive' });
+      return;
+    }
+
+    setSendingReview(true);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-review-request`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ client_id: client.id }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send review request');
+      }
+
+      toast({ title: 'Review request sent!', description: `Email sent to ${client.email}` });
+      onSaved(); // Refresh to show updated timestamp
+    } catch (error: any) {
+      toast({ title: 'Error sending review request', description: error.message, variant: 'destructive' });
+    } finally {
+      setSendingReview(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -554,6 +591,42 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
               rows={3}
             />
           </div>
+
+          {/* Google Review Request */}
+          {!isNew && (
+            <div className="space-y-3">
+              <Separator />
+              <div className="flex items-center justify-between p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-amber-500" />
+                    <span className="font-medium">Google Review</span>
+                  </div>
+                  {client?.review_request_sent_at ? (
+                    <p className="text-xs text-muted-foreground">
+                      Last requested: {format(new Date(client.review_request_sent_at), 'MMM d, yyyy')}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No request sent yet</p>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRequestReview}
+                  disabled={sendingReview || !client?.email}
+                  className="border-amber-500/50 hover:bg-amber-500/10"
+                >
+                  {sendingReview ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4 mr-2" />
+                  )}
+                  Request Review
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Totals */}
           <div className="space-y-2">
