@@ -676,7 +676,7 @@ const Services = () => {
                 {billingPeriod === "yearly" && (
                   <p className="text-xs text-primary font-medium">Save $1,200/year</p>
                 )}
-                <p className="text-sm text-muted-foreground mt-2">10 hrs + hosting included</p>
+                <p className="text-sm text-muted-foreground mt-2">Includes hosting + 10 hrs support</p>
               </div>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start gap-2 text-sm font-medium text-primary">
