@@ -211,8 +211,6 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
     }
     return Math.max(0, Number(cs.agreed_price) - coupon.discount_value);
   };
-    return servicesTotal + Number(packagePrice);
-  };
 
   const handleAddService = () => {
     if (services.length === 0) return;
