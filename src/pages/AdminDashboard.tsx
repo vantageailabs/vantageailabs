@@ -12,6 +12,7 @@ import { CalendarStatus } from '@/components/admin/CalendarStatus';
 import { ClientsList } from '@/components/admin/ClientsList';
 import { ServicesManager } from '@/components/admin/ServicesManager';
 import { SupportPackagesManager } from '@/components/admin/SupportPackagesManager';
+import { CouponsManager } from '@/components/admin/CouponsManager';
 import { CapacitySettings } from '@/components/admin/CapacitySettings';
 import { ContactSubmissionsList } from '@/components/admin/ContactSubmissionsList';
 import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList, Briefcase, Package, TrendingUp, Mail } from 'lucide-react';
@@ -139,6 +140,7 @@ function DashboardContent() {
             <div className="space-y-8">
               <ServicesManager />
               <SupportPackagesManager />
+              <CouponsManager />
             </div>
           </TabsContent>
 

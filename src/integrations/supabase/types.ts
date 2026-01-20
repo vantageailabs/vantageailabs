@@ -271,6 +271,7 @@ export type Database = {
         Row: {
           agreed_price: number
           client_id: string
+          coupon_id: string | null
           created_at: string
           end_date: string | null
           id: string
@@ -281,6 +282,7 @@ export type Database = {
         Insert: {
           agreed_price?: number
           client_id: string
+          coupon_id?: string | null
           created_at?: string
           end_date?: string | null
           id?: string
@@ -291,6 +293,7 @@ export type Database = {
         Update: {
           agreed_price?: number
           client_id?: string
+          coupon_id?: string | null
           created_at?: string
           end_date?: string | null
           id?: string
@@ -304,6 +307,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_services_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
             referencedColumns: ["id"]
           },
           {
@@ -431,6 +441,36 @@ export type Database = {
           name?: string
           status?: string
           subject?: string
+        }
+        Relationships: []
+      }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_type: string
+          discount_value: number
+          id?: string
+          is_active?: boolean
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean
+          name?: string
         }
         Relationships: []
       }
