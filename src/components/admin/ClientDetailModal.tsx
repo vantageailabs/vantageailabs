@@ -23,6 +23,7 @@ import { format } from 'date-fns';
 import { Client, ClientStatus } from './ClientsList';
 import { Separator } from '@/components/ui/separator';
 import { ClientCredentialsSection } from './ClientCredentialsSection';
+import { ClientReferralSection } from './ClientReferralSection';
 import {
   Select,
   SelectContent,
@@ -89,6 +90,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
     support_package_id: '',
     start_month: '',
     notes: '',
+    referral_code: null as string | null,
   });
 
   useEffect(() => {
@@ -104,6 +106,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           support_package_id: client.support_package_id || '',
           start_month: client.start_month || '',
           notes: client.notes || '',
+          referral_code: (client as any).referral_code || null,
         });
         fetchClientServices(client.id);
         fetchClientCosts(client.id);
@@ -123,6 +126,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
       support_package_id: '',
       start_month: '',
       notes: '',
+      referral_code: null,
     });
     setClientServices([]);
     setClientCosts([]);
@@ -599,6 +603,15 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
               clientId={client.id}
               clientEmail={client.email}
               onRefresh={onSaved}
+            />
+          )}
+
+          {/* Client Referral Section */}
+          {!isNew && client?.id && (
+            <ClientReferralSection
+              clientId={client.id}
+              referralCode={formData.referral_code}
+              onCodeGenerated={(code) => setFormData({ ...formData, referral_code: code })}
             />
           )}
 

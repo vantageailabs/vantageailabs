@@ -35,6 +35,7 @@ export interface Client {
   created_at: string;
   updated_at: string;
   review_request_sent_at: string | null;
+  referral_code: string | null;
 }
 
 const statusColors: Record<ClientStatus, string> = {
