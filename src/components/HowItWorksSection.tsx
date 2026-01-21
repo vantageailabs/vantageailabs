@@ -45,15 +45,8 @@ const HowItWorksSection = () => {
 
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 relative">
-            {/* Connecting line - hidden on mobile, positioned at center of number circles */}
-            <div className="hidden md:block absolute top-8 left-[12%] right-[12%] h-0.5 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/20" />
-            
             {steps.map((step, index) => (
               <div key={index} className="relative group">
-                {/* Mobile connector - centered under the number circles */}
-                {index < steps.length - 1 && (
-                  <div className="md:hidden absolute left-1/2 -translate-x-[1px] top-20 bottom-0 w-0.5 bg-gradient-to-b from-primary/40 to-primary/10 -mb-8" />
-                )}
                 
                 <div className="flex flex-col items-center text-center">
                   {/* Number circle */}
