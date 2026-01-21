@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Gift, Loader2, Plus, Check, UserPlus, Clock, Mail } from 'lucide-react';
+import { Copy, Gift, Loader2, Plus, Check, UserPlus, Clock, Mail, X } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   Dialog,
@@ -401,6 +401,11 @@ export function ClientReferralSection({ clientId, clientName, clientEmail, refer
                           <SelectItem value="converted">
                             <div className="flex items-center gap-1">
                               <Check className="h-3 w-3" /> Converted
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="cancelled">
+                            <div className="flex items-center gap-1">
+                              <X className="h-3 w-3" /> Cancelled
                             </div>
                           </SelectItem>
                           <SelectItem value="expired">Expired</SelectItem>
