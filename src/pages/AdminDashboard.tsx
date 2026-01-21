@@ -15,7 +15,8 @@ import { SupportPackagesManager } from '@/components/admin/SupportPackagesManage
 import { CouponsManager } from '@/components/admin/CouponsManager';
 import { CapacitySettings } from '@/components/admin/CapacitySettings';
 import { ContactSubmissionsList } from '@/components/admin/ContactSubmissionsList';
-import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList, Briefcase, Package, TrendingUp, Mail } from 'lucide-react';
+import { FeatureRequestsList } from '@/components/admin/FeatureRequestsList';
+import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList, Briefcase, Package, TrendingUp, Mail, Lightbulb } from 'lucide-react';
 
 function DashboardContent() {
   const { signOut } = useAuth();
@@ -53,7 +54,7 @@ function DashboardContent() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid grid-cols-5 lg:grid-cols-9 w-full">
+          <TabsList className="grid grid-cols-5 lg:grid-cols-10 w-full">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden lg:inline">Appointments</span>
@@ -73,6 +74,10 @@ function DashboardContent() {
             <TabsTrigger value="contact" className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
               <span className="hidden lg:inline">Contact</span>
+            </TabsTrigger>
+            <TabsTrigger value="feature-requests" className="flex items-center gap-2">
+              <Lightbulb className="h-4 w-4" />
+              <span className="hidden lg:inline">Requests</span>
             </TabsTrigger>
             <TabsTrigger value="services" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
@@ -130,6 +135,14 @@ function DashboardContent() {
               <p className="text-muted-foreground">View and respond to contact form submissions</p>
             </div>
             <ContactSubmissionsList />
+          </TabsContent>
+
+          <TabsContent value="feature-requests" className="animate-fade-in">
+            <div className="mb-4">
+              <h2 className="text-2xl font-display font-bold text-foreground">Feature Requests</h2>
+              <p className="text-muted-foreground">Review and quote incoming feature requests from clients</p>
+            </div>
+            <FeatureRequestsList />
           </TabsContent>
 
           <TabsContent value="services" className="animate-fade-in">
