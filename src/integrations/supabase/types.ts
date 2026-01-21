@@ -267,6 +267,44 @@ export type Database = {
           },
         ]
       }
+      client_projects: {
+        Row: {
+          client_id: string
+          created_at: string
+          domain: string | null
+          id: string
+          name: string
+          status: Database["public"]["Enums"]["project_status"]
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          domain?: string | null
+          id?: string
+          name: string
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          domain?: string | null
+          id?: string
+          name?: string
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_services: {
         Row: {
           agreed_price: number
@@ -275,6 +313,8 @@ export type Database = {
           created_at: string
           end_date: string | null
           id: string
+          project_id: string | null
+          scope_category: Database["public"]["Enums"]["scope_category"] | null
           service_id: string
           start_date: string | null
           status: Database["public"]["Enums"]["service_status"]
@@ -286,6 +326,8 @@ export type Database = {
           created_at?: string
           end_date?: string | null
           id?: string
+          project_id?: string | null
+          scope_category?: Database["public"]["Enums"]["scope_category"] | null
           service_id: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["service_status"]
@@ -297,6 +339,8 @@ export type Database = {
           created_at?: string
           end_date?: string | null
           id?: string
+          project_id?: string | null
+          scope_category?: Database["public"]["Enums"]["scope_category"] | null
           service_id?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["service_status"]
@@ -314,6 +358,13 @@ export type Database = {
             columns: ["coupon_id"]
             isOneToOne: false
             referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_services_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "client_projects"
             referencedColumns: ["id"]
           },
           {
@@ -745,8 +796,10 @@ export type Database = {
           hours_included: number
           id: string
           is_active: boolean
+          max_projects: number | null
           monthly_price: number
           name: string
+          tier_type: string
         }
         Insert: {
           created_at?: string
@@ -755,8 +808,10 @@ export type Database = {
           hours_included?: number
           id?: string
           is_active?: boolean
+          max_projects?: number | null
           monthly_price?: number
           name: string
+          tier_type?: string
         }
         Update: {
           created_at?: string
@@ -765,8 +820,10 @@ export type Database = {
           hours_included?: number
           id?: string
           is_active?: boolean
+          max_projects?: number | null
           monthly_price?: number
           name?: string
+          tier_type?: string
         }
         Relationships: []
       }
@@ -854,6 +911,14 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       client_status: "lead" | "prospect" | "active" | "completed" | "churned"
+      project_status: "active" | "paused" | "archived"
+      scope_category:
+        | "maintenance"
+        | "content_update"
+        | "new_page"
+        | "enhancement"
+        | "integration"
+        | "new_project"
       service_status: "planned" | "in_progress" | "completed" | "cancelled"
     }
     CompositeTypes: {
@@ -984,6 +1049,15 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       client_status: ["lead", "prospect", "active", "completed", "churned"],
+      project_status: ["active", "paused", "archived"],
+      scope_category: [
+        "maintenance",
+        "content_update",
+        "new_page",
+        "enhancement",
+        "integration",
+        "new_project",
+      ],
       service_status: ["planned", "in_progress", "completed", "cancelled"],
     },
   },

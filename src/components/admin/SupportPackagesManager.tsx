@@ -5,8 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Trash2, Headphones } from 'lucide-react';
+import { Loader2, Plus, Trash2, Headphones, FolderOpen } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface SupportPackage {
   id: string;
@@ -16,7 +24,15 @@ interface SupportPackage {
   hours_included: number;
   is_active: boolean;
   display_order: number;
+  max_projects: number | null;
+  tier_type: string;
 }
+
+const tierTypes = [
+  { value: 'single', label: 'Single Project', description: 'Covers 1 project' },
+  { value: 'portfolio', label: 'Portfolio', description: 'Covers 2-3 projects' },
+  { value: 'unlimited', label: 'Unlimited', description: 'Covers all projects' },
+];
 
 export function SupportPackagesManager() {
   const [packages, setPackages] = useState<SupportPackage[]>([]);
@@ -29,6 +45,8 @@ export function SupportPackagesManager() {
     description: '',
     monthly_price: 0,
     hours_included: 0,
+    max_projects: 1,
+    tier_type: 'single',
   });
 
   useEffect(() => {
@@ -61,6 +79,8 @@ export function SupportPackagesManager() {
       description: newPackage.description || null,
       monthly_price: newPackage.monthly_price,
       hours_included: newPackage.hours_included,
+      max_projects: newPackage.tier_type === 'unlimited' ? null : newPackage.max_projects,
+      tier_type: newPackage.tier_type,
       display_order: packages.length,
     });
 
@@ -68,7 +88,7 @@ export function SupportPackagesManager() {
       toast({ title: 'Error adding package', description: error.message, variant: 'destructive' });
     } else {
       toast({ title: 'Package added!' });
-      setNewPackage({ name: '', description: '', monthly_price: 0, hours_included: 0 });
+      setNewPackage({ name: '', description: '', monthly_price: 0, hours_included: 0, max_projects: 1, tier_type: 'single' });
       fetchPackages();
     }
     setSaving(false);
@@ -111,6 +131,19 @@ export function SupportPackagesManager() {
     }
   };
 
+  const getTierBadge = (tierType: string, maxProjects: number | null) => {
+    switch (tierType) {
+      case 'single':
+        return <Badge variant="secondary" className="gap-1"><FolderOpen className="h-3 w-3" /> 1 Project</Badge>;
+      case 'portfolio':
+        return <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20"><FolderOpen className="h-3 w-3" /> {maxProjects || '2-3'} Projects</Badge>;
+      case 'unlimited':
+        return <Badge variant="secondary" className="gap-1 bg-green-500/10 text-green-600 border-green-500/20"><FolderOpen className="h-3 w-3" /> Unlimited</Badge>;
+      default:
+        return null;
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-8 text-muted-foreground">Loading packages...</div>;
   }
@@ -126,14 +159,14 @@ export function SupportPackagesManager() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="pkgName">Package Name</Label>
               <Input
                 id="pkgName"
                 value={newPackage.name}
                 onChange={(e) => setNewPackage({ ...newPackage, name: e.target.value })}
-                placeholder="e.g., Basic Support"
+                placeholder="e.g., Single Project Support"
               />
             </div>
             <div className="space-y-2">
@@ -154,6 +187,36 @@ export function SupportPackagesManager() {
                 onChange={(e) => setNewPackage({ ...newPackage, hours_included: Number(e.target.value) })}
               />
             </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-2">
+              <Label>Tier Type</Label>
+              <Select
+                value={newPackage.tier_type}
+                onValueChange={(v) => setNewPackage({ ...newPackage, tier_type: v, max_projects: v === 'unlimited' ? null : (v === 'portfolio' ? 3 : 1) })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {tierTypes.map(t => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {newPackage.tier_type !== 'unlimited' && (
+              <div className="space-y-2">
+                <Label htmlFor="pkgMaxProjects">Max Projects</Label>
+                <Input
+                  id="pkgMaxProjects"
+                  type="number"
+                  min={1}
+                  value={newPackage.max_projects || 1}
+                  onChange={(e) => setNewPackage({ ...newPackage, max_projects: Number(e.target.value) })}
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="pkgDesc">Description</Label>
               <Input
@@ -204,6 +267,8 @@ export function SupportPackagesManager() {
                   </div>
                 </div>
 
+                {getTierBadge(pkg.tier_type, pkg.max_projects)}
+
                 <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Monthly Price</Label>
@@ -232,6 +297,43 @@ export function SupportPackagesManager() {
                       onBlur={(e) => handleUpdatePackage(pkg.id, { hours_included: Number(e.target.value) })}
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Tier Type</Label>
+                    <Select
+                      value={pkg.tier_type}
+                      onValueChange={(v) => {
+                        setPackages(packages.map(p => p.id === pkg.id ? { ...p, tier_type: v } : p));
+                        handleUpdatePackage(pkg.id, { tier_type: v, max_projects: v === 'unlimited' ? null : pkg.max_projects });
+                      }}
+                    >
+                      <SelectTrigger className="h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tierTypes.map(t => (
+                          <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {pkg.tier_type !== 'unlimited' && (
+                    <div className="space-y-1">
+                      <Label className="text-xs text-muted-foreground">Max Projects</Label>
+                      <Input
+                        type="number"
+                        className="h-8"
+                        min={1}
+                        value={pkg.max_projects || 1}
+                        onChange={(e) => {
+                          setPackages(packages.map(p => p.id === pkg.id ? { ...p, max_projects: Number(e.target.value) } : p));
+                        }}
+                        onBlur={(e) => handleUpdatePackage(pkg.id, { max_projects: Number(e.target.value) })}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <Input
