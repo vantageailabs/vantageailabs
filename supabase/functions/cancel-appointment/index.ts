@@ -137,6 +137,24 @@ serve(async (req) => {
 
     console.log('Appointment cancelled:', appointment.id);
 
+    // Delete any pending referral associated with this appointment's email
+    try {
+      const { error: referralDeleteError } = await supabase
+        .from('referrals')
+        .delete()
+        .eq('referred_email', appointment.guest_email)
+        .eq('status', 'pending');
+
+      if (referralDeleteError) {
+        console.error('Error deleting pending referral:', referralDeleteError);
+      } else {
+        console.log('Checked/deleted pending referral for:', appointment.guest_email);
+      }
+    } catch (refError) {
+      console.error('Error handling referral cleanup:', refError);
+      // Don't fail the cancellation if referral cleanup fails
+    }
+
     // Send cancellation confirmation email
     try {
       const siteUrl = Deno.env.get('SITE_URL') || 'https://vantageailabs.com';
