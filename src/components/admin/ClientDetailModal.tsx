@@ -18,12 +18,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Trash2, Save, Star, Send, Calendar, Clock, Tag } from 'lucide-react';
+import { Loader2, Plus, Trash2, Save, Star, Send, Calendar, Clock, Tag, FolderOpen } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { Client, ClientStatus } from './ClientsList';
 import { Separator } from '@/components/ui/separator';
 import { ClientCredentialsSection } from './ClientCredentialsSection';
 import { ClientReferralSection } from './ClientReferralSection';
+import { ClientProjectsSection, ClientProject, ProjectStatus } from './ClientProjectsSection';
+import { ScopeCategoryBadge, getScopeCategories, ScopeCategory } from './ScopeCategoryBadge';
 import {
   Select,
   SelectContent,
@@ -43,6 +45,8 @@ interface SupportPackage {
   name: string;
   monthly_price: number;
   hours_included: number;
+  max_projects: number | null;
+  tier_type: string;
 }
 
 interface Coupon {
@@ -63,6 +67,8 @@ interface ClientService {
   start_date: string | null;
   end_date: string | null;
   coupon_id: string | null;
+  project_id: string | null;
+  scope_category: ScopeCategory;
   service?: Service;
   coupon?: Coupon;
 }
@@ -92,6 +98,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [clientServices, setClientServices] = useState<ClientService[]>([]);
   const [clientCosts, setClientCosts] = useState<ClientCost[]>([]);
+  const [clientProjects, setClientProjects] = useState<ClientProject[]>([]);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -123,6 +130,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
         });
         fetchClientServices(client.id);
         fetchClientCosts(client.id);
+        fetchClientProjects(client.id);
       } else {
         resetForm();
       }
@@ -143,6 +151,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
     });
     setClientServices([]);
     setClientCosts([]);
+    setClientProjects([]);
   };
 
   const fetchServicesAndPackages = async () => {
@@ -173,11 +182,25 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
         start_date: cs.start_date,
         end_date: cs.end_date,
         coupon_id: cs.coupon_id,
+        project_id: cs.project_id,
+        scope_category: cs.scope_category || 'new_project',
         service: cs.services,
         coupon: cs.coupons,
       })));
     }
     setLoading(false);
+  };
+
+  const fetchClientProjects = async (clientId: string) => {
+    const { data } = await supabase
+      .from('client_projects')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: true });
+
+    if (data) {
+      setClientProjects(data as ClientProject[]);
+    }
   };
 
   const fetchClientCosts = async (clientId: string) => {
@@ -224,6 +247,8 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
         start_date: null,
         end_date: null,
         coupon_id: null,
+        project_id: clientProjects.length > 0 ? clientProjects[0].id : null,
+        scope_category: 'new_project' as ScopeCategory,
         service: services[0],
       },
     ]);
@@ -317,9 +342,31 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
 
         // Delete existing services and re-insert
         await supabase.from('client_services').delete().eq('client_id', clientId);
+        // Delete existing projects and re-insert
+        await supabase.from('client_projects').delete().eq('client_id', clientId);
       }
 
-      // Insert client services
+      // Insert client projects first (to get IDs for services)
+      const projectIdMap = new Map<string, string>();
+      if (clientProjects.length > 0 && clientId) {
+        for (const project of clientProjects) {
+          const { data, error } = await supabase
+            .from('client_projects')
+            .insert({
+              client_id: clientId,
+              name: project.name,
+              domain: project.domain || null,
+              status: project.status,
+            })
+            .select()
+            .single();
+          if (error) throw error;
+          // Map temp IDs to real IDs
+          projectIdMap.set(project.id, data.id);
+        }
+      }
+
+      // Insert client services with project references
       if (clientServices.length > 0 && clientId) {
         const servicesToInsert = clientServices.map(cs => ({
           client_id: clientId,
@@ -329,6 +376,8 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           start_date: cs.start_date || null,
           end_date: cs.end_date || null,
           coupon_id: cs.coupon_id || null,
+          project_id: cs.project_id ? (projectIdMap.get(cs.project_id) || cs.project_id) : null,
+          scope_category: cs.scope_category,
         }));
 
         const { error } = await supabase.from('client_services').insert(servicesToInsert);
@@ -371,6 +420,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
       // Delete related records first
       await supabase.from('client_services').delete().eq('client_id', client.id);
       await supabase.from('client_costs').delete().eq('client_id', client.id);
+      await supabase.from('client_projects').delete().eq('client_id', client.id);
       
       const { error } = await supabase.from('clients').delete().eq('id', client.id);
       if (error) throw error;
@@ -492,7 +542,17 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
             </div>
           </div>
 
+          {/* Projects Section */}
+          <Separator />
+          <ClientProjectsSection
+            clientId={client?.id}
+            isNewClient={isNew}
+            projects={clientProjects}
+            onProjectsChange={setClientProjects}
+          />
+
           {/* Services */}
+          <Separator />
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label>Assigned Services</Label>
@@ -515,6 +575,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
                   const discountedPrice = calculateDiscountedPrice(cs);
                   const hasDiscount = cs.coupon_id && discountedPrice !== Number(cs.agreed_price);
                   const activeCoupon = cs.coupon_id ? (coupons.find(c => c.id === cs.coupon_id) || cs.coupon) : null;
+                  const scopeCategories = getScopeCategories();
                   
                   return (
                     <div key={cs.id} className="p-3 rounded-lg border border-border/50 bg-muted/50 space-y-2">
@@ -558,8 +619,49 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
+
+                      {/* Row 2: Project & Scope Category */}
+                      <div className="flex items-center gap-2 pt-1 border-t border-border/30">
+                        <div className="flex items-center gap-1.5 flex-1">
+                          <FolderOpen className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Select
+                            value={cs.project_id || 'none'}
+                            onValueChange={(v) => handleServiceChange(index, 'project_id', v === 'none' ? null : v)}
+                          >
+                            <SelectTrigger className="h-8 text-sm flex-1">
+                              <SelectValue placeholder="No project" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">No project</SelectItem>
+                              {clientProjects.map((p) => (
+                                <SelectItem key={p.id} value={p.id}>
+                                  {p.name || 'Unnamed'} {p.domain && `(${p.domain})`}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Select
+                          value={cs.scope_category}
+                          onValueChange={(v) => handleServiceChange(index, 'scope_category', v)}
+                        >
+                          <SelectTrigger className="h-8 text-sm w-40">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {scopeCategories.map((cat) => (
+                              <SelectItem key={cat.value} value={cat.value}>
+                                <span className="flex items-center gap-1">
+                                  {cat.supportEligible ? '✓' : '✗'} {cat.label}
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <ScopeCategoryBadge category={cs.scope_category} />
+                      </div>
                       
-                      {/* Row 2: Dates and Duration */}
+                      {/* Row 3: Dates and Duration */}
                       <div className="flex items-center gap-2 pt-1 border-t border-border/30">
                         <div className="flex items-center gap-1.5 flex-1">
                           <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
@@ -587,7 +689,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
                         )}
                       </div>
 
-                      {/* Row 3: Coupon and Final Price */}
+                      {/* Row 4: Coupon and Final Price */}
                       <div className="flex items-center gap-2 pt-1 border-t border-border/30">
                         <div className="flex items-center gap-1.5 flex-1">
                           <Tag className="h-3.5 w-3.5 text-muted-foreground" />

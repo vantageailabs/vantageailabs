@@ -577,6 +577,28 @@ const Services = () => {
             Keep your digital presence running smoothly with flexible support options.
           </p>
           
+          {/* Scope Clarification */}
+          <div className="grid md:grid-cols-2 gap-4 mb-8">
+            <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+              <p className="font-semibold text-green-600 mb-2">✓ Covered by Support Hours</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Bug fixes & security patches</li>
+                <li>• Content updates (text, images)</li>
+                <li>• New pages using existing functionality</li>
+                <li>• Performance optimization</li>
+              </ul>
+            </div>
+            <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4">
+              <p className="font-semibold text-orange-600 mb-2">✗ Requires Separate Quote</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• New features or functionality</li>
+                <li>• Third-party integrations</li>
+                <li>• New websites or applications</li>
+                <li>• Major redesigns</li>
+              </ul>
+            </div>
+          </div>
+          
           {/* 30-day free support banner */}
           <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 mb-8 text-center">
             <p className="text-sm font-medium">
