@@ -569,6 +569,69 @@ export type Database = {
           },
         ]
       }
+      feature_requests: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          features: string[]
+          id: string
+          notes: string | null
+          project_id: string | null
+          quoted_amount: number | null
+          source_identifier: string
+          status: string
+          submitter_email: string | null
+          submitter_name: string | null
+          submitter_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          features?: string[]
+          id?: string
+          notes?: string | null
+          project_id?: string | null
+          quoted_amount?: number | null
+          source_identifier: string
+          status?: string
+          submitter_email?: string | null
+          submitter_name?: string | null
+          submitter_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          features?: string[]
+          id?: string
+          notes?: string | null
+          project_id?: string | null
+          quoted_amount?: number | null
+          source_identifier?: string
+          status?: string
+          submitter_email?: string | null
+          submitter_name?: string | null
+          submitter_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "client_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       form_analytics: {
         Row: {
           abandoned: boolean | null
