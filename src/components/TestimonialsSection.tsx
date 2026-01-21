@@ -143,7 +143,7 @@ const TestimonialsSection = () => {
 
       {/* Preview Dialog */}
       <Dialog open={!!selectedTestimonial} onOpenChange={() => setSelectedTestimonial(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto p-0 w-[95vw] sm:w-full">
           <DialogHeader className="p-6 pb-0">
             <DialogTitle className="text-xl">
               Built for {selectedTestimonial?.company}
