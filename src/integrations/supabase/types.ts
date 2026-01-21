@@ -571,8 +571,11 @@ export type Database = {
       }
       feature_requests: {
         Row: {
+          applied_discount_percent: number | null
           client_id: string | null
+          coupon_id: string | null
           created_at: string
+          feature_quotes: Json | null
           features: string[]
           id: string
           notes: string | null
@@ -586,8 +589,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          applied_discount_percent?: number | null
           client_id?: string | null
+          coupon_id?: string | null
           created_at?: string
+          feature_quotes?: Json | null
           features?: string[]
           id?: string
           notes?: string | null
@@ -601,8 +607,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          applied_discount_percent?: number | null
           client_id?: string | null
+          coupon_id?: string | null
           created_at?: string
+          feature_quotes?: Json | null
           features?: string[]
           id?: string
           notes?: string | null
@@ -621,6 +630,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_requests_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
             referencedColumns: ["id"]
           },
           {
