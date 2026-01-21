@@ -28,11 +28,15 @@ export default function CurrentCustomerQuotes() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    notes: ''
-  });
+  const [notes, setNotes] = useState('');
+
+  // Calculate discount based on feature count
+  const getDiscount = () => {
+    if (features.length >= 3) return { percent: 20, label: '20% off' };
+    if (features.length === 1) return { percent: 10, label: '10% off' };
+    return null;
+  };
+  const discount = getDiscount();
 
   // Parse features from URL on mount
   useEffect(() => {
@@ -111,9 +115,7 @@ export default function CurrentCustomerQuotes() {
           client_id: matchedClient?.id || null,
           source_identifier: source || 'direct',
           features,
-          submitter_name: formData.name || null,
-          submitter_email: formData.email || null,
-          submitter_notes: formData.notes || null
+          submitter_notes: notes || null
         });
 
       if (error) throw error;
@@ -267,45 +269,45 @@ export default function CurrentCustomerQuotes() {
             </CardContent>
           </Card>
 
+          {/* Discount Banner */}
+          {discount && (
+            <Card className="mb-6 border-green-500/30 bg-green-500/10">
+              <CardContent className="py-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <span className="text-green-600 dark:text-green-400 font-bold text-sm">%</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">
+                      You're earning <span className="text-green-600 dark:text-green-400 font-bold">{discount.label}</span>!
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {features.length === 1 
+                        ? 'Request 3+ features to unlock 20% off' 
+                        : `Bundling ${features.length} features for maximum savings`}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Additional Notes */}
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
+              <CardTitle>Additional Notes</CardTitle>
               <CardDescription>
-                Optional: Provide your details so we can send you the quote directly.
+                Optional: Add any context or specific requirements for your feature requests.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="Your name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="notes">Additional Notes</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Any additional context or requirements..."
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  rows={3}
-                />
-              </div>
+            <CardContent>
+              <Textarea
+                id="notes"
+                placeholder="Any additional context or requirements..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+              />
             </CardContent>
           </Card>
 
