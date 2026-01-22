@@ -19,6 +19,7 @@ interface BlueprintRequest {
 const moduleDetails: Record<string, { name: string; value: string }> = {
   // Lead & Sales
   recovery: { name: "Lead Recovery Module", value: "+15% Lead Volume" },
+  "lead-pipeline": { name: "Advanced Lead Pipeline", value: "Smart Prioritization" },
   sms: { name: "SMS Speed-to-Lead", value: "+2x Booking Rate" },
   booking: { name: "Direct Booking Integration", value: "Frictionless Sales" },
   // Customer Experience
