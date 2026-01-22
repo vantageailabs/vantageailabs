@@ -26,6 +26,16 @@ const moduleDetails: Record<string, { name: string; value: string }> = {
   dashboard: { name: "Performance Dashboard", value: "Data Visibility" },
   "field-sync": { name: "Field Tool Integration", value: "Operations" },
   portal: { name: "Customer Portal", value: "Trust & Transparency" },
+  "ai-phone": { name: "AI Phone Agent", value: "24/7 Availability" },
+  "multi-location": { name: "Multi-Location Support", value: "Scalability" },
+  invoicing: { name: "Automated Invoicing", value: "Faster Payments" },
+  inventory: { name: "Inventory Tracking", value: "Cost Control" },
+  "employee-scheduling": { name: "Employee Scheduling", value: "Efficiency" },
+  "marketing-automation": { name: "Marketing Automation", value: "Revenue Growth" },
+  "crm-sync": { name: "CRM Integration", value: "Data Sync" },
+  "payment-processing": { name: "Payment Processing", value: "Convenience" },
+  "estimate-builder": { name: "Digital Estimate Builder", value: "Close Faster" },
+  "warranty-tracking": { name: "Warranty & Maintenance Tracking", value: "Recurring Revenue" },
 };
 
 const generateBlueprintEmailHtml = (data: BlueprintRequest): string => {

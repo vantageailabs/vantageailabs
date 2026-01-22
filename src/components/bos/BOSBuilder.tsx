@@ -14,7 +14,17 @@ import {
   Plug, 
   Users,
   Zap,
-  Clock
+  Clock,
+  Phone,
+  Building2,
+  Receipt,
+  Package,
+  CalendarClock,
+  Megaphone,
+  Database,
+  CreditCard,
+  FileSignature,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,6 +145,46 @@ const allModules: BOSModule[] = [
     icon: Clock,
     tier: "growth"
   },
+  {
+    id: "marketing-automation",
+    name: "Marketing Automation",
+    description: "Seasonal campaigns, promotions, and email drip sequences",
+    price: 700,
+    hoursSaved: 3,
+    valueMetric: "Revenue Growth",
+    icon: Megaphone,
+    tier: "growth"
+  },
+  {
+    id: "payment-processing",
+    name: "Payment Processing",
+    description: "Accept cards on-site or online with automated receipts",
+    price: 500,
+    hoursSaved: 2,
+    valueMetric: "Convenience",
+    icon: CreditCard,
+    tier: "growth"
+  },
+  {
+    id: "estimate-builder",
+    name: "Digital Estimate Builder",
+    description: "Create professional estimates on-site with e-signatures",
+    price: 650,
+    hoursSaved: 4,
+    valueMetric: "Close Faster",
+    icon: FileSignature,
+    tier: "growth"
+  },
+  {
+    id: "warranty-tracking",
+    name: "Warranty & Maintenance Tracking",
+    description: "Automated reminders for service agreements and warranties",
+    price: 550,
+    hoursSaved: 2,
+    valueMetric: "Recurring Revenue",
+    icon: Shield,
+    tier: "growth"
+  },
   // Scale tier add-ons
   {
     id: "ai-agent",
@@ -144,6 +194,16 @@ const allModules: BOSModule[] = [
     hoursSaved: 5,
     valueMetric: "Saves 5 hrs/week",
     icon: Bot,
+    tier: "scale"
+  },
+  {
+    id: "ai-phone",
+    name: "AI Phone Agent",
+    description: "Voice AI that answers calls, books appointments, and routes emergencies",
+    price: 2000,
+    hoursSaved: 8,
+    valueMetric: "24/7 Availability",
+    icon: Phone,
     tier: "scale"
   },
   {
@@ -174,6 +234,56 @@ const allModules: BOSModule[] = [
     hoursSaved: 3,
     valueMetric: "Trust & Transparency",
     icon: Users,
+    tier: "scale"
+  },
+  {
+    id: "multi-location",
+    name: "Multi-Location Support",
+    description: "Manage multiple service areas with territory routing",
+    price: 1500,
+    hoursSaved: 4,
+    valueMetric: "Scalability",
+    icon: Building2,
+    tier: "scale"
+  },
+  {
+    id: "invoicing",
+    name: "Automated Invoicing",
+    description: "Generate and send invoices automatically when jobs complete",
+    price: 900,
+    hoursSaved: 5,
+    valueMetric: "Faster Payments",
+    icon: Receipt,
+    tier: "scale"
+  },
+  {
+    id: "inventory",
+    name: "Inventory Tracking",
+    description: "Track parts and materials across trucks and warehouse",
+    price: 750,
+    hoursSaved: 3,
+    valueMetric: "Cost Control",
+    icon: Package,
+    tier: "scale"
+  },
+  {
+    id: "employee-scheduling",
+    name: "Employee Scheduling",
+    description: "Automated tech dispatch and route optimization",
+    price: 850,
+    hoursSaved: 4,
+    valueMetric: "Efficiency",
+    icon: CalendarClock,
+    tier: "scale"
+  },
+  {
+    id: "crm-sync",
+    name: "CRM Integration",
+    description: "Two-way sync with Salesforce, HubSpot, or Zoho",
+    price: 1100,
+    hoursSaved: 3,
+    valueMetric: "Data Sync",
+    icon: Database,
     tier: "scale"
   }
 ];
