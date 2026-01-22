@@ -44,6 +44,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import BOSModuleCard, { type BOSModule } from "./BOSModuleCard";
 import { cn } from "@/lib/utils";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 // Define all available modules
 const allModules: BOSModule[] = [
@@ -569,33 +575,46 @@ const BOSBuilder = () => {
               const categoryModules = allModules.filter(m => m.tier === category.id);
               if (categoryModules.length === 0) return null;
               const CategoryIcon = category.icon;
+              const selectedInCategory = categoryModules.filter(m => selectedModules.includes(m.id)).length;
               
               return (
-                <div key={category.id}>
-                  <h3 className="font-semibold mb-4 flex items-center gap-2">
-                    <span className={cn("px-2 py-1 rounded text-xs flex items-center gap-1", 
-                      category.id === "lead-sales" ? "bg-primary/10 text-primary" :
-                      category.id === "customer" ? "bg-blue-500/10 text-blue-500" :
-                      category.id === "ai" ? "bg-purple-500/10 text-purple-500" :
-                      category.id === "operations" ? "bg-orange-500/10 text-orange-500" :
-                      category.id === "finance" ? "bg-green-500/10 text-green-500" :
-                      "bg-cyan-500/10 text-cyan-500"
-                    )}>
-                      <CategoryIcon className="h-3 w-3" />
-                      {category.name}
-                    </span>
-                  </h3>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {categoryModules.map(module => (
-                      <BOSModuleCard
-                        key={module.id}
-                        module={module}
-                        isSelected={selectedModules.includes(module.id)}
-                        onToggle={() => toggleModule(module.id)}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <Collapsible key={category.id} defaultOpen={true} className="group">
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between py-2 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors">
+                      <h3 className="font-semibold flex items-center gap-2">
+                        <span className={cn("px-2 py-1 rounded text-xs flex items-center gap-1", 
+                          category.id === "lead-sales" ? "bg-primary/10 text-primary" :
+                          category.id === "customer" ? "bg-blue-500/10 text-blue-500" :
+                          category.id === "ai" ? "bg-purple-500/10 text-purple-500" :
+                          category.id === "operations" ? "bg-orange-500/10 text-orange-500" :
+                          category.id === "finance" ? "bg-green-500/10 text-green-500" :
+                          "bg-cyan-500/10 text-cyan-500"
+                        )}>
+                          <CategoryIcon className="h-3 w-3" />
+                          {category.name}
+                        </span>
+                        {selectedInCategory > 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            {selectedInCategory} selected
+                          </Badge>
+                        )}
+                      </h3>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-3">
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {categoryModules.map(module => (
+                        <BOSModuleCard
+                          key={module.id}
+                          module={module}
+                          isSelected={selectedModules.includes(module.id)}
+                          onToggle={() => toggleModule(module.id)}
+                        />
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               );
             })}
           </div>
