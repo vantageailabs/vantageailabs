@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard, Clock, Calendar, Headphones, Palette, Search, Download, HelpCircle } from "lucide-react";
+import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard, Clock, Calendar, Headphones, Palette, Search, Download, HelpCircle, FileEdit } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -85,6 +85,7 @@ const serviceCategories: ServiceCategoryData[] = [
           "Bespoke design & branding",
           "Full SEO strategy",
           "AI chatbot",
+          "Advanced CMS included",
           "CRM integration",
           "Custom booking system",
           "Client portal",
@@ -732,6 +733,143 @@ const Services = () => {
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
             Add-ons & <span className="text-gradient-accent">Extras</span>
           </h2>
+          {/* CMS Comparison */}
+          <TooltipProvider>
+            <div className="grid sm:grid-cols-2 gap-6 mb-8">
+              {/* Basic CMS */}
+              <div className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-colors">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg bg-muted">
+                    <FileEdit className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Basic CMS</h3>
+                    <Badge variant="secondary" className="text-xs">Included in Professional</Badge>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Self-service editing for common content updates. Perfect for making quick changes without waiting for support.
+                </p>
+                <ul className="space-y-2 mb-4">
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Edit existing text & images</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Update contact info & hours</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Manage team member profiles</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Update service descriptions</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="h-4 w-4 mt-0.5 flex-shrink-0">—</span>
+                    <span>Cannot add new pages</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="h-4 w-4 mt-0.5 flex-shrink-0">—</span>
+                    <span>Single admin user</span>
+                  </li>
+                </ul>
+                <div className="flex items-baseline justify-between pt-4 border-t border-border">
+                  <span className="text-2xl font-bold">$350</span>
+                  <span className="text-sm text-muted-foreground">one-time add-on</span>
+                </div>
+              </div>
+
+              {/* Advanced CMS */}
+              <div className="bg-primary/5 border-2 border-primary rounded-xl p-6 relative">
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
+                  Included in Enterprise
+                </Badge>
+                <div className="flex items-center gap-3 mb-4 pt-2">
+                  <div className="p-2 rounded-lg bg-primary/20">
+                    <LayoutDashboard className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Advanced CMS</h3>
+                    <span className="text-xs text-muted-foreground">Full content control</span>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Complete content management with full autonomy. Create pages, manage your blog, and control who can edit what.
+                </p>
+                <ul className="space-y-2 mb-4">
+                  <li className="flex items-start gap-2 text-sm font-medium text-primary">
+                    <Check className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    <span>Everything in Basic CMS</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Create & manage blog posts</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Add new pages & sections</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="flex items-center gap-1">
+                      User roles (Admin/Editor)
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-xs">Admins have full access. Editors can update content but cannot change site settings or add new pages.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Edit SEO meta tags & titles</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Media library management</span>
+                  </li>
+                </ul>
+                <div className="flex items-baseline justify-between pt-4 border-t border-primary/20">
+                  <span className="text-2xl font-bold">$750</span>
+                  <span className="text-sm text-muted-foreground">one-time add-on</span>
+                </div>
+              </div>
+            </div>
+          </TooltipProvider>
+
+          {/* CMS vs Retainer Comparison */}
+          <div className="bg-muted/50 border border-border rounded-xl p-6 mb-8">
+            <h3 className="font-display font-semibold text-lg mb-4 text-center">CMS vs. Monthly Retainer: Which is right for you?</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <p className="font-medium text-primary mb-2">Choose CMS if you want:</p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• <span className="text-foreground">Self-service</span> — make changes on your own schedule</li>
+                  <li>• <span className="text-foreground">One-time cost</span> — no ongoing fees for content editing</li>
+                  <li>• <span className="text-foreground">Frequent updates</span> — you update content weekly or daily</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-medium text-primary mb-2">Choose Retainer if you want:</p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• <span className="text-foreground">Done-for-you</span> — we handle all updates for you</li>
+                  <li>• <span className="text-foreground">Expert execution</span> — complex changes, new pages, logic updates</li>
+                  <li>• <span className="text-foreground">Ongoing support</span> — bug fixes, optimization, strategy calls</li>
+                </ul>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground text-center mt-4">
+              💡 Many clients combine both: CMS for quick day-to-day edits, plus a retainer for bigger changes and support.
+            </p>
+          </div>
+
+          {/* Other Add-ons */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
               <div className="flex items-center gap-3 mb-3">
@@ -745,21 +883,6 @@ const Services = () => {
               </p>
               <div className="flex items-baseline justify-between">
                 <span className="text-xl font-bold">$300</span>
-                <span className="text-xs text-muted-foreground">one-time</span>
-              </div>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 rounded-lg bg-muted">
-                  <LayoutDashboard className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-semibold text-sm">Advanced CMS</h3>
-              </div>
-              <p className="text-xs text-muted-foreground mb-4">
-                Full content management with blog, user roles, and unlimited editable pages.
-              </p>
-              <div className="flex items-baseline justify-between">
-                <span className="text-xl font-bold">$350</span>
                 <span className="text-xs text-muted-foreground">one-time</span>
               </div>
             </div>
@@ -790,6 +913,21 @@ const Services = () => {
               </p>
               <div className="flex items-baseline justify-between">
                 <span className="text-xl font-bold">$250</span>
+                <span className="text-xs text-muted-foreground">one-time</span>
+              </div>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 rounded-lg bg-muted">
+                  <Zap className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-semibold text-sm">Priority Onboarding</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">
+                Skip the queue with expedited delivery and dedicated onboarding support.
+              </p>
+              <div className="flex items-baseline justify-between">
+                <span className="text-xl font-bold">$500</span>
                 <span className="text-xs text-muted-foreground">one-time</span>
               </div>
             </div>
