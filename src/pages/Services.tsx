@@ -585,6 +585,7 @@ const Services = () => {
                 <li>• Bug fixes & security patches</li>
                 <li>• Content updates (text, images)</li>
                 <li>• New pages using existing functionality</li>
+                <li>• Changes to existing logic (e.g., email addresses, calculations)</li>
                 <li>• Performance optimization</li>
               </ul>
             </div>
