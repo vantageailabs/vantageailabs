@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Sparkles, Zap, Rocket, Shield, MapPin, LayoutDashboard, Clock, Calendar, Headphones, Palette, Search, Download, HelpCircle, FileEdit } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -278,6 +279,7 @@ const serviceCategories: ServiceCategoryData[] = [
 const Services = () => {
   const [activeCategory, setActiveCategory] = useState<ServiceCategory>("websites");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
+  const [brandDesignType, setBrandDesignType] = useState<"basic" | "full">("basic");
   const currentCategory = serviceCategories.find((cat) => cat.id === activeCategory)!;
 
   return (
@@ -886,18 +888,37 @@ const Services = () => {
                 <span className="text-xs text-muted-foreground">one-time</span>
               </div>
             </div>
-            <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
+            <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors sm:col-span-2 lg:col-span-1">
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 rounded-lg bg-muted">
                   <Palette className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-semibold text-sm">Logo & Brand Design</h3>
               </div>
+              
+              {/* Toggle between Basic and Full */}
+              <ToggleGroup
+                type="single"
+                value={brandDesignType}
+                onValueChange={(value) => value && setBrandDesignType(value as "basic" | "full")}
+                className="justify-start mb-3"
+              >
+                <ToggleGroupItem value="basic" className="text-xs px-3 py-1 h-7">
+                  Basic
+                </ToggleGroupItem>
+                <ToggleGroupItem value="full" className="text-xs px-3 py-1 h-7">
+                  Full Brand
+                </ToggleGroupItem>
+              </ToggleGroup>
+              
               <p className="text-xs text-muted-foreground mb-4">
-                Custom logo design with brand guidelines, color palette, and typography.
+                {brandDesignType === "basic" 
+                  ? "Custom logo designed by a professional designer."
+                  : "Complete brand package: logo, guidelines, color palette, typography, and usage rules."
+                }
               </p>
               <div className="flex items-baseline justify-between">
-                <span className="text-xl font-bold">$500</span>
+                <span className="text-xl font-bold">{brandDesignType === "basic" ? "$1,000" : "$5,000"}</span>
                 <span className="text-xs text-muted-foreground">one-time</span>
               </div>
             </div>
