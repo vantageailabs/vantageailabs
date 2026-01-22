@@ -17,25 +17,40 @@ interface BlueprintRequest {
 
 // Module details for the email
 const moduleDetails: Record<string, { name: string; value: string }> = {
+  // Lead & Sales
   recovery: { name: "Lead Recovery Module", value: "+15% Lead Volume" },
   sms: { name: "SMS Speed-to-Lead", value: "+2x Booking Rate" },
   booking: { name: "Direct Booking Integration", value: "Frictionless Sales" },
+  // Customer Experience
   reviews: { name: "Review Booster", value: "SEO Authority" },
   nurture: { name: "7-Day Nurture Sequence", value: "+20% Conversions" },
-  "ai-agent": { name: "AI Intake Agent", value: "Saves 5 hrs/week" },
-  dashboard: { name: "Performance Dashboard", value: "Data Visibility" },
-  "field-sync": { name: "Field Tool Integration", value: "Operations" },
   portal: { name: "Customer Portal", value: "Trust & Transparency" },
+  referral: { name: "Referral Program", value: "Organic Growth" },
+  // AI & Intelligence
+  "ai-agent": { name: "AI Intake Agent", value: "Smart Qualification" },
   "ai-phone": { name: "AI Phone Agent", value: "24/7 Availability" },
+  "ai-estimate": { name: "AI Estimate Builder", value: "Accurate Quotes" },
+  "ai-voice-polish": { name: "AI Voice-to-Text Polish", value: "Pro Documentation" },
+  "ai-sentiment": { name: "Review Sentiment Manager", value: "Reputation Intel" },
+  "ai-scheduler": { name: "AI Smart Scheduler", value: "Max Efficiency" },
+  // Operations
+  dashboard: { name: "Performance Dashboard", value: "Data Visibility" },
+  "field-sync": { name: "Field Tool Integration", value: "Unified Ops" },
   "multi-location": { name: "Multi-Location Support", value: "Scalability" },
-  invoicing: { name: "Automated Invoicing", value: "Faster Payments" },
+  "employee-scheduling": { name: "Employee Scheduling", value: "Team Efficiency" },
   inventory: { name: "Inventory Tracking", value: "Cost Control" },
-  "employee-scheduling": { name: "Employee Scheduling", value: "Efficiency" },
-  "marketing-automation": { name: "Marketing Automation", value: "Revenue Growth" },
-  "crm-sync": { name: "CRM Integration", value: "Data Sync" },
-  "payment-processing": { name: "Payment Processing", value: "Convenience" },
+  "voice-notes": { name: "Voice-to-Text Field Notes", value: "Fast Documentation" },
+  "user-roles": { name: "User Roles & Permissions", value: "Access Control" },
+  "expense-tracking": { name: "Expense Tracking", value: "Cost Clarity" },
+  // Finance
+  invoicing: { name: "Automated Invoicing", value: "Faster Payments" },
+  "payment-processing": { name: "Payment Processing", value: "Easy Payments" },
   "estimate-builder": { name: "Digital Estimate Builder", value: "Close Faster" },
-  "warranty-tracking": { name: "Warranty & Maintenance Tracking", value: "Recurring Revenue" },
+  "warranty-tracking": { name: "Warranty & Maintenance", value: "Recurring Revenue" },
+  // Content & Analytics
+  "cms-basic": { name: "Basic CMS", value: "Self-Service" },
+  "cms-advanced": { name: "Advanced CMS", value: "Full Control" },
+  "crm-sync": { name: "CRM Integration", value: "Data Sync" },
 };
 
 const generateBlueprintEmailHtml = (data: BlueprintRequest): string => {
@@ -119,6 +134,7 @@ const generateBlueprintEmailHtml = (data: BlueprintRequest): string => {
     </div>
 
     <!-- Foundation Features -->
+    <!-- Foundation Features -->
     <div style="margin-bottom: 24px;">
       <h3 style="color: #ffffff; font-size: 16px; margin: 0 0 12px 0; border-bottom: 1px solid #333; padding-bottom: 8px;">
         ✓ Foundation Features (Included)
@@ -129,6 +145,7 @@ const generateBlueprintEmailHtml = (data: BlueprintRequest): string => {
         <li>Google Business Profile Sync</li>
         <li>Unified Lead Inbox</li>
         <li>Email Notifications</li>
+        <li>Standard SEO Optimization</li>
       </ul>
     </div>
 

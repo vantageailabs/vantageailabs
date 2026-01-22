@@ -20,11 +20,20 @@ import {
   Receipt,
   Package,
   CalendarClock,
-  Megaphone,
   Database,
   CreditCard,
   FileSignature,
-  Shield
+  Shield,
+  Search,
+  Mic,
+  Gift,
+  UserCog,
+  Wallet,
+  BrainCircuit,
+  MessageCircle,
+  Route,
+  FileEdit,
+  Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +103,17 @@ const allModules: BOSModule[] = [
     tier: "foundation",
     included: true
   },
+  {
+    id: "seo-standard",
+    name: "Standard SEO Optimization",
+    description: "Meta tags, schema markup, and sitemap for search visibility",
+    price: 0,
+    hoursSaved: 0,
+    valueMetric: "Search Rankings",
+    icon: Search,
+    tier: "foundation",
+    included: true
+  },
   // Lead & Sales Add-ons
   {
     id: "recovery",
@@ -119,7 +139,7 @@ const allModules: BOSModule[] = [
     id: "booking",
     name: "Direct Booking Integration",
     description: "Let clients see your actual availability and book appointments on the fly",
-    price: 400,
+    price: 1000,
     hoursSaved: 4,
     valueMetric: "Frictionless Sales",
     icon: Calendar,
@@ -176,6 +196,16 @@ const allModules: BOSModule[] = [
     icon: Shield,
     tier: "customer"
   },
+  {
+    id: "referral",
+    name: "Referral Program",
+    description: "Automated referral tracking with rewards and commission management",
+    price: 800,
+    hoursSaved: 3,
+    valueMetric: "Organic Growth",
+    icon: Gift,
+    tier: "customer"
+  },
   // AI & Intelligence Add-ons
   {
     id: "ai-agent",
@@ -195,6 +225,46 @@ const allModules: BOSModule[] = [
     hoursSaved: 8,
     valueMetric: "24/7 Availability",
     icon: Phone,
+    tier: "ai"
+  },
+  {
+    id: "ai-estimate",
+    name: "AI Estimate Builder",
+    description: "Smart pricing suggestions based on job details, photos, and history",
+    price: 1200,
+    hoursSaved: 4,
+    valueMetric: "Accurate Quotes",
+    icon: BrainCircuit,
+    tier: "ai"
+  },
+  {
+    id: "ai-voice-polish",
+    name: "AI Voice-to-Text Polish",
+    description: "Transcribes field notes and polishes them into professional documentation",
+    price: 600,
+    hoursSaved: 3,
+    valueMetric: "Pro Documentation",
+    icon: MessageCircle,
+    tier: "ai"
+  },
+  {
+    id: "ai-sentiment",
+    name: "Review Sentiment Manager",
+    description: "AI analysis of reviews with smart response suggestions",
+    price: 700,
+    hoursSaved: 2,
+    valueMetric: "Reputation Intel",
+    icon: Star,
+    tier: "ai"
+  },
+  {
+    id: "ai-scheduler",
+    name: "AI Smart Scheduler",
+    description: "Optimize routes and appointments automatically based on location and priority",
+    price: 1100,
+    hoursSaved: 5,
+    valueMetric: "Max Efficiency",
+    icon: Route,
     tier: "ai"
   },
   // Operations Add-ons
@@ -238,6 +308,36 @@ const allModules: BOSModule[] = [
     icon: Package,
     tier: "operations"
   },
+  {
+    id: "voice-notes",
+    name: "Voice-to-Text Field Notes",
+    description: "Capture notes hands-free while on the job site",
+    price: 500,
+    hoursSaved: 3,
+    valueMetric: "Fast Documentation",
+    icon: Mic,
+    tier: "operations"
+  },
+  {
+    id: "user-roles",
+    name: "User Roles & Permissions",
+    description: "Admin, manager, and tech access levels with audit trails",
+    price: 600,
+    hoursSaved: 2,
+    valueMetric: "Access Control",
+    icon: UserCog,
+    tier: "operations"
+  },
+  {
+    id: "expense-tracking",
+    name: "Expense Tracking",
+    description: "Log and categorize job-related expenses with receipt capture",
+    price: 700,
+    hoursSaved: 3,
+    valueMetric: "Cost Clarity",
+    icon: Wallet,
+    tier: "operations"
+  },
   // Finance & Payments Add-ons
   {
     id: "payment-processing",
@@ -259,7 +359,7 @@ const allModules: BOSModule[] = [
     icon: Receipt,
     tier: "finance"
   },
-  // Analytics & Marketing Add-ons
+  // Content & Analytics Add-ons
   {
     id: "dashboard",
     name: "Performance Dashboard",
@@ -271,13 +371,23 @@ const allModules: BOSModule[] = [
     tier: "analytics"
   },
   {
-    id: "marketing-automation",
-    name: "Marketing Automation",
-    description: "Seasonal campaigns, promotions, and email drip sequences",
-    price: 700,
-    hoursSaved: 3,
-    valueMetric: "Revenue Growth",
-    icon: Megaphone,
+    id: "cms-basic",
+    name: "Basic CMS",
+    description: "Edit existing content and manage blog posts yourself",
+    price: 350,
+    hoursSaved: 2,
+    valueMetric: "Self-Service",
+    icon: FileEdit,
+    tier: "analytics"
+  },
+  {
+    id: "cms-advanced",
+    name: "Advanced CMS",
+    description: "Full page management, user roles, and SEO meta controls",
+    price: 750,
+    hoursSaved: 4,
+    valueMetric: "Full Control",
+    icon: Layers,
     tier: "analytics"
   },
   {
@@ -299,7 +409,7 @@ const categories = [
   { id: "ai", name: "AI & Intelligence", icon: Bot, color: "text-purple-500" },
   { id: "operations", name: "Operations", icon: Plug, color: "text-orange-500" },
   { id: "finance", name: "Finance & Payments", icon: CreditCard, color: "text-green-500" },
-  { id: "analytics", name: "Analytics & Marketing", icon: BarChart3, color: "text-cyan-500" },
+  { id: "analytics", name: "Content & Analytics", icon: BarChart3, color: "text-cyan-500" },
 ];
 
 // Tier definitions for comparison
