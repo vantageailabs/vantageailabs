@@ -178,6 +178,45 @@ export type Database = {
         }
         Relationships: []
       }
+      bos_builder_submissions: {
+        Row: {
+          business_name: string | null
+          created_at: string
+          email: string
+          estimated_hours_saved: number
+          estimated_price: number
+          id: string
+          name: string | null
+          phone: string | null
+          selected_modules: Json
+          suggested_tier: string | null
+        }
+        Insert: {
+          business_name?: string | null
+          created_at?: string
+          email: string
+          estimated_hours_saved?: number
+          estimated_price?: number
+          id?: string
+          name?: string | null
+          phone?: string | null
+          selected_modules?: Json
+          suggested_tier?: string | null
+        }
+        Update: {
+          business_name?: string | null
+          created_at?: string
+          email?: string
+          estimated_hours_saved?: number
+          estimated_price?: number
+          id?: string
+          name?: string | null
+          phone?: string | null
+          selected_modules?: Json
+          suggested_tier?: string | null
+        }
+        Relationships: []
+      }
       client_costs: {
         Row: {
           amount: number
