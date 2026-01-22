@@ -132,6 +132,16 @@ const allModules: BOSModule[] = [
     tier: "lead-sales"
   },
   {
+    id: "lead-pipeline",
+    name: "Advanced Lead Pipeline",
+    description: "Segment leads by high, medium, and low value with automated routing",
+    price: 650,
+    hoursSaved: 3,
+    valueMetric: "Smart Prioritization",
+    icon: Layers,
+    tier: "lead-sales"
+  },
+  {
     id: "sms",
     name: "SMS Speed-to-Lead",
     description: "Automated text sent to the client within 30 seconds of form submit",
