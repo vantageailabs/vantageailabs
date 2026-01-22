@@ -757,19 +757,19 @@ const Services = () => {
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Write & edit blog posts</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <span>Update contact info & hours</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>Manage team member profiles</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>Update service descriptions</span>
+                    <span>Manage team & service listings</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-muted-foreground">
                     <span className="h-4 w-4 mt-0.5 flex-shrink-0">—</span>
-                    <span>Cannot add new pages</span>
+                    <span>Cannot add new pages/sections</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-muted-foreground">
                     <span className="h-4 w-4 mt-0.5 flex-shrink-0">—</span>
@@ -806,10 +806,6 @@ const Services = () => {
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>Create & manage blog posts</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <span>Add new pages & sections</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
@@ -829,6 +825,10 @@ const Services = () => {
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <span>Edit SEO meta tags & titles</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>Blog categories & scheduling</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
