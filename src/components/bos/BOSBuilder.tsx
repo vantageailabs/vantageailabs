@@ -94,7 +94,7 @@ const allModules: BOSModule[] = [
     tier: "foundation",
     included: true
   },
-  // Growth tier add-ons
+  // Lead & Sales Add-ons
   {
     id: "recovery",
     name: "Lead Recovery Module",
@@ -103,7 +103,7 @@ const allModules: BOSModule[] = [
     hoursSaved: 2,
     valueMetric: "+15% Lead Volume",
     icon: Mail,
-    tier: "growth"
+    tier: "lead-sales"
   },
   {
     id: "sms",
@@ -113,7 +113,7 @@ const allModules: BOSModule[] = [
     hoursSaved: 3,
     valueMetric: "+2x Booking Rate",
     icon: MessageSquare,
-    tier: "growth"
+    tier: "lead-sales"
   },
   {
     id: "booking",
@@ -123,17 +123,7 @@ const allModules: BOSModule[] = [
     hoursSaved: 4,
     valueMetric: "Frictionless Sales",
     icon: Calendar,
-    tier: "growth"
-  },
-  {
-    id: "reviews",
-    name: "Review Booster",
-    description: "Automated Google review requests once a job is marked complete",
-    price: 350,
-    hoursSaved: 1,
-    valueMetric: "SEO Authority",
-    icon: Star,
-    tier: "growth"
+    tier: "lead-sales"
   },
   {
     id: "nurture",
@@ -143,27 +133,7 @@ const allModules: BOSModule[] = [
     hoursSaved: 2,
     valueMetric: "+20% Conversions",
     icon: Clock,
-    tier: "growth"
-  },
-  {
-    id: "marketing-automation",
-    name: "Marketing Automation",
-    description: "Seasonal campaigns, promotions, and email drip sequences",
-    price: 700,
-    hoursSaved: 3,
-    valueMetric: "Revenue Growth",
-    icon: Megaphone,
-    tier: "growth"
-  },
-  {
-    id: "payment-processing",
-    name: "Payment Processing",
-    description: "Accept cards on-site or online with automated receipts",
-    price: 500,
-    hoursSaved: 2,
-    valueMetric: "Convenience",
-    icon: CreditCard,
-    tier: "growth"
+    tier: "lead-sales"
   },
   {
     id: "estimate-builder",
@@ -173,58 +143,18 @@ const allModules: BOSModule[] = [
     hoursSaved: 4,
     valueMetric: "Close Faster",
     icon: FileSignature,
-    tier: "growth"
+    tier: "lead-sales"
   },
+  // Customer Experience Add-ons
   {
-    id: "warranty-tracking",
-    name: "Warranty & Maintenance Tracking",
-    description: "Automated reminders for service agreements and warranties",
-    price: 550,
-    hoursSaved: 2,
-    valueMetric: "Recurring Revenue",
-    icon: Shield,
-    tier: "growth"
-  },
-  // Scale tier add-ons
-  {
-    id: "ai-agent",
-    name: "AI Intake Agent",
-    description: "24/7 chatbot that pre-qualifies leads and answers basic FAQs",
-    price: 1500,
-    hoursSaved: 5,
-    valueMetric: "Saves 5 hrs/week",
-    icon: Bot,
-    tier: "scale"
-  },
-  {
-    id: "ai-phone",
-    name: "AI Phone Agent",
-    description: "Voice AI that answers calls, books appointments, and routes emergencies",
-    price: 2000,
-    hoursSaved: 8,
-    valueMetric: "24/7 Availability",
-    icon: Phone,
-    tier: "scale"
-  },
-  {
-    id: "dashboard",
-    name: "Performance Dashboard",
-    description: "Visual analytics for Lead-to-Close ratios and Ad spend ROI",
-    price: 800,
-    hoursSaved: 2,
-    valueMetric: "Data Visibility",
-    icon: BarChart3,
-    tier: "scale"
-  },
-  {
-    id: "field-sync",
-    name: "Field Tool Integration",
-    description: "Two-way sync with Jobber, Housecall Pro, or ServiceTitan",
-    price: 1000,
-    hoursSaved: 4,
-    valueMetric: "Operations",
-    icon: Plug,
-    tier: "scale"
+    id: "reviews",
+    name: "Review Booster",
+    description: "Automated Google review requests once a job is marked complete",
+    price: 350,
+    hoursSaved: 1,
+    valueMetric: "SEO Authority",
+    icon: Star,
+    tier: "customer"
   },
   {
     id: "portal",
@@ -234,7 +164,49 @@ const allModules: BOSModule[] = [
     hoursSaved: 3,
     valueMetric: "Trust & Transparency",
     icon: Users,
-    tier: "scale"
+    tier: "customer"
+  },
+  {
+    id: "warranty-tracking",
+    name: "Warranty & Maintenance Tracking",
+    description: "Automated reminders for service agreements and warranties",
+    price: 550,
+    hoursSaved: 2,
+    valueMetric: "Recurring Revenue",
+    icon: Shield,
+    tier: "customer"
+  },
+  // AI & Intelligence Add-ons
+  {
+    id: "ai-agent",
+    name: "AI Intake Agent",
+    description: "24/7 chatbot that pre-qualifies leads and answers basic FAQs",
+    price: 1500,
+    hoursSaved: 5,
+    valueMetric: "Saves 5 hrs/week",
+    icon: Bot,
+    tier: "ai"
+  },
+  {
+    id: "ai-phone",
+    name: "AI Phone Agent",
+    description: "Voice AI that answers calls, books appointments, and routes emergencies",
+    price: 2000,
+    hoursSaved: 8,
+    valueMetric: "24/7 Availability",
+    icon: Phone,
+    tier: "ai"
+  },
+  // Operations Add-ons
+  {
+    id: "field-sync",
+    name: "Field Tool Integration",
+    description: "Two-way sync with Jobber, Housecall Pro, or ServiceTitan",
+    price: 1000,
+    hoursSaved: 4,
+    valueMetric: "Operations",
+    icon: Plug,
+    tier: "operations"
   },
   {
     id: "multi-location",
@@ -244,27 +216,7 @@ const allModules: BOSModule[] = [
     hoursSaved: 4,
     valueMetric: "Scalability",
     icon: Building2,
-    tier: "scale"
-  },
-  {
-    id: "invoicing",
-    name: "Automated Invoicing",
-    description: "Generate and send invoices automatically when jobs complete",
-    price: 900,
-    hoursSaved: 5,
-    valueMetric: "Faster Payments",
-    icon: Receipt,
-    tier: "scale"
-  },
-  {
-    id: "inventory",
-    name: "Inventory Tracking",
-    description: "Track parts and materials across trucks and warehouse",
-    price: 750,
-    hoursSaved: 3,
-    valueMetric: "Cost Control",
-    icon: Package,
-    tier: "scale"
+    tier: "operations"
   },
   {
     id: "employee-scheduling",
@@ -274,7 +226,59 @@ const allModules: BOSModule[] = [
     hoursSaved: 4,
     valueMetric: "Efficiency",
     icon: CalendarClock,
-    tier: "scale"
+    tier: "operations"
+  },
+  {
+    id: "inventory",
+    name: "Inventory Tracking",
+    description: "Track parts and materials across trucks and warehouse",
+    price: 750,
+    hoursSaved: 3,
+    valueMetric: "Cost Control",
+    icon: Package,
+    tier: "operations"
+  },
+  // Finance & Payments Add-ons
+  {
+    id: "payment-processing",
+    name: "Payment Processing",
+    description: "Accept cards on-site or online with automated receipts",
+    price: 500,
+    hoursSaved: 2,
+    valueMetric: "Convenience",
+    icon: CreditCard,
+    tier: "finance"
+  },
+  {
+    id: "invoicing",
+    name: "Automated Invoicing",
+    description: "Generate and send invoices automatically when jobs complete",
+    price: 900,
+    hoursSaved: 5,
+    valueMetric: "Faster Payments",
+    icon: Receipt,
+    tier: "finance"
+  },
+  // Analytics & Marketing Add-ons
+  {
+    id: "dashboard",
+    name: "Performance Dashboard",
+    description: "Visual analytics for Lead-to-Close ratios and Ad spend ROI",
+    price: 800,
+    hoursSaved: 2,
+    valueMetric: "Data Visibility",
+    icon: BarChart3,
+    tier: "analytics"
+  },
+  {
+    id: "marketing-automation",
+    name: "Marketing Automation",
+    description: "Seasonal campaigns, promotions, and email drip sequences",
+    price: 700,
+    hoursSaved: 3,
+    valueMetric: "Revenue Growth",
+    icon: Megaphone,
+    tier: "analytics"
   },
   {
     id: "crm-sync",
@@ -284,8 +288,18 @@ const allModules: BOSModule[] = [
     hoursSaved: 3,
     valueMetric: "Data Sync",
     icon: Database,
-    tier: "scale"
+    tier: "analytics"
   }
+];
+
+// Category definitions for display
+const categories = [
+  { id: "lead-sales", name: "Lead & Sales", icon: Zap, color: "text-primary" },
+  { id: "customer", name: "Customer Experience", icon: Users, color: "text-blue-500" },
+  { id: "ai", name: "AI & Intelligence", icon: Bot, color: "text-purple-500" },
+  { id: "operations", name: "Operations", icon: Plug, color: "text-orange-500" },
+  { id: "finance", name: "Finance & Payments", icon: CreditCard, color: "text-green-500" },
+  { id: "analytics", name: "Analytics & Marketing", icon: BarChart3, color: "text-cyan-500" },
 ];
 
 // Tier definitions for comparison
@@ -399,8 +413,6 @@ const BOSBuilder = () => {
   };
 
   const foundationModules = allModules.filter(m => m.tier === "foundation");
-  const growthModules = allModules.filter(m => m.tier === "growth");
-  const scaleModules = allModules.filter(m => m.tier === "scale");
 
   return (
     <section id="bos-builder" className="py-20 bg-muted/30">
@@ -442,41 +454,40 @@ const BOSBuilder = () => {
               </div>
             </div>
 
-            {/* Growth modules */}
-            <div>
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs">Growth</span>
-                Automation Add-ons
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {growthModules.map(module => (
-                  <BOSModuleCard
-                    key={module.id}
-                    module={module}
-                    isSelected={selectedModules.includes(module.id)}
-                    onToggle={() => toggleModule(module.id)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Scale modules */}
-            <div>
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <span className="px-2 py-1 bg-accent/20 text-accent-foreground rounded text-xs">Scale</span>
-                Enterprise Features
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {scaleModules.map(module => (
-                  <BOSModuleCard
-                    key={module.id}
-                    module={module}
-                    isSelected={selectedModules.includes(module.id)}
-                    onToggle={() => toggleModule(module.id)}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Add-on categories */}
+            {categories.map(category => {
+              const categoryModules = allModules.filter(m => m.tier === category.id);
+              if (categoryModules.length === 0) return null;
+              const CategoryIcon = category.icon;
+              
+              return (
+                <div key={category.id}>
+                  <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <span className={cn("px-2 py-1 rounded text-xs flex items-center gap-1", 
+                      category.id === "lead-sales" ? "bg-primary/10 text-primary" :
+                      category.id === "customer" ? "bg-blue-500/10 text-blue-500" :
+                      category.id === "ai" ? "bg-purple-500/10 text-purple-500" :
+                      category.id === "operations" ? "bg-orange-500/10 text-orange-500" :
+                      category.id === "finance" ? "bg-green-500/10 text-green-500" :
+                      "bg-cyan-500/10 text-cyan-500"
+                    )}>
+                      <CategoryIcon className="h-3 w-3" />
+                      {category.name}
+                    </span>
+                  </h3>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {categoryModules.map(module => (
+                      <BOSModuleCard
+                        key={module.id}
+                        module={module}
+                        isSelected={selectedModules.includes(module.id)}
+                        onToggle={() => toggleModule(module.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Summary panel */}

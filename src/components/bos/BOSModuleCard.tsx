@@ -9,7 +9,7 @@ export interface BOSModule {
   hoursSaved: number;
   valueMetric: string;
   icon: React.ElementType;
-  tier: "foundation" | "growth" | "scale";
+  tier: "foundation" | "lead-sales" | "customer" | "ai" | "operations" | "finance" | "analytics";
   included?: boolean; // If true, it's a base feature (no toggle)
 }
 
