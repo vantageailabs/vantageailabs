@@ -400,7 +400,7 @@ const Support = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold">Basic CMS</h3>
-                    <Badge variant="secondary" className="text-xs">Included in Professional</Badge>
+                    <Badge variant="secondary" className="text-xs">Included in Middle Tier</Badge>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -433,7 +433,7 @@ const Support = () => {
                   </li>
                 </ul>
                 <div className="flex items-baseline justify-between pt-4 border-t border-border">
-                  <span className="text-2xl font-bold">$350</span>
+                  <span className="text-2xl font-bold">$500</span>
                   <span className="text-sm text-muted-foreground">one-time add-on</span>
                 </div>
               </div>
