@@ -36,15 +36,15 @@ const CoachBuildProcess = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto items-stretch">
           {steps.map((step, index) => (
-            <div key={step.title} className="relative">
+            <div key={step.title} className="relative flex">
               {/* Connector line */}
               {index < steps.length - 1 && (
                 <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-primary/50 to-primary/10" />
               )}
               
-              <div className="bg-card border border-border rounded-2xl p-6 text-center relative z-10">
+              <div className="bg-card border border-border rounded-2xl p-6 text-center relative z-10 flex flex-col flex-1">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                   <step.icon className="h-8 w-8 text-primary" />
                 </div>
@@ -52,7 +52,7 @@ const CoachBuildProcess = () => {
                   {index + 1}
                 </div>
                 <h3 className="font-semibold mb-2">{step.title}</h3>
-                <p className="text-sm text-muted-foreground">{step.description}</p>
+                <p className="text-sm text-muted-foreground flex-1">{step.description}</p>
               </div>
             </div>
           ))}
