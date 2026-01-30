@@ -51,6 +51,7 @@ export type Database = {
         Row: {
           appointment_date: string
           appointment_time: string
+          bos_submission_id: string | null
           cancel_token: string | null
           created_at: string
           duration_minutes: number
@@ -69,6 +70,7 @@ export type Database = {
         Insert: {
           appointment_date: string
           appointment_time: string
+          bos_submission_id?: string | null
           cancel_token?: string | null
           created_at?: string
           duration_minutes?: number
@@ -87,6 +89,7 @@ export type Database = {
         Update: {
           appointment_date?: string
           appointment_time?: string
+          bos_submission_id?: string | null
           cancel_token?: string | null
           created_at?: string
           duration_minutes?: number
@@ -102,7 +105,15 @@ export type Database = {
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "appointments_bos_submission_id_fkey"
+            columns: ["bos_submission_id"]
+            isOneToOne: false
+            referencedRelation: "bos_builder_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       assessment_responses: {
         Row: {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar, Clock, Video, ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
+import { Calendar, Clock, Video, ChevronLeft, ChevronRight, Check, Loader2, Zap, X } from "lucide-react";
 import { useAvailableSlots } from "@/hooks/useAvailableSlots";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,18 @@ const BookingSection = () => {
   
   // Check for existing assessment from standalone flow
   const [existingAssessmentId, setExistingAssessmentId] = useState<string | null>(null);
+  
+  // Check for BOS configuration from BOS Builder flow
+  const [pendingBosConfig, setPendingBosConfig] = useState<{
+    id: string;
+    email: string;
+    name: string;
+    businessName: string;
+    selectedModules: string[];
+    totalPrice: number;
+    totalHoursSaved: number;
+    suggestedTier: string;
+  } | null>(null);
 
   const { toast } = useToast();
   const { trackStep, trackFieldBlur, trackPartialData, trackAssessmentQuestion, trackComplete } = useFormAnalytics();
@@ -55,11 +67,36 @@ const BookingSection = () => {
     return null;
   };
   
-  // Check sessionStorage for pending assessment on mount
+  // Check sessionStorage for pending assessment and BOS config on mount
   useEffect(() => {
     const pendingId = readPendingAssessment();
     if (pendingId) {
       setExistingAssessmentId(pendingId);
+    }
+    
+    // Check for BOS config from BOS Builder
+    try {
+      const bosData = sessionStorage.getItem('pending_bos_config');
+      if (bosData) {
+        const parsed = JSON.parse(bosData);
+        const TTL_MS = 30 * 60 * 1000; // 30 minutes
+        const isExpired = Date.now() - parsed.createdAt > TTL_MS;
+        
+        if (isExpired) {
+          sessionStorage.removeItem('pending_bos_config');
+        } else {
+          setPendingBosConfig(parsed);
+          // Pre-fill form with BOS data
+          setFormData(prev => ({
+            ...prev,
+            email: parsed.email || prev.email,
+            name: parsed.name || prev.name,
+            company: parsed.businessName || prev.company,
+          }));
+        }
+      }
+    } catch (e) {
+      sessionStorage.removeItem('pending_bos_config');
     }
   }, []);
   
@@ -145,6 +182,7 @@ const BookingSection = () => {
           guest_email: formData.email,
           guest_phone: formData.phone || undefined,
           assessment_id: idToUse,
+          bos_submission_id: pendingBosConfig?.id,
         },
       });
 
@@ -154,9 +192,11 @@ const BookingSection = () => {
         throw new Error(data.error);
       }
 
-      // Clear the pending assessment from sessionStorage
+      // Clear the pending data from sessionStorage
       sessionStorage.removeItem('pending_assessment');
+      sessionStorage.removeItem('pending_bos_config');
       setExistingAssessmentId(null);
+      setPendingBosConfig(null);
       
       // Track completion
       trackComplete();
@@ -230,6 +270,7 @@ const BookingSection = () => {
           guest_phone: formData.phone || undefined,
           notes: additionalNotes || undefined,
           assessment_id: assessmentData?.id,
+          bos_submission_id: pendingBosConfig?.id,
         },
       });
 
@@ -239,8 +280,10 @@ const BookingSection = () => {
         throw new Error(data.error);
       }
 
-      // Clear any pending assessment from sessionStorage
+      // Clear any pending data from sessionStorage
       sessionStorage.removeItem('pending_assessment');
+      sessionStorage.removeItem('pending_bos_config');
+      setPendingBosConfig(null);
       
       // Track completion
       trackComplete();
@@ -320,6 +363,38 @@ const BookingSection = () => {
                 <p className="text-sm text-muted-foreground mb-4">
                   {selectedDate?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at {selectedTime && formatTimeDisplay(selectedTime)}
                 </p>
+
+                {pendingBosConfig && (
+                  <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-primary" />
+                        <span className="text-sm font-medium text-primary">Your BOS Configuration</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          sessionStorage.removeItem('pending_bos_config');
+                          setPendingBosConfig(null);
+                        }}
+                        className="text-primary/60 hover:text-primary transition-colors"
+                        aria-label="Remove BOS configuration"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">{pendingBosConfig.suggestedTier}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold">${pendingBosConfig.totalPrice.toLocaleString()}</span>
+                        <span className="text-primary">{pendingBosConfig.totalHoursSaved} hrs/week saved</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      We'll discuss this configuration during your call.
+                    </p>
+                  </div>
+                )}
 
                 {existingAssessmentId && (
                   <div className="flex items-center justify-between bg-primary/10 text-primary px-4 py-3 rounded-lg mb-6">
