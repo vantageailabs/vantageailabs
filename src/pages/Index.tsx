@@ -12,6 +12,7 @@ import LeadMagnet from "@/components/LeadMagnet";
 import BookingSection from "@/components/BookingSection";
 import Footer from "@/components/Footer";
 import { CapacityBanner } from "@/components/CapacityBanner";
+import AIReadinessAssessment from "@/components/AIReadinessAssessment";
 
 const Index = () => {
   return (
@@ -22,6 +23,7 @@ const Index = () => {
       <ProblemSection />
       <ServicesSection />
       <HowItWorksSection />
+      <AIReadinessAssessment />
       <TestimonialsSection />
       <AboutSection />
       <ROICalculator />
