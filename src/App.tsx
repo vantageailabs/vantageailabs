@@ -20,8 +20,12 @@ import CredentialSubmission from "./pages/CredentialSubmission";
 import CurrentCustomerQuotes from "./pages/CurrentCustomerQuotes";
 import BOS from "./pages/BOS";
 import CoachBuild from "./pages/CoachBuild";
+import Websites from "./pages/Websites";
+import Automation from "./pages/Automation";
+import AIAssistants from "./pages/AIAssistants";
+import CustomApps from "./pages/CustomApps";
+import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
-
 
 const queryClient = new QueryClient();
 
@@ -49,6 +53,11 @@ const App = () => (
           <Route path="/current-customer-quotes" element={<CurrentCustomerQuotes />} />
           <Route path="/bos" element={<BOS />} />
           <Route path="/coach-build" element={<CoachBuild />} />
+          <Route path="/websites" element={<Websites />} />
+          <Route path="/automation" element={<Automation />} />
+          <Route path="/ai-assistants" element={<AIAssistants />} />
+          <Route path="/custom-apps" element={<CustomApps />} />
+          <Route path="/support" element={<Support />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
