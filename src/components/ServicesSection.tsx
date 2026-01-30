@@ -96,6 +96,7 @@ const ServicesSection = () => {
                 <Link
                   key={index}
                   to={service.link}
+                  onClick={() => window.scrollTo(0, 0)}
                   className={`card-elevated p-6 group transition-all duration-500 block ${
                     service.featured 
                       ? "border-accent/30 hover:border-accent/50 hover:glow-accent ring-1 ring-accent/20" 
