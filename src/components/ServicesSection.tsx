@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Bot, Workflow, Rocket, Shield, Sparkles, Target, Layers, ArrowRight } from "lucide-react";
+import { Bot, Workflow, Rocket, Shield, Sparkles, Target, Layers, ArrowRight, Globe, Cpu } from "lucide-react";
 
 interface Service {
   icon: React.ElementType;
@@ -20,22 +20,32 @@ const services: Service[] = [
     featured: true,
   },
   {
+    icon: Globe,
+    title: "Service Business Websites",
+    description: "Professional websites designed to convert visitors into customers. Fast, mobile-optimized, and built to grow.",
+    highlight: "Websites that convert",
+    link: "/websites",
+  },
+  {
     icon: Workflow,
     title: "Process Automation",
     description: "Connect your tools, eliminate data entry, and let automations handle the busywork.",
     highlight: "Save 20+ hours/week",
+    link: "/automation",
   },
   {
     icon: Sparkles,
-    title: "AI-Powered Apps",
-    description: "Native applications built specifically for your workflows—no bloated SaaS subscriptions.",
-    highlight: "Built for YOUR business",
+    title: "AI Assistants",
+    description: "24/7 intelligent assistants that handle customer inquiries, bookings, and support around the clock.",
+    highlight: "Never miss a lead again",
+    link: "/ai-assistants",
   },
   {
-    icon: Target,
-    title: "Lead Capture & Follow-Up",
-    description: "Automated forms, instant responses, and smart follow-up sequences that convert visitors into customers.",
-    highlight: "Never lose a lead again",
+    icon: Cpu,
+    title: "Custom Applications",
+    description: "Bespoke software solutions built specifically for your unique business needs—no bloated SaaS.",
+    highlight: "Built for YOUR business",
+    link: "/custom-apps",
   },
   {
     icon: Shield,
@@ -43,12 +53,6 @@ const services: Service[] = [
     description: "Your build (website, BOS, or app) plus hands-on guidance—funnels, lead psychology, email best practices, and automation strategy.",
     highlight: "Build smarter from day one",
     link: "/coach-build",
-  },
-  {
-    icon: Rocket,
-    title: "Implementation & Training",
-    description: "We build, train your team, and deploy custom AI assistants that handle inquiries and support 24/7.",
-    highlight: "Full support included",
   },
 ];
 
