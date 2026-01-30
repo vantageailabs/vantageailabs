@@ -1,11 +1,23 @@
-import { Bot, Workflow, Rocket, Shield, Sparkles, Target } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Bot, Workflow, Rocket, Shield, Sparkles, Target, Layers, ArrowRight } from "lucide-react";
 
-const services = [
+interface Service {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  highlight: string;
+  link?: string;
+  featured?: boolean;
+}
+
+const services: Service[] = [
   {
-    icon: Bot,
-    title: "Custom AI Assistants",
-    description: "Chatbots and virtual assistants that handle customer inquiries, bookings, and support 24/7.",
-    highlight: "Never miss a lead again",
+    icon: Layers,
+    title: "Business Operating System",
+    description: "A complete digital infrastructure that automates leads, operations, and customer experience—built around YOUR workflow.",
+    highlight: "Your business, systematized",
+    link: "/bos",
+    featured: true,
   },
   {
     icon: Workflow,
@@ -34,7 +46,7 @@ const services = [
   {
     icon: Rocket,
     title: "Implementation & Training",
-    description: "We don't just build—we train your team and ensure everything runs smoothly.",
+    description: "We build, train your team, and deploy custom AI assistants that handle inquiries and support 24/7.",
     highlight: "Full support included",
   },
 ];
@@ -56,19 +68,54 @@ const ServicesSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {services.map((service, index) => (
-            <div
-              key={index}
-              className="card-elevated p-6 group hover:border-primary/30 hover:glow-primary transition-all duration-500"
-            >
-              <div className="p-3 rounded-xl bg-primary/10 text-primary inline-block mb-4 group-hover:bg-primary/20 transition-colors">
-                <service.icon className="w-6 h-6" />
+          {services.map((service, index) => {
+            const CardContent = (
+              <>
+                <div className={`p-3 rounded-xl inline-block mb-4 transition-colors ${
+                  service.featured 
+                    ? "bg-accent/10 text-accent group-hover:bg-accent/20" 
+                    : "bg-primary/10 text-primary group-hover:bg-primary/20"
+                }`}>
+                  <service.icon className="w-6 h-6" />
+                </div>
+                <h3 className="font-display font-semibold text-xl mb-2">{service.title}</h3>
+                <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
+                <p className={`font-semibold text-sm ${service.featured ? "text-accent" : "text-accent"}`}>
+                  {service.highlight}
+                </p>
+                {service.link && (
+                  <div className="mt-4 flex items-center gap-1 text-sm font-medium text-primary group-hover:gap-2 transition-all">
+                    Explore BOS <ArrowRight className="w-4 h-4" />
+                  </div>
+                )}
+              </>
+            );
+
+            if (service.link) {
+              return (
+                <Link
+                  key={index}
+                  to={service.link}
+                  className={`card-elevated p-6 group transition-all duration-500 block ${
+                    service.featured 
+                      ? "border-accent/30 hover:border-accent/50 hover:glow-accent ring-1 ring-accent/20" 
+                      : "hover:border-primary/30 hover:glow-primary"
+                  }`}
+                >
+                  {CardContent}
+                </Link>
+              );
+            }
+
+            return (
+              <div
+                key={index}
+                className="card-elevated p-6 group hover:border-primary/30 hover:glow-primary transition-all duration-500"
+              >
+                {CardContent}
               </div>
-              <h3 className="font-display font-semibold text-xl mb-2">{service.title}</h3>
-              <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
-              <p className="text-accent font-semibold text-sm">{service.highlight}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
