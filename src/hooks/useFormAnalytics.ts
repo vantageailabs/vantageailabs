@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-type FormStep = 'calendar' | 'form' | 'assessment' | 'completed';
+type FormStep = 'calendar' | 'form' | 'assessment' | 'completed' | 'lead_magnet' | 'contact' | 'bos_builder';
 
 interface AnalyticsSession {
   id: string | null;
@@ -11,11 +11,18 @@ interface AnalyticsSession {
   fieldsCompleted: Set<string>;
 }
 
-export const useFormAnalytics = () => {
+interface UseFormAnalyticsOptions {
+  initialStep?: FormStep;
+  autoInit?: boolean;
+}
+
+export const useFormAnalytics = (options: UseFormAnalyticsOptions = {}) => {
+  const { initialStep = 'calendar', autoInit = true } = options;
+  
   const session = useRef<AnalyticsSession>({
     id: null,
     sessionId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    currentStep: 'calendar',
+    currentStep: initialStep,
     stepStartedAt: new Date(),
     fieldsCompleted: new Set(),
   });
@@ -24,6 +31,8 @@ export const useFormAnalytics = () => {
 
   // Initialize session on mount
   useEffect(() => {
+    if (!autoInit) return;
+    
     const initSession = async () => {
       try {
         const { data, error } = await supabase
@@ -66,7 +75,7 @@ export const useFormAnalytics = () => {
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, []);
+  }, [autoInit]);
 
   // Track step changes
   const trackStep = useCallback(async (step: FormStep) => {
@@ -121,8 +130,22 @@ export const useFormAnalytics = () => {
   }, []);
 
   // Track partial data for potential follow-up
-  const trackPartialData = useCallback((field: 'email' | 'name', value: string) => {
+  const trackPartialData = useCallback(async (field: 'email' | 'name', value: string) => {
     partialData.current[field] = value;
+    
+    // Also update in database immediately for abandonment recovery
+    if (session.current.id && value) {
+      try {
+        await supabase
+          .from('form_analytics')
+          .update({
+            [field === 'email' ? 'partial_email' : 'partial_name']: value,
+          })
+          .eq('id', session.current.id);
+      } catch (e) {
+        console.error('Failed to save partial data:', e);
+      }
+    }
   }, []);
 
   // Track assessment question progress

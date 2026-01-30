@@ -42,6 +42,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useFormAnalytics } from "@/hooks/useFormAnalytics";
 import BOSModuleCard, { type BOSModule } from "./BOSModuleCard";
 import { cn } from "@/lib/utils";
 import {
@@ -486,6 +487,26 @@ const BOSBuilder = () => {
     );
   };
 
+  const { trackPartialData, trackFieldBlur, trackComplete } = useFormAnalytics({ 
+    initialStep: 'bos_builder' 
+  });
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (value.includes('@')) {
+      trackPartialData('email', value);
+    }
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setName(value);
+    if (value.length > 2) {
+      trackPartialData('name', value);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
@@ -528,6 +549,8 @@ const BOSBuilder = () => {
         // Don't fail the whole submission if email fails
       }
 
+      // Track completion
+      await trackComplete();
       setIsSubmitted(true);
       toast.success("Your custom blueprint has been sent!");
     } catch (error) {
@@ -685,7 +708,8 @@ const BOSBuilder = () => {
                       id="builder-email"
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
+                      onBlur={(e) => trackFieldBlur('email', !!e.target.value)}
                       placeholder="you@company.com"
                       required
                     />
@@ -696,7 +720,8 @@ const BOSBuilder = () => {
                       id="builder-name"
                       type="text"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={handleNameChange}
+                      onBlur={(e) => trackFieldBlur('name', !!e.target.value)}
                       placeholder="John Smith"
                     />
                   </div>
@@ -707,6 +732,7 @@ const BOSBuilder = () => {
                       type="text"
                       value={businessName}
                       onChange={(e) => setBusinessName(e.target.value)}
+                      onBlur={(e) => trackFieldBlur('business_name', !!e.target.value)}
                       placeholder="Smith HVAC"
                     />
                   </div>
