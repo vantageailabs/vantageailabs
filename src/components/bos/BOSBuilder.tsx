@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   Globe, 
   FileText, 
@@ -33,7 +34,10 @@ import {
   MessageCircle,
   Route,
   FileEdit,
-  Layers
+  Layers,
+  ChevronDown,
+  CalendarCheck,
+  ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +54,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Define all available modules
 const allModules: BOSModule[] = [
@@ -437,12 +447,15 @@ const tierPackages = [
 ];
 
 const BOSBuilder = () => {
+  const navigate = useNavigate();
   const [selectedModules, setSelectedModules] = useState<string[]>([]);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
   // Calculate totals
   const { totalPrice, totalHoursSaved, efficiencyScore } = useMemo(() => {
@@ -516,8 +529,8 @@ const BOSBuilder = () => {
 
     setIsSubmitting(true);
     try {
-      // Save to database
-      const { error: dbError } = await supabase
+      // Save to database and get the ID
+      const { data: insertedData, error: dbError } = await supabase
         .from("bos_builder_submissions")
         .insert({
           email,
@@ -527,10 +540,50 @@ const BOSBuilder = () => {
           estimated_price: totalPrice,
           estimated_hours_saved: totalHoursSaved,
           suggested_tier: suggestedTier.name
-        });
+        })
+        .select('id')
+        .single();
 
       if (dbError) throw dbError;
 
+      // Store the submission ID
+      setSubmissionId(insertedData.id);
+
+      // Track completion
+      await trackComplete();
+      
+      // Show the booking modal instead of immediately sending email
+      setShowBookingModal(true);
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBookCall = () => {
+    // Store BOS config in sessionStorage for the booking page
+    const bosConfig = {
+      id: submissionId,
+      email,
+      name,
+      businessName,
+      selectedModules,
+      totalPrice,
+      totalHoursSaved,
+      suggestedTier: suggestedTier.name,
+      createdAt: Date.now()
+    };
+    sessionStorage.setItem('pending_bos_config', JSON.stringify(bosConfig));
+    
+    // Navigate to booking page
+    navigate('/book');
+  };
+
+  const handleJustSendBlueprint = async () => {
+    setIsSubmitting(true);
+    try {
       // Send blueprint email
       const { error: emailError } = await supabase.functions.invoke("send-bos-blueprint", {
         body: { 
@@ -546,15 +599,15 @@ const BOSBuilder = () => {
 
       if (emailError) {
         console.error("Email error:", emailError);
-        // Don't fail the whole submission if email fails
+        toast.error("Failed to send blueprint email");
+        return;
       }
 
-      // Track completion
-      await trackComplete();
+      setShowBookingModal(false);
       setIsSubmitted(true);
       toast.success("Your custom blueprint has been sent!");
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error("Email error:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -697,6 +750,54 @@ const BOSBuilder = () => {
               </div>
 
               {/* Lead capture form */}
+              {/* Booking Modal */}
+              <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <CalendarCheck className="h-5 w-5 text-primary" />
+                      Want to Discuss Your Blueprint?
+                    </DialogTitle>
+                    <DialogDescription>
+                      Schedule a free strategy call to walk through your custom BOS configuration and get personalized recommendations.
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-4 pt-4">
+                    {/* Summary of their build */}
+                    <div className="bg-muted/50 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-muted-foreground">Your Custom Build</span>
+                        <Badge variant="outline">{suggestedTier.name}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-bold">${totalPrice.toLocaleString()}</span>
+                        <span className="text-sm text-primary">{totalHoursSaved} hrs/week saved</span>
+                      </div>
+                    </div>
+
+                    <Button 
+                      onClick={handleBookCall}
+                      className="w-full"
+                      size="lg"
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Yes, Schedule a Call
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                    
+                    <Button 
+                      variant="outline"
+                      onClick={handleJustSendBlueprint}
+                      className="w-full"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Sending..." : "No thanks, just send my blueprint"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
               {!isSubmitted ? (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <p className="text-sm text-muted-foreground mb-4">

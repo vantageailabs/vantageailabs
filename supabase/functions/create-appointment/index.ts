@@ -48,6 +48,7 @@ interface AppointmentRequest {
   guest_phone?: string;
   notes?: string;
   assessment_id?: string; // Optional assessment to link
+  bos_submission_id?: string; // Optional BOS builder submission to link
 }
 
 interface AssessmentData {
@@ -346,6 +347,13 @@ serve(async (req) => {
       );
     }
 
+    if (rawData.bos_submission_id && !isValidUUID(rawData.bos_submission_id)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid BOS submission ID format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Sanitize string inputs
     const appointmentData: AppointmentRequest = {
       appointment_date: rawData.appointment_date,
@@ -355,6 +363,7 @@ serve(async (req) => {
       guest_phone: rawData.guest_phone ? sanitizeString(rawData.guest_phone, 20) : undefined,
       notes: rawData.notes ? sanitizeString(rawData.notes, 1000) : undefined,
       assessment_id: rawData.assessment_id,
+      bos_submission_id: rawData.bos_submission_id,
     };
     
     console.log('Creating appointment:', { ...appointmentData, guest_email: '[REDACTED]' });
@@ -450,6 +459,7 @@ serve(async (req) => {
         status: 'confirmed',
         meeting_id: eventId,
         meeting_join_url: meetLink,
+        bos_submission_id: appointmentData.bos_submission_id || null,
       })
       .select('*, cancel_token')
       .single();

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Clock, Mail, Phone, Video, Trash2, ClipboardList, Search } from 'lucide-react';
+import { Calendar, Clock, Mail, Phone, Video, Trash2, ClipboardList, Search, Zap } from 'lucide-react';
 import { format, parseISO, isAfter, startOfDay } from 'date-fns';
 
 interface Appointment {
@@ -22,6 +22,7 @@ interface Appointment {
   notes: string | null;
   meeting_id: string | null;
   meeting_join_url: string | null;
+  bos_submission_id: string | null;
 }
 
 interface AssessmentInfo {
@@ -31,9 +32,18 @@ interface AssessmentInfo {
   business_type: string | null;
 }
 
+interface BOSSubmissionInfo {
+  id: string;
+  suggested_tier: string | null;
+  estimated_price: number;
+  estimated_hours_saved: number;
+  selected_modules: string[];
+}
+
 export function AppointmentsList() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [assessmentMap, setAssessmentMap] = useState<Record<string, AssessmentInfo>>({});
+  const [bosMap, setBosMap] = useState<Record<string, BOSSubmissionInfo>>({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showCancelled, setShowCancelled] = useState(false);
@@ -90,6 +100,35 @@ export function AppointmentsList() {
             }
           });
           setAssessmentMap(map);
+        }
+
+        // Fetch linked BOS submissions
+        const bosIds = data.filter(a => a.bos_submission_id).map(a => a.bos_submission_id);
+        if (bosIds.length > 0) {
+          const { data: bosSubmissions } = await supabase
+            .from('bos_builder_submissions')
+            .select('id, suggested_tier, estimated_price, estimated_hours_saved, selected_modules')
+            .in('id', bosIds);
+          
+          if (bosSubmissions) {
+            const bosMapData: Record<string, BOSSubmissionInfo> = {};
+            // Map BOS submission ID to appointment ID
+            data.forEach((apt: Appointment) => {
+              if (apt.bos_submission_id) {
+                const bosData = bosSubmissions.find((b: any) => b.id === apt.bos_submission_id);
+                if (bosData) {
+                  bosMapData[apt.id] = {
+                    id: bosData.id,
+                    suggested_tier: bosData.suggested_tier,
+                    estimated_price: bosData.estimated_price,
+                    estimated_hours_saved: bosData.estimated_hours_saved,
+                    selected_modules: bosData.selected_modules as string[] || [],
+                  };
+                }
+              }
+            });
+            setBosMap(bosMapData);
+          }
         }
       }
     }
@@ -188,6 +227,12 @@ export function AppointmentsList() {
                       Score: {assessmentMap[apt.id].overall_score}/100
                     </Badge>
                   )}
+                  {bosMap[apt.id] && (
+                    <Badge variant="outline" className="bg-accent/10 text-accent border-accent/30">
+                      <Zap className="h-3 w-3 mr-1" />
+                      BOS: {bosMap[apt.id].suggested_tier}
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
@@ -219,6 +264,19 @@ export function AppointmentsList() {
                         {assessmentMap[apt.id].business_type.replace('_', ' ')}
                       </span>
                     )}
+                  </div>
+                )}
+                {bosMap[apt.id] && (
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="bg-accent/10 text-accent px-2 py-1 rounded">
+                      ${bosMap[apt.id].estimated_price.toLocaleString()} build
+                    </span>
+                    <span className="bg-accent/10 text-accent px-2 py-1 rounded">
+                      {bosMap[apt.id].estimated_hours_saved} hrs/week saved
+                    </span>
+                    <span className="bg-muted px-2 py-1 rounded">
+                      {bosMap[apt.id].selected_modules.length} modules selected
+                    </span>
                   </div>
                 )}
                 {apt.notes && <p className="text-sm text-muted-foreground italic">{apt.notes}</p>}
