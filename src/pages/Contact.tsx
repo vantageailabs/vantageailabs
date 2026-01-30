@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useFormAnalytics } from "@/hooks/useFormAnalytics";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -17,6 +18,21 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+
+  const { trackPartialData, trackFieldBlur, trackComplete } = useFormAnalytics({ 
+    initialStep: 'contact' 
+  });
+
+  const handleFieldChange = (field: keyof typeof formData, value: string) => {
+    setFormData({ ...formData, [field]: value });
+    
+    // Track email and name for abandonment recovery
+    if (field === 'email' && value.includes('@')) {
+      trackPartialData('email', value);
+    } else if (field === 'name' && value.length > 2) {
+      trackPartialData('name', value);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +72,9 @@ const Contact = () => {
       // Don't show error to user - form was still saved
     }
     
+    // Track completion
+    await trackComplete();
+    
     toast({
       title: "Message sent!",
       description: "We'll get back to you as soon as possible.",
@@ -90,7 +109,8 @@ const Contact = () => {
                   id="name"
                   placeholder="Your name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => handleFieldChange('name', e.target.value)}
+                  onBlur={(e) => trackFieldBlur('name', !!e.target.value)}
                   required
                 />
               </div>
@@ -102,7 +122,8 @@ const Contact = () => {
                   type="email"
                   placeholder="your@email.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => handleFieldChange('email', e.target.value)}
+                  onBlur={(e) => trackFieldBlur('email', !!e.target.value)}
                   required
                 />
               </div>
@@ -113,7 +134,8 @@ const Contact = () => {
                   id="subject"
                   placeholder="How can we help?"
                   value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  onChange={(e) => handleFieldChange('subject', e.target.value)}
+                  onBlur={(e) => trackFieldBlur('subject', !!e.target.value)}
                   required
                 />
               </div>
@@ -125,7 +147,8 @@ const Contact = () => {
                   placeholder="Tell us more about your inquiry..."
                   rows={5}
                   value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  onChange={(e) => handleFieldChange('message', e.target.value)}
+                  onBlur={(e) => trackFieldBlur('message', !!e.target.value)}
                   required
                 />
               </div>

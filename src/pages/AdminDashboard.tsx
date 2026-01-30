@@ -16,7 +16,8 @@ import { CouponsManager } from '@/components/admin/CouponsManager';
 import { CapacitySettings } from '@/components/admin/CapacitySettings';
 import { ContactSubmissionsList } from '@/components/admin/ContactSubmissionsList';
 import { FeatureRequestsList } from '@/components/admin/FeatureRequestsList';
-import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList, Briefcase, Package, TrendingUp, Mail, Lightbulb } from 'lucide-react';
+import { FormAnalyticsList } from '@/components/admin/FormAnalyticsList';
+import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList, Briefcase, Package, TrendingUp, Mail, Lightbulb, Activity } from 'lucide-react';
 
 function DashboardContent() {
   const { signOut } = useAuth();
@@ -54,7 +55,7 @@ function DashboardContent() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="appointments" className="space-y-6">
-          <TabsList className="grid grid-cols-5 lg:grid-cols-10 w-full">
+          <TabsList className="grid grid-cols-6 lg:grid-cols-11 w-full">
             <TabsTrigger value="appointments" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden lg:inline">Appointments</span>
@@ -74,6 +75,10 @@ function DashboardContent() {
             <TabsTrigger value="contact" className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
               <span className="hidden lg:inline">Contact</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              <span className="hidden lg:inline">Analytics</span>
             </TabsTrigger>
             <TabsTrigger value="feature-requests" className="flex items-center gap-2">
               <Lightbulb className="h-4 w-4" />
@@ -135,6 +140,14 @@ function DashboardContent() {
               <p className="text-muted-foreground">View and respond to contact form submissions</p>
             </div>
             <ContactSubmissionsList />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="animate-fade-in">
+            <div className="mb-4">
+              <h2 className="text-2xl font-display font-bold text-foreground">Form Analytics</h2>
+              <p className="text-muted-foreground">Track form interactions, abandonments, and conversion rates</p>
+            </div>
+            <FormAnalyticsList />
           </TabsContent>
 
           <TabsContent value="feature-requests" className="animate-fade-in">

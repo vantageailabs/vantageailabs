@@ -4,11 +4,24 @@ import { Input } from "@/components/ui/input";
 import { Download, CheckCircle, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useFormAnalytics } from "@/hooks/useFormAnalytics";
 
 const LeadMagnet = () => {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const { trackPartialData, trackComplete } = useFormAnalytics({ 
+    initialStep: 'lead_magnet' 
+  });
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (value.includes('@')) {
+      trackPartialData('email', value);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +53,8 @@ const LeadMagnet = () => {
         toast.success("Check your email for the AI Playbook!");
       }
       
+      // Track completion
+      await trackComplete();
       setIsSubmitted(true);
     } catch (error) {
       console.error('Error submitting lead:', error);
@@ -103,7 +118,7 @@ const LeadMagnet = () => {
                         type="email"
                         placeholder="you@company.com"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={handleEmailChange}
                         required
                         className="bg-muted border-border"
                       />
