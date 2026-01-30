@@ -441,7 +441,7 @@ const Support = () => {
               {/* Advanced CMS */}
               <div className="bg-primary/5 border-2 border-primary rounded-xl p-6 relative">
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
-                  Included in Enterprise
+                  Included in Top Tier
                 </Badge>
                 <div className="flex items-center gap-3 mb-4 pt-2">
                   <div className="p-2 rounded-lg bg-primary/20">
@@ -492,7 +492,7 @@ const Support = () => {
                   </li>
                 </ul>
                 <div className="flex items-baseline justify-between pt-4 border-t border-primary/20">
-                  <span className="text-2xl font-bold">$750</span>
+                  <span className="text-2xl font-bold">$1,250</span>
                   <span className="text-sm text-muted-foreground">one-time add-on</span>
                 </div>
               </div>
