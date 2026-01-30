@@ -39,9 +39,9 @@ const services: Service[] = [
   },
   {
     icon: Shield,
-    title: "Website + Business Coaching",
-    description: "Full website build plus hands-on guidance—funnels, client management, automated emails, and strategy.",
-    highlight: "Done-for-you + taught",
+    title: "Coach + Build",
+    description: "Your build (website, BOS, or app) plus hands-on guidance—funnels, lead psychology, email best practices, and automation strategy.",
+    highlight: "Build smarter from day one",
   },
   {
     icon: Rocket,
