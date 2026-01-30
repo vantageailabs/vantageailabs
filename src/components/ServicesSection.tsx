@@ -42,6 +42,7 @@ const services: Service[] = [
     title: "Coach + Build",
     description: "Your build (website, BOS, or app) plus hands-on guidance—funnels, lead psychology, email best practices, and automation strategy.",
     highlight: "Build smarter from day one",
+    link: "/coach-build",
   },
   {
     icon: Rocket,
@@ -85,7 +86,7 @@ const ServicesSection = () => {
                 </p>
                 {service.link && (
                   <div className="mt-4 flex items-center gap-1 text-sm font-medium text-primary group-hover:gap-2 transition-all">
-                    Explore BOS <ArrowRight className="w-4 h-4" />
+                    Learn more <ArrowRight className="w-4 h-4" />
                   </div>
                 )}
               </>
