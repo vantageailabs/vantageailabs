@@ -19,6 +19,7 @@ import RescheduleAppointment from "./pages/RescheduleAppointment";
 import CredentialSubmission from "./pages/CredentialSubmission";
 import CurrentCustomerQuotes from "./pages/CurrentCustomerQuotes";
 import BOS from "./pages/BOS";
+import CoachBuild from "./pages/CoachBuild";
 import NotFound from "./pages/NotFound";
 
 
@@ -47,6 +48,7 @@ const App = () => (
           <Route path="/credentials/:token" element={<CredentialSubmission />} />
           <Route path="/current-customer-quotes" element={<CurrentCustomerQuotes />} />
           <Route path="/bos" element={<BOS />} />
+          <Route path="/coach-build" element={<CoachBuild />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
