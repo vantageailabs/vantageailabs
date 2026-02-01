@@ -166,7 +166,7 @@ const Support = () => {
                     <span>Email support (5-day turnaround)</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
-                    <img src={vantageIcon} alt="" className="h-4 w-4 mt-0.5 flex-shrink-0 opacity-70" />
+                    <img src={vantageIcon} alt="Vantage AI Labs" className="h-4 w-4 mt-0.5 flex-shrink-0 opacity-70" />
                     <span className="text-muted-foreground">"Powered by Vantage AI Labs" badge</span>
                   </li>
                 </ul>

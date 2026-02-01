@@ -109,15 +109,15 @@ const TestimonialsSection = () => {
               <div className="flex items-center gap-3 pt-4 border-t border-border/50">
                 {testimonial.avatar === "JP" ? (
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-border">
-                    <img src={premierPaintLogo} alt="Premier Paint" className="w-full h-full object-cover" />
+                    <img src={premierPaintLogo} alt="Premier Paint company logo" className="w-full h-full object-cover" />
                   </div>
                 ) : testimonial.avatar === "JE" ? (
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-border">
-                    <img src={elevation180Logo} alt="Elevation180" className="w-full h-full object-cover" />
+                    <img src={elevation180Logo} alt="Elevation180 company logo" className="w-full h-full object-cover" />
                   </div>
                 ) : testimonial.avatar === "MC" ? (
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-white border border-border">
-                    <img src={chenLegalLogo} alt="Chen Legal Services" className="w-full h-full object-cover" />
+                    <img src={chenLegalLogo} alt="Chen Legal Services company logo" className="w-full h-full object-cover" />
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">

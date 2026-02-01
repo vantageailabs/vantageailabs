@@ -154,11 +154,11 @@ const Hero = () => {
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
                 {[
-                  { src: premierPaintLogo, alt: "Premier Paint" },
-                  { src: elevation180Logo, alt: "Elevation180" },
-                  { src: chenLegalLogo, alt: "Chen Legal" },
-                  { src: canyonClubLogo, alt: "Canyon Club" },
-                  { src: bestBuyDrugsLogo, alt: "Best Buy Drugs" },
+                  { src: premierPaintLogo, alt: "Premier Paint client logo" },
+                  { src: elevation180Logo, alt: "Elevation180 client logo" },
+                  { src: chenLegalLogo, alt: "Chen Legal client logo" },
+                  { src: canyonClubLogo, alt: "Canyon Club client logo" },
+                  { src: bestBuyDrugsLogo, alt: "Best Buy Drugs client logo" },
                 ].map((logo, i) => (
                   <div key={i} className="w-8 h-8 rounded-full bg-white border-2 border-background overflow-hidden">
                     <img src={logo.src} alt={logo.alt} className="w-full h-full object-cover" />
