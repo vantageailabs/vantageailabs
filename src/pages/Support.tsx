@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Download, Sparkles, Shield, Clock, Calendar, Headphones, FileEdit, LayoutDashboard, HelpCircle } from "lucide-react";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -12,6 +13,12 @@ const Support = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Support & Maintenance Plans"
+        description="Ongoing support and maintenance for your AI systems, websites, and automations. Flexible plans to keep your business running smoothly."
+        canonical="/support"
+        keywords="tech support Albuquerque, website maintenance, AI support, automation maintenance"
+      />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container px-4 py-4 flex items-center justify-between">

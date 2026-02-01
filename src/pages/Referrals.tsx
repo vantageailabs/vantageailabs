@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Gift, Loader2, Check, ChevronLeft, ChevronRight, Clock, Video } from "lucide-react";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -235,6 +236,11 @@ const Referrals = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Referral Program"
+        description="Refer a business to Vantage AI Labs and earn rewards. Help other Albuquerque businesses discover AI automation while earning bonuses."
+        canonical="/referrals"
+      />
       {/* Header */}
       <header className="border-b border-border/50 bg-background/95 backdrop-blur-sm">
         <div className="container px-4 py-4 flex items-center justify-between">

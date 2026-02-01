@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "@/components/SEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AssessmentFlow from "@/components/assessment/AssessmentFlow";
@@ -84,6 +85,12 @@ const Assessment = () => {
 
   return (
     <div className="min-h-screen bg-background pt-[48px]">
+      <SEO
+        title="Free AI Readiness Assessment"
+        description="Discover your business's AI automation potential with our free assessment. Get a personalized report showing hours saved and cost reduction opportunities."
+        canonical="/assessment"
+        keywords="AI readiness assessment, business automation assessment, AI consulting Albuquerque"
+      />
       <Navbar />
       <section className="py-20 px-4 bg-muted/30">
         <AssessmentFlow 

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Sparkles, Zap, Rocket, ArrowRight } from "lucide-react";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -61,6 +62,12 @@ const tiers = [
 const Automation = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Business Process Automation Services"
+        description="Eliminate busywork with custom workflow automation. We connect your apps, automate repetitive tasks, and streamline operations for Albuquerque small businesses."
+        canonical="/automation"
+        keywords="workflow automation Albuquerque, business process automation New Mexico, Zapier integration, automation consulting"
+      />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container px-4 py-4 flex items-center justify-between">

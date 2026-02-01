@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Sparkles, Zap, Rocket, ArrowRight } from "lucide-react";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -62,6 +63,12 @@ const tiers = [
 const AIAssistants = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="AI Chatbots & Virtual Assistants"
+        description="24/7 AI-powered chatbots for your business. Handle customer inquiries, book appointments, and capture leads automatically. Custom AI assistants built in Albuquerque."
+        canonical="/ai-assistants"
+        keywords="AI chatbot Albuquerque, virtual assistant New Mexico, business chatbot, automated customer service"
+      />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container px-4 py-4 flex items-center justify-between">

@@ -1,11 +1,18 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEO from "@/components/SEO";
 import BookingSection from "@/components/BookingSection";
 import vantageIcon from "@/assets/vantage-icon.png";
 
 const Book = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Book a Free AI Consultation"
+        description="Schedule a free 30-minute consultation with Vantage AI Labs in Albuquerque. Discover how AI automation can transform your small business operations."
+        canonical="/book"
+        keywords="AI consultation Albuquerque, free business consultation, AI strategy session New Mexico"
+      />
       {/* Simple Header */}
       <header className="border-b border-border/50 bg-background/95 backdrop-blur-sm">
         <div className="container px-4 py-4 flex items-center justify-between">

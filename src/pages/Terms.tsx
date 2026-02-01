@@ -1,10 +1,16 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 
 const Terms = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Terms of Service"
+        description="Vantage AI Labs terms of service. Read our terms and conditions for using our AI consulting and automation services."
+        canonical="/terms"
+      />
       <div className="container px-4 py-16 max-w-4xl">
         <Link to="/">
           <Button variant="ghost" className="mb-8">

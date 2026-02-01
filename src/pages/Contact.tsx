@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail, MapPin, Send } from "lucide-react";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -86,6 +87,12 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with Vantage AI Labs in Albuquerque, NM. Questions about AI automation, custom apps, or our services? We'd love to hear from you."
+        canonical="/contact"
+        keywords="contact Vantage AI Labs, AI consulting Albuquerque contact, New Mexico tech company"
+      />
       <div className="container px-4 py-16 max-w-4xl">
         <Link to="/">
           <Button variant="ghost" className="mb-8">
@@ -193,7 +200,11 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Location</h3>
-                  <p className="text-muted-foreground">Remote-first, serving clients worldwide</p>
+                  <p className="text-muted-foreground">
+                    7410 Montgomery Blvd NE #203<br />
+                    Albuquerque, NM 87109
+                  </p>
+                  <p className="text-muted-foreground text-sm mt-1">Serving clients nationwide</p>
                 </div>
               </div>
             </div>

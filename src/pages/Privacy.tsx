@@ -1,10 +1,16 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Privacy Policy"
+        description="Vantage AI Labs privacy policy. Learn how we collect, use, and protect your personal information."
+        canonical="/privacy"
+      />
       <div className="container px-4 py-16 max-w-4xl">
         <Link to="/">
           <Button variant="ghost" className="mb-8">

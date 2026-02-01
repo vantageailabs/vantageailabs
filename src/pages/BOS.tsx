@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEO from "@/components/SEO";
 import BOSHero from "@/components/bos/BOSHero";
 import BOSPhases from "@/components/bos/BOSPhases";
 import BOSTiers from "@/components/bos/BOSTiers";
@@ -11,6 +12,12 @@ import Footer from "@/components/Footer";
 const BOS = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Business Operating System - Automate Your Operations"
+        description="Transform your service business with our modular Business Operating System. Automate lead capture, scheduling, client management, and more. Built for Albuquerque small businesses."
+        canonical="/bos"
+        keywords="business operating system, small business automation Albuquerque, service business software, workflow automation New Mexico"
+      />
       {/* Simple header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container px-4 py-4 flex items-center justify-between">

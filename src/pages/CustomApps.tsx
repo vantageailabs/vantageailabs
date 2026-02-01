@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Sparkles, Zap, Rocket, ArrowRight } from "lucide-react";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import vantageIcon from "@/assets/vantage-icon.png";
@@ -63,6 +64,12 @@ const tiers = [
 const CustomApps = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Custom App Development"
+        description="Bespoke software development for small businesses. From MVPs to enterprise applications, we build custom apps tailored to your needs. Albuquerque app developers."
+        canonical="/custom-apps"
+        keywords="custom app development Albuquerque, software development New Mexico, MVP development, business applications"
+      />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container px-4 py-4 flex items-center justify-between">

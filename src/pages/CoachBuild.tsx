@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEO from "@/components/SEO";
 import CoachBuildHero from "@/components/coach-build/CoachBuildHero";
 import CoachBuildTiers from "@/components/coach-build/CoachBuildTiers";
 import CoachBuildProcess from "@/components/coach-build/CoachBuildProcess";
@@ -10,6 +11,12 @@ import Footer from "@/components/Footer";
 const CoachBuild = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="AI & Automation Coaching"
+        description="Learn to build AI systems yourself with hands-on coaching. We guide you through creating automations, chatbots, and custom tools. AI coaching in Albuquerque."
+        canonical="/coach-build"
+        keywords="AI coaching Albuquerque, automation training New Mexico, learn AI, business coaching"
+      />
       {/* Simple header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container px-4 py-4 flex items-center justify-between">
