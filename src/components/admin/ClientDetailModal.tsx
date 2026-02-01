@@ -16,16 +16,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Trash2, Save, Star, Send, Calendar, Clock, Tag, FolderOpen } from 'lucide-react';
-import { format, differenceInDays, parseISO } from 'date-fns';
+import { Loader2, Trash2, Save } from 'lucide-react';
 import { Client, ClientStatus } from './ClientsList';
 import { Separator } from '@/components/ui/separator';
 import { ClientCredentialsSection } from './ClientCredentialsSection';
 import { ClientReferralSection } from './ClientReferralSection';
-import { ClientProjectsSection, ClientProject, ProjectStatus } from './ClientProjectsSection';
-import { ScopeCategoryBadge, getScopeCategories, ScopeCategory } from './ScopeCategoryBadge';
+import { ClientProjectsSection, ClientProject } from './ClientProjectsSection';
+import { ClientServicesSection, ClientService } from './ClientServicesSection';
+import { ClientCostsSection, ClientCost } from './ClientCostsSection';
+import { ClientReviewSection } from './ClientReviewSection';
+import { ScopeCategory } from './ScopeCategoryBadge';
 import {
   Select,
   SelectContent,
@@ -57,30 +58,6 @@ interface Coupon {
   discount_value: number;
 }
 
-type ServiceStatus = 'planned' | 'in_progress' | 'completed' | 'cancelled';
-
-interface ClientService {
-  id: string;
-  service_id: string;
-  agreed_price: number;
-  status: ServiceStatus;
-  start_date: string | null;
-  end_date: string | null;
-  coupon_id: string | null;
-  project_id: string | null;
-  scope_category: ScopeCategory;
-  service?: Service;
-  coupon?: Coupon;
-}
-
-interface ClientCost {
-  id: string;
-  name: string;
-  amount: number;
-  notes?: string;
-  incurred_at: string;
-}
-
 interface Props {
   client: Client | null;
   open: boolean;
@@ -92,7 +69,6 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
   const isNew = !client?.id;
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [sendingReview, setSendingReview] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [packages, setPackages] = useState<SupportPackage[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -168,7 +144,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
 
   const fetchClientServices = async (clientId: string) => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('client_services')
       .select('*, services(*), coupons(*)')
       .eq('client_id', clientId);
@@ -215,91 +191,27 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
     }
   };
 
-  const calculateTotal = () => {
-    const servicesTotal = clientServices.reduce((sum, cs) => {
-      const discountedPrice = calculateDiscountedPrice(cs);
-      return sum + discountedPrice;
-    }, 0);
-    const packagePrice = packages.find(p => p.id === formData.support_package_id)?.monthly_price || 0;
-    return servicesTotal + Number(packagePrice);
-  };
-
   const calculateDiscountedPrice = (cs: ClientService) => {
     if (!cs.coupon_id) return Number(cs.agreed_price);
     const coupon = coupons.find(c => c.id === cs.coupon_id) || cs.coupon;
     if (!coupon) return Number(cs.agreed_price);
-    
+
     if (coupon.discount_type === 'percentage') {
       return Number(cs.agreed_price) * (1 - coupon.discount_value / 100);
     }
     return Math.max(0, Number(cs.agreed_price) - coupon.discount_value);
   };
 
-  const handleAddService = () => {
-    if (services.length === 0) return;
-    setClientServices([
-      ...clientServices,
-      {
-        id: `temp-${Date.now()}`,
-        service_id: services[0].id,
-        agreed_price: services[0].base_price,
-        status: 'planned' as ServiceStatus,
-        start_date: null,
-        end_date: null,
-        coupon_id: null,
-        project_id: clientProjects.length > 0 ? clientProjects[0].id : null,
-        scope_category: 'new_project' as ScopeCategory,
-        service: services[0],
-      },
-    ]);
-  };
-
-  const handleAddCost = () => {
-    setClientCosts([
-      ...clientCosts,
-      {
-        id: `temp-${Date.now()}`,
-        name: '',
-        amount: 0,
-        incurred_at: new Date().toISOString().split('T')[0],
-      },
-    ]);
-  };
-
-  const handleRemoveCost = (index: number) => {
-    setClientCosts(clientCosts.filter((_, i) => i !== index));
-  };
-
-  const handleCostChange = (index: number, field: keyof ClientCost, value: string | number) => {
-    const updated = [...clientCosts];
-    updated[index] = { ...updated[index], [field]: value };
-    setClientCosts(updated);
+  const calculateTotal = () => {
+    const servicesTotal = clientServices.reduce((sum, cs) => {
+      return sum + calculateDiscountedPrice(cs);
+    }, 0);
+    const packagePrice = packages.find(p => p.id === formData.support_package_id)?.monthly_price || 0;
+    return servicesTotal + Number(packagePrice);
   };
 
   const calculateTotalCosts = () => {
     return clientCosts.reduce((sum, c) => sum + Number(c.amount), 0);
-  };
-
-  const handleRemoveService = (index: number) => {
-    setClientServices(clientServices.filter((_, i) => i !== index));
-  };
-
-  const handleServiceChange = (index: number, field: string, value: string | number) => {
-    const updated = [...clientServices];
-    if (field === 'service_id') {
-      const service = services.find(s => s.id === value);
-      updated[index] = {
-        ...updated[index],
-        service_id: value as string,
-        agreed_price: service?.base_price || 0,
-        service,
-      };
-    } else if (field === 'status') {
-      updated[index] = { ...updated[index], status: value as ServiceStatus };
-    } else {
-      updated[index] = { ...updated[index], [field]: value };
-    }
-    setClientServices(updated);
   };
 
   const handleSave = async () => {
@@ -340,9 +252,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           .eq('id', clientId);
         if (error) throw error;
 
-        // Delete existing services and re-insert
         await supabase.from('client_services').delete().eq('client_id', clientId);
-        // Delete existing projects and re-insert
         await supabase.from('client_projects').delete().eq('client_id', clientId);
       }
 
@@ -361,7 +271,6 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
             .select()
             .single();
           if (error) throw error;
-          // Map temp IDs to real IDs
           projectIdMap.set(project.id, data.id);
         }
       }
@@ -386,7 +295,6 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
 
       // Save client costs
       if (clientId) {
-        // Delete existing costs and re-insert
         await supabase.from('client_costs').delete().eq('client_id', clientId);
 
         if (clientCosts.length > 0) {
@@ -414,14 +322,13 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
 
   const handleDelete = async () => {
     if (!client?.id) return;
-    
+
     setSaving(true);
     try {
-      // Delete related records first
       await supabase.from('client_services').delete().eq('client_id', client.id);
       await supabase.from('client_costs').delete().eq('client_id', client.id);
       await supabase.from('client_projects').delete().eq('client_id', client.id);
-      
+
       const { error } = await supabase.from('clients').delete().eq('id', client.id);
       if (error) throw error;
 
@@ -431,41 +338,6 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
       toast({ title: 'Error deleting client', description: error.message, variant: 'destructive' });
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleRequestReview = async () => {
-    if (!client?.id || !client.email) {
-      toast({ title: 'Client email is required', variant: 'destructive' });
-      return;
-    }
-
-    setSendingReview(true);
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-review-request`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ client_id: client.id }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send review request');
-      }
-
-      toast({ title: 'Review request sent!', description: `Email sent to ${client.email}` });
-      onSaved(); // Refresh to show updated timestamp
-    } catch (error: any) {
-      toast({ title: 'Error sending review request', description: error.message, variant: 'destructive' });
-    } finally {
-      setSendingReview(false);
     }
   };
 
@@ -553,178 +425,13 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
 
           {/* Services */}
           <Separator />
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Assigned Services</Label>
-              <Button variant="outline" size="sm" onClick={handleAddService} disabled={services.length === 0}>
-                <Plus className="h-4 w-4 mr-1" />
-                Add Service
-              </Button>
-            </div>
-
-            {services.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No services available. Add services in the Services tab first.</p>
-            ) : clientServices.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No services assigned yet.</p>
-            ) : (
-              <div className="space-y-3">
-                {clientServices.map((cs, index) => {
-                  const duration = cs.start_date && cs.end_date 
-                    ? differenceInDays(parseISO(cs.end_date), parseISO(cs.start_date)) + 1
-                    : null;
-                  const discountedPrice = calculateDiscountedPrice(cs);
-                  const hasDiscount = cs.coupon_id && discountedPrice !== Number(cs.agreed_price);
-                  const activeCoupon = cs.coupon_id ? (coupons.find(c => c.id === cs.coupon_id) || cs.coupon) : null;
-                  const scopeCategories = getScopeCategories();
-                  
-                  return (
-                    <div key={cs.id} className="p-3 rounded-lg border border-border/50 bg-muted/50 space-y-2">
-                      {/* Row 1: Service, Price, Status, Delete */}
-                      <div className="flex items-center gap-2">
-                        <Select
-                          value={cs.service_id}
-                          onValueChange={(v) => handleServiceChange(index, 'service_id', v)}
-                        >
-                          <SelectTrigger className="flex-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {services.map((s) => (
-                              <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          type="number"
-                          className="w-28"
-                          value={cs.agreed_price}
-                          onChange={(e) => handleServiceChange(index, 'agreed_price', Number(e.target.value))}
-                          placeholder="Price"
-                        />
-                        <Select
-                          value={cs.status}
-                          onValueChange={(v) => handleServiceChange(index, 'status', v)}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="planned">Planned</SelectItem>
-                            <SelectItem value="in_progress">In Progress</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Button variant="ghost" size="icon" onClick={() => handleRemoveService(index)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-
-                      {/* Row 2: Project & Scope Category */}
-                      <div className="flex items-center gap-2 pt-1 border-t border-border/30">
-                        <div className="flex items-center gap-1.5 flex-1">
-                          <FolderOpen className="h-3.5 w-3.5 text-muted-foreground" />
-                          <Select
-                            value={cs.project_id || 'none'}
-                            onValueChange={(v) => handleServiceChange(index, 'project_id', v === 'none' ? null : v)}
-                          >
-                            <SelectTrigger className="h-8 text-sm flex-1">
-                              <SelectValue placeholder="No project" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">No project</SelectItem>
-                              {clientProjects.map((p) => (
-                                <SelectItem key={p.id} value={p.id}>
-                                  {p.name || 'Unnamed'} {p.domain && `(${p.domain})`}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Select
-                          value={cs.scope_category}
-                          onValueChange={(v) => handleServiceChange(index, 'scope_category', v)}
-                        >
-                          <SelectTrigger className="h-8 text-sm w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {scopeCategories.map((cat) => (
-                              <SelectItem key={cat.value} value={cat.value}>
-                                <span className="flex items-center gap-1">
-                                  {cat.supportEligible ? '✓' : '✗'} {cat.label}
-                                </span>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <ScopeCategoryBadge category={cs.scope_category} />
-                      </div>
-                      
-                      {/* Row 3: Dates and Duration */}
-                      <div className="flex items-center gap-2 pt-1 border-t border-border/30">
-                        <div className="flex items-center gap-1.5 flex-1">
-                          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                          <Input
-                            type="date"
-                            className="h-8 text-sm"
-                            value={cs.start_date || ''}
-                            onChange={(e) => handleServiceChange(index, 'start_date', e.target.value || null)}
-                            placeholder="Start"
-                          />
-                          <span className="text-muted-foreground text-sm">→</span>
-                          <Input
-                            type="date"
-                            className="h-8 text-sm"
-                            value={cs.end_date || ''}
-                            onChange={(e) => handleServiceChange(index, 'end_date', e.target.value || null)}
-                            placeholder="End"
-                          />
-                        </div>
-                        {duration !== null && (
-                          <Badge variant="secondary" className="flex items-center gap-1 shrink-0">
-                            <Clock className="h-3 w-3" />
-                            {duration} day{duration !== 1 ? 's' : ''}
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Row 4: Coupon and Final Price */}
-                      <div className="flex items-center gap-2 pt-1 border-t border-border/30">
-                        <div className="flex items-center gap-1.5 flex-1">
-                          <Tag className="h-3.5 w-3.5 text-muted-foreground" />
-                          <Select
-                            value={cs.coupon_id || 'none'}
-                            onValueChange={(v) => handleServiceChange(index, 'coupon_id', v === 'none' ? null : v)}
-                          >
-                            <SelectTrigger className="h-8 text-sm flex-1">
-                              <SelectValue placeholder="No coupon" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">No coupon</SelectItem>
-                              {coupons.map((c) => (
-                                <SelectItem key={c.id} value={c.id}>
-                                  {c.code} - {c.discount_type === 'percentage' ? `${c.discount_value}%` : `$${c.discount_value}`} off
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        {hasDiscount && activeCoupon && (
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-sm text-muted-foreground line-through">${Number(cs.agreed_price).toFixed(0)}</span>
-                            <Badge variant="default" className="bg-green-600 hover:bg-green-600">
-                              ${discountedPrice.toFixed(0)}
-                            </Badge>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          <ClientServicesSection
+            services={services}
+            coupons={coupons}
+            clientServices={clientServices}
+            clientProjects={clientProjects}
+            onServicesChange={setClientServices}
+          />
 
           {/* Support Package */}
           <div className="space-y-2">
@@ -752,51 +459,10 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           </div>
 
           {/* Costs */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Costs</Label>
-              <Button variant="outline" size="sm" onClick={handleAddCost}>
-                <Plus className="h-4 w-4 mr-1" />
-                Add Cost
-              </Button>
-            </div>
-
-            {clientCosts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No costs tracked yet.</p>
-            ) : (
-              <div className="space-y-2">
-                {clientCosts.map((cost, index) => (
-                  <div key={cost.id} className="flex items-center gap-2 p-2 rounded border border-border/50 bg-muted/50">
-                    <Input
-                      className="flex-1"
-                      value={cost.name}
-                      onChange={(e) => handleCostChange(index, 'name', e.target.value)}
-                      placeholder="Cost name (e.g., Lovable credits)"
-                    />
-                    <Input
-                      type="number"
-                      className="w-28"
-                      value={cost.amount}
-                      onChange={(e) => handleCostChange(index, 'amount', Number(e.target.value))}
-                      placeholder="Amount"
-                    />
-                    <Input
-                      type="date"
-                      className="w-36"
-                      value={cost.incurred_at}
-                      onChange={(e) => handleCostChange(index, 'incurred_at', e.target.value)}
-                    />
-                    <Button variant="ghost" size="icon" onClick={() => handleRemoveCost(index)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                ))}
-                <div className="flex justify-end text-sm text-muted-foreground">
-                  Total Costs: <span className="font-medium text-destructive ml-1">${calculateTotalCosts().toLocaleString()}</span>
-                </div>
-              </div>
-            )}
-          </div>
+          <ClientCostsSection
+            costs={clientCosts}
+            onCostsChange={setClientCosts}
+          />
 
           {/* Notes */}
           <div className="space-y-2">
@@ -830,39 +496,13 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           )}
 
           {/* Google Review Request */}
-          {!isNew && (
-            <div className="space-y-3">
-              <Separator />
-              <div className="flex items-center justify-between p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-amber-500" />
-                    <span className="font-medium">Google Review</span>
-                  </div>
-                  {client?.review_request_sent_at ? (
-                    <p className="text-xs text-muted-foreground">
-                      Last requested: {format(new Date(client.review_request_sent_at), 'MMM d, yyyy')}
-                    </p>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">No request sent yet</p>
-                  )}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRequestReview}
-                  disabled={sendingReview || !client?.email}
-                  className="border-amber-500/50 hover:bg-amber-500/10"
-                >
-                  {sendingReview ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4 mr-2" />
-                  )}
-                  Request Review
-                </Button>
-              </div>
-            </div>
+          {!isNew && client?.id && (
+            <ClientReviewSection
+              clientId={client.id}
+              clientEmail={client.email}
+              reviewRequestSentAt={client.review_request_sent_at || null}
+              onReviewSent={onSaved}
+            />
           )}
 
           {/* Totals */}
