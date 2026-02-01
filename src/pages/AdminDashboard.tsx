@@ -1,23 +1,32 @@
+import { lazy, Suspense } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProtectedRoute } from '@/components/admin/ProtectedRoute';
-import { AppointmentsList } from '@/components/admin/AppointmentsList';
-import { WorkingHoursEditor } from '@/components/admin/WorkingHoursEditor';
-import { BlockedDatesManager } from '@/components/admin/BlockedDatesManager';
-import { LeadsList } from '@/components/admin/LeadsList';
-import { AssessmentsList } from '@/components/admin/AssessmentsList';
-import { CalendarStatus } from '@/components/admin/CalendarStatus';
-import { ClientsList } from '@/components/admin/ClientsList';
-import { ServicesManager } from '@/components/admin/ServicesManager';
-import { SupportPackagesManager } from '@/components/admin/SupportPackagesManager';
-import { CouponsManager } from '@/components/admin/CouponsManager';
-import { CapacitySettings } from '@/components/admin/CapacitySettings';
-import { ContactSubmissionsList } from '@/components/admin/ContactSubmissionsList';
-import { FeatureRequestsList } from '@/components/admin/FeatureRequestsList';
-import { FormAnalyticsList } from '@/components/admin/FormAnalyticsList';
-import { Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList, Briefcase, Package, TrendingUp, Mail, Lightbulb, Activity } from 'lucide-react';
+import { Loader2, Calendar, Clock, Ban, Users, LogOut, Settings, ArrowLeft, ClipboardList, Briefcase, Package, TrendingUp, Mail, Lightbulb, Activity } from 'lucide-react';
+
+// Lazy load all admin components
+const AppointmentsList = lazy(() => import('@/components/admin/AppointmentsList').then(m => ({ default: m.AppointmentsList })));
+const WorkingHoursEditor = lazy(() => import('@/components/admin/WorkingHoursEditor').then(m => ({ default: m.WorkingHoursEditor })));
+const BlockedDatesManager = lazy(() => import('@/components/admin/BlockedDatesManager').then(m => ({ default: m.BlockedDatesManager })));
+const LeadsList = lazy(() => import('@/components/admin/LeadsList').then(m => ({ default: m.LeadsList })));
+const AssessmentsList = lazy(() => import('@/components/admin/AssessmentsList').then(m => ({ default: m.AssessmentsList })));
+const CalendarStatus = lazy(() => import('@/components/admin/CalendarStatus').then(m => ({ default: m.CalendarStatus })));
+const ClientsList = lazy(() => import('@/components/admin/ClientsList').then(m => ({ default: m.ClientsList })));
+const ServicesManager = lazy(() => import('@/components/admin/ServicesManager').then(m => ({ default: m.ServicesManager })));
+const SupportPackagesManager = lazy(() => import('@/components/admin/SupportPackagesManager').then(m => ({ default: m.SupportPackagesManager })));
+const CouponsManager = lazy(() => import('@/components/admin/CouponsManager').then(m => ({ default: m.CouponsManager })));
+const CapacitySettings = lazy(() => import('@/components/admin/CapacitySettings').then(m => ({ default: m.CapacitySettings })));
+const ContactSubmissionsList = lazy(() => import('@/components/admin/ContactSubmissionsList').then(m => ({ default: m.ContactSubmissionsList })));
+const FeatureRequestsList = lazy(() => import('@/components/admin/FeatureRequestsList').then(m => ({ default: m.FeatureRequestsList })));
+const FormAnalyticsList = lazy(() => import('@/components/admin/FormAnalyticsList').then(m => ({ default: m.FormAnalyticsList })));
+
+const TabLoader = () => (
+  <div className="flex items-center justify-center py-12">
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  </div>
+);
 
 function DashboardContent() {
   const { signOut } = useAuth();
@@ -107,7 +116,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Appointments</h2>
               <p className="text-muted-foreground">Manage your scheduled appointments</p>
             </div>
-            <AppointmentsList />
+            <Suspense fallback={<TabLoader />}>
+              <AppointmentsList />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="clients" className="animate-fade-in">
@@ -115,7 +126,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Clients</h2>
               <p className="text-muted-foreground">Manage client relationships and assigned services</p>
             </div>
-            <ClientsList />
+            <Suspense fallback={<TabLoader />}>
+              <ClientsList />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="assessments" className="animate-fade-in">
@@ -123,7 +136,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">AI Readiness Assessments</h2>
               <p className="text-muted-foreground">View submitted assessments and automation potential scores</p>
             </div>
-            <AssessmentsList />
+            <Suspense fallback={<TabLoader />}>
+              <AssessmentsList />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="leads" className="animate-fade-in">
@@ -131,7 +146,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Leads</h2>
               <p className="text-muted-foreground">View and export email submissions</p>
             </div>
-            <LeadsList />
+            <Suspense fallback={<TabLoader />}>
+              <LeadsList />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="contact" className="animate-fade-in">
@@ -139,7 +156,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Contact Submissions</h2>
               <p className="text-muted-foreground">View and respond to contact form submissions</p>
             </div>
-            <ContactSubmissionsList />
+            <Suspense fallback={<TabLoader />}>
+              <ContactSubmissionsList />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="analytics" className="animate-fade-in">
@@ -147,7 +166,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Form Analytics</h2>
               <p className="text-muted-foreground">Track form interactions, abandonments, and conversion rates</p>
             </div>
-            <FormAnalyticsList />
+            <Suspense fallback={<TabLoader />}>
+              <FormAnalyticsList />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="feature-requests" className="animate-fade-in">
@@ -155,7 +176,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Feature Requests</h2>
               <p className="text-muted-foreground">Review and quote incoming feature requests from clients</p>
             </div>
-            <FeatureRequestsList />
+            <Suspense fallback={<TabLoader />}>
+              <FeatureRequestsList />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="services" className="animate-fade-in">
@@ -163,11 +186,13 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Services & Packages</h2>
               <p className="text-muted-foreground">Manage your service offerings and support packages</p>
             </div>
-            <div className="space-y-8">
-              <ServicesManager />
-              <SupportPackagesManager />
-              <CouponsManager />
-            </div>
+            <Suspense fallback={<TabLoader />}>
+              <div className="space-y-8">
+                <ServicesManager />
+                <SupportPackagesManager />
+                <CouponsManager />
+              </div>
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="capacity" className="animate-fade-in">
@@ -175,7 +200,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Capacity Management</h2>
               <p className="text-muted-foreground">Control monthly client capacity for urgency messaging</p>
             </div>
-            <CapacitySettings />
+            <Suspense fallback={<TabLoader />}>
+              <CapacitySettings />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="settings" className="animate-fade-in">
@@ -183,10 +210,12 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Calendar Settings</h2>
               <p className="text-muted-foreground">Configure working hours and appointment settings</p>
             </div>
-            <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-              <CalendarStatus />
-              <WorkingHoursEditor />
-            </div>
+            <Suspense fallback={<TabLoader />}>
+              <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+                <CalendarStatus />
+                <WorkingHoursEditor />
+              </div>
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="blocked" className="animate-fade-in">
@@ -194,7 +223,9 @@ function DashboardContent() {
               <h2 className="text-2xl font-display font-bold text-foreground">Blocked Dates</h2>
               <p className="text-muted-foreground">Set dates when you're unavailable</p>
             </div>
-            <BlockedDatesManager />
+            <Suspense fallback={<TabLoader />}>
+              <BlockedDatesManager />
+            </Suspense>
           </TabsContent>
         </Tabs>
       </main>
