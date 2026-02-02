@@ -177,12 +177,13 @@ export function ClientReferralSection({ clientId, clientName, clientEmail, refer
       if (error) throw error;
       
       toast({ title: 'Email sent!', description: `Referral code sent to ${clientEmail}` });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error sending referral email:', error);
-      toast({ 
-        title: 'Error sending email', 
-        description: error.message || 'Please try again', 
-        variant: 'destructive' 
+      const message = error instanceof Error ? error.message : 'Please try again';
+      toast({
+        title: 'Error sending email',
+        description: message,
+        variant: 'destructive'
       });
     } finally {
       setSendingEmail(false);
@@ -216,7 +217,7 @@ export function ClientReferralSection({ clientId, clientName, clientEmail, refer
   };
 
   const handleUpdateStatus = async (referralId: string, newStatus: string) => {
-    const updates: any = { status: newStatus };
+    const updates: { status: string; converted_at?: string } = { status: newStatus };
     if (newStatus === 'converted') {
       updates.converted_at = new Date().toISOString();
     }

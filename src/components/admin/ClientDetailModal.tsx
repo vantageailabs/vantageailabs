@@ -102,7 +102,7 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
           support_package_id: client.support_package_id || '',
           start_month: client.start_month || '',
           notes: client.notes || '',
-          referral_code: (client as any).referral_code || null,
+          referral_code: client.referral_code || null,
         });
         fetchClientServices(client.id);
         fetchClientCosts(client.id);
@@ -150,7 +150,20 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
       .eq('client_id', clientId);
 
     if (data) {
-      setClientServices(data.map((cs: any) => ({
+      type ClientServiceRow = {
+        id: string;
+        service_id: string;
+        agreed_price: number;
+        status: string;
+        start_date: string | null;
+        end_date: string | null;
+        coupon_id: string | null;
+        project_id: string | null;
+        scope_category: string | null;
+        services: { id: string; name: string; base_price: number } | null;
+        coupons: { id: string; code: string; name: string; discount_type: 'percentage' | 'fixed'; discount_value: number } | null;
+      };
+      setClientServices(data.map((cs: ClientServiceRow) => ({
         id: cs.id,
         service_id: cs.service_id,
         agreed_price: cs.agreed_price,
@@ -313,8 +326,9 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
 
       toast({ title: isNew ? 'Client created!' : 'Client updated!' });
       onSaved();
-    } catch (error: any) {
-      toast({ title: 'Error saving client', description: error.message, variant: 'destructive' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({ title: 'Error saving client', description: message, variant: 'destructive' });
     } finally {
       setSaving(false);
     }
@@ -334,8 +348,9 @@ export function ClientDetailModal({ client, open, onClose, onSaved }: Props) {
 
       toast({ title: 'Client deleted' });
       onSaved();
-    } catch (error: any) {
-      toast({ title: 'Error deleting client', description: error.message, variant: 'destructive' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({ title: 'Error deleting client', description: message, variant: 'destructive' });
     } finally {
       setSaving(false);
     }

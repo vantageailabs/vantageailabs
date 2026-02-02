@@ -117,8 +117,9 @@ export function ClientCredentialsSection({ clientId, clientEmail, onRefresh }: P
       setRequestDialogOpen(false);
       fetchData();
       onRefresh?.();
-    } catch (error: any) {
-      toast({ title: 'Error sending request', description: error.message, variant: 'destructive' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({ title: 'Error sending request', description: message, variant: 'destructive' });
     } finally {
       setSending(false);
     }

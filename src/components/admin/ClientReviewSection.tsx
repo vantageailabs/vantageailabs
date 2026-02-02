@@ -44,8 +44,9 @@ export function ClientReviewSection({ clientId, clientEmail, reviewRequestSentAt
 
       toast({ title: 'Review request sent!', description: `Email sent to ${clientEmail}` });
       onReviewSent();
-    } catch (error: any) {
-      toast({ title: 'Error sending review request', description: error.message, variant: 'destructive' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({ title: 'Error sending review request', description: message, variant: 'destructive' });
     } finally {
       setSendingReview(false);
     }

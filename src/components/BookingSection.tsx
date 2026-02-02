@@ -209,11 +209,12 @@ const BookingSection = () => {
         title: "Booking confirmed!",
         description: "Check your email for the meeting details.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Booking error:', error);
+      const message = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
       toast({
         title: "Booking failed",
-        description: error.message || "Something went wrong. Please try again.",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -296,11 +297,12 @@ const BookingSection = () => {
         title: "Booking confirmed!",
         description: "Check your email for the meeting details.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Booking error:', error);
+      const message = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
       toast({
         title: "Booking failed",
-        description: error.message || "Something went wrong. Please try again.",
+        description: message,
         variant: "destructive",
       });
     } finally {

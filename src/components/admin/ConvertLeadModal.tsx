@@ -177,8 +177,9 @@ export function ConvertLeadModal({ open, onClose, onConverted }: Props) {
 
       toast({ title: 'Lead converted to client!' });
       onConverted();
-    } catch (error: any) {
-      toast({ title: 'Error converting lead', description: error.message, variant: 'destructive' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({ title: 'Error converting lead', description: message, variant: 'destructive' });
     } finally {
       setSaving(false);
     }

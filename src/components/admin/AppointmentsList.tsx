@@ -89,7 +89,8 @@ export function AppointmentsList() {
         
         if (assessments) {
           const map: Record<string, AssessmentInfo> = {};
-          assessments.forEach((a: any) => {
+          type AssessmentRow = { id: string; appointment_id: string | null; overall_score: number; estimated_hours_saved: number; business_type: string };
+          assessments.forEach((a: AssessmentRow) => {
             if (a.appointment_id) {
               map[a.appointment_id] = {
                 id: a.id,
@@ -112,10 +113,11 @@ export function AppointmentsList() {
           
           if (bosSubmissions) {
             const bosMapData: Record<string, BOSSubmissionInfo> = {};
+            type BOSRow = { id: string; suggested_tier: string; estimated_price: number; estimated_hours_saved: number; selected_modules: unknown };
             // Map BOS submission ID to appointment ID
             data.forEach((apt: Appointment) => {
               if (apt.bos_submission_id) {
-                const bosData = bosSubmissions.find((b: any) => b.id === apt.bos_submission_id);
+                const bosData = bosSubmissions.find((b: BOSRow) => b.id === apt.bos_submission_id);
                 if (bosData) {
                   bosMapData[apt.id] = {
                     id: bosData.id,
